@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+				"${workspaceFolder}/**",
+				"${workspaceFolder}/src",
+                "${workspaceFolder}/src/**",
+                "/home/braxton/audio-dev/sdks/VST_SDK/VST2_SDK/**",
+                "/home/braxton/audio-dev/sdks/VST_SDK/VST3_SDK/**",
+                "/home/braxton/audio-dev/sdks/AAX_SDK_2p3p2/**",
+                "/home/braxton/JUCE_CMAKE/include/JUCE-6.0.0/modules"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "intelliSenseMode": "clang-x64",
+            "compilerArgs": [],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "configurationProvider": "vector-of-bool.cmake-tools"
+        }
+    ],
+    "version": 4
+}
