@@ -11,7 +11,7 @@ juce_set_vst2_sdk_path("/home/braxton/audio-dev/sdks/VST_SDK/VST2_SDK")
 
 add_library(Apex STATIC)
 
-target_include_directories(Apex PUBLIC
+target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src"
 	"${CMAKE_SOURCE_DIR}/src/ui"
 	"${CMAKE_SOURCE_DIR}/src/dsp"
