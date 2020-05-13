@@ -94,22 +94,3 @@ target_link_libraries(Apex PRIVATE
 	juce::juce_opengl
 	)
 
-install( TARGETS Apex EXPORT LibApex)
-export(TARGETS Apex 
-	juce_audio_basics
-	juce_audio_devices
-	juce_audio_formats
-	juce_audio_processors
-	juce_audio_utils
-	juce_core
-	juce_cryptography
-	juce_data_structures
-	juce_events
-	juce_graphics
-	juce_gui_basics
-	juce_gui_extra
-	juce_opengl
-	juce_vst3_headers
-	FILE ${CMAKE_BINARY_DIR}/LibApexConfig.cmake
-	)
-export(PACKAGE LibApex)
