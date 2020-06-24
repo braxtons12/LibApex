@@ -40,7 +40,7 @@ namespace apex {
 			if(mUsesThumbImage) {
 				resizeThumb();
 			}
-			else {
+			else if(mLookAndFeel != nullptr) {
 				mLookAndFeel->drawLinearApexSliderThumb(g, getX(), getY(),
 						getWidth(), getHeight(), sliderPos, *this);
 			}

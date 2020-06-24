@@ -27,16 +27,16 @@ namespace apex {
 		}
 
 		inline float cosf(float angle) {
-			int quad = int(angle * twoOverPif);			// Get quadrant # (0 to 3) we're in
-
 			angle = fmodf(angle, twoPif);				// Get rid of values > 2* pi
 			if(angle < 0) angle = -angle;					// cos(-x) = cos(x)
+			int quad = int(angle * twoOverPif);			// Get quadrant # (0 to 3) we're in
 			switch(quad) {
 				case 0: return  cos_helperf(angle);
 				case 1: return -cos_helperf(pif - angle);
 				case 2: return -cos_helperf(angle - pif);
 				case 3: return  cos_helperf(twoPif - angle);
 			}
+			return 0.0f;
 		}
 
 		inline float sinf(float angle) {
@@ -57,10 +57,8 @@ namespace apex {
 		}
 
 		inline float tanf(float angle) {
-			// what octant are we in?
-			int octant =int(angle * fourOverPif);			// Get octant # (0 to 7)
-
 			angle = fmodf(angle, twoPif);				// Get rid of values >2 *pi
+			int octant = int(angle / fourOverPif);			// Get octant # (0 to 7)
 			switch(octant) {
 				case 0: return  tan_helperf(angle * fourOverPif);
 				case 1: return  1.0f / tan_helperf((piOver2f - angle) * fourOverPif);
@@ -71,6 +69,7 @@ namespace apex {
 				case 6: return -1.0f / tan_helperf((angle - threePiOver2f) * fourOverPif);
 				case 7: return -tan_helperf((twoPif - angle) * fourOverPif);
 			}
+			return 0.0f;
 		}
 
 		const float tanPiOver6f = tanf(piOver6f);
@@ -135,16 +134,16 @@ namespace apex {
 		}
 
 		inline double cos(double angle) {
-			int quad = int(angle * twoOverPi);			// Get quadrant # (0 to 3) we're in
-
 			angle = fmod(angle, twoPi);				// Get rid of values > 2* pi
 			if(angle < 0) angle = -angle;					// cos(-x) = cos(x)
+			int quad = int(angle * twoOverPi);			// Get quadrant # (0 to 3) we're in
 			switch(quad) {
 				case 0: return  cos_helper(angle);
 				case 1: return -cos_helper(pi - angle);
 				case 2: return -cos_helper(angle - pi);
 				case 3: return  cos_helper(twoPi - angle);
 			}
+			return 0.0;
 		}
 
 		inline double sin(double angle) {
@@ -165,10 +164,8 @@ namespace apex {
 		}
 
 		inline double tan(double angle) {
-			// what octant are we in?
-			int octant = int(angle * fourOverPi);			// Get octant # (0 to 7)
-
 			angle = fmod(angle, twoPi);				// Get rid of values >2 *pi
+			int octant = int(angle / fourOverPi);			// Get octant # (0 to 7)
 			switch(octant) {
 				case 0: return  tan_helper(angle * fourOverPi);
 				case 1: return  1.0 / tan_helper((piOver2 - angle) * fourOverPi);
@@ -179,6 +176,7 @@ namespace apex {
 				case 6: return -1.0 / tan_helper((angle - threePiOver2) * fourOverPi);
 				case 7: return -tan_helper((twoPi - angle) * fourOverPi);
 			}
+			return 0.0;
 		}
 
 		const double tanPiOver6 = tan(piOver6);

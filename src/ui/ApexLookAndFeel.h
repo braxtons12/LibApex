@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../StandardIncludes.h"
+#include "../base/StandardIncludes.h"
 
 namespace apex {
 	namespace ui {
@@ -12,6 +12,9 @@ namespace apex {
 
 		class ApexLookAndFeel : public LookAndFeel_V4 {
 			public:
+
+				//#define USE_PHYSICAL_ROTARIES
+				//#define USE_2D_SEMICIRCULAR_ROTARIES
 
 				enum ApexColourId {
 					backgroundColourId = 0x11110000,
@@ -30,13 +33,14 @@ namespace apex {
 					meterUpperColourId = 0x11110013,
 					popupMenuBackgroundColourId = 0x11110014,
 					popupMenuTextColourId = 0x11110015,
-					rotarySliderFillColourId = 0x11110016,
-					rotarySliderIndicatorColourId = 0x11110017,
-					sliderStrokeColourId = 0x11110018,
-					sliderShadowColourId = 0x11110019,
-					sliderTroughColourId = 0x11110020,
-					sliderGlowColourId = 0x11110021,
-					sliderTextColourId = 0x11110022
+					popupMenuHighlightColourId = 0x11110016,
+					rotarySliderFillColourId = 0x11110017,
+					rotarySliderIndicatorColourId = 0x11110018,
+					sliderStrokeColourId = 0x11110019,
+					sliderShadowColourId = 0x11110020,
+					sliderTroughColourId = 0x11110021,
+					sliderGlowColourId = 0x11110022,
+					sliderTextColourId = 0x11110023
 				};
 
 				ApexLookAndFeel();
@@ -102,30 +106,43 @@ namespace apex {
 				virtual void setColour(ApexColourId id, Colour colour);
 				virtual Colour getColour(ApexColourId id);
 
+				virtual Rectangle<int> getActualRotaryBounds(int x, int y, int width, int height);
+
 			protected:
-				Colour mBackgroundColour = Colour(0x282c34);
-				Colour mButtonShadowColour = Colour(0x14161a);
-				Colour mButtonNormalColour = Colour(0x333843);
-				Colour mButtonPressedColour = Colour(0x2b3039);
-				Colour mButtonTroughColour = Colour(0x1e2128);
-				Colour mButtonTextColour = Colour(0xaaaaaa);
-				Colour mComboBoxBackgroundColour = Colour(0x282c34);
-				Colour mComboBoxShadowColour = Colour(0x14161a);
-				Colour mComboBoxTroughColour = Colour(0x1e2128);
-				Colour mComboBoxTextColour = Colour(0xaaaaaa);
-				Colour mMeterTroughColour = Colour(0x1e2128);
-				Colour mMeterLowerColour = Colour(0x29967f);
-				Colour mMeterUpperColour = Colour(0x297dff);
-				Colour mMeterClipColour = Colour(0xffff7f);
-				Colour mPopupMenuBackgroundColour = Colour(0x2e323c);
-				Colour mPopupMenuTextColour = Colour(0xaaaaaa);
-				Colour mRotarySliderFillColour = Colour(0x2e324c);
-				Colour mRotarySliderIndicatorColour = Colour(0x29967f);
-				Colour mSliderStrokeColour = Colour(0x29967f);
-				Colour mSliderShadowColour = Colour(0x14161a);
-				Colour mSliderTroughColour = Colour(0x1e2128);
-				Colour mSliderGlowColour = Colour(0x32b498);
-				Colour mSliderTextColour = Colour (0xaaaaaa);
+				virtual void drawPhysicalRotary(Graphics& g, int x, int y, int width, int height,
+						float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
+						Slider& slider);
+				virtual void drawSemiCircularRotary(Graphics& g, int x, int y, int width, int height,
+						float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
+						Slider& slider);
+				virtual void drawCircularFillRotary(Graphics& g, int x, int y, int width, int height,
+						float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
+						Slider& slider);
+
+				Colour mBackgroundColour = Colour(0xff282c34);
+				Colour mButtonShadowColour = Colour(0xff14161a);
+				Colour mButtonNormalColour = Colour(0xff6a90af);
+				Colour mButtonPressedColour = Colour(0xff3d5264);
+				Colour mButtonTroughColour = Colour(0xff1e2128);
+				Colour mButtonTextColour = Colour(0xff8598b5);
+				Colour mComboBoxBackgroundColour = Colour(0xff282c34);
+				Colour mComboBoxShadowColour = Colour(0xff14161a);
+				Colour mComboBoxTroughColour = Colour(0xff1e2128);
+				Colour mComboBoxTextColour = Colour(0xff8598b5);
+				Colour mMeterTroughColour = Colour(0xff1e2128);
+				Colour mMeterLowerColour = Colour(0xff29967f);
+				Colour mMeterUpperColour = Colour(0xff297dff);
+				Colour mMeterClipColour = Colour(0xffffff7f);
+				Colour mPopupMenuBackgroundColour = Colour(0xff1e2128);
+				Colour mPopupMenuTextColour = Colour(0xff8598b5);
+				Colour mPopupMenuHighlightColour = Colour(0xff1c1f26);
+				Colour mRotarySliderFillColour = Colour(0xff2e324c);
+				Colour mRotarySliderIndicatorColour = Colour(0xff1276c8);
+				Colour mSliderStrokeColour = Colour(0xff1276c8);
+				Colour mSliderShadowColour = Colour(0xff14161a);
+				Colour mSliderTroughColour = Colour(0xff1e2128);
+				Colour mSliderGlowColour = Colour(0xff1793ff);
+				Colour mSliderTextColour = Colour (0xff8598b5);
 
 				Font mFont;
 

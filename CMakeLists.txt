@@ -7,12 +7,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 find_package(JUCE CONFIG REQUIRED)
 
-juce_set_vst2_sdk_path("/home/braxton/audio-dev/sdks/VST_SDK/VST2_SDK")
-
 add_library(Apex STATIC)
 
 target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src"
+	"${CMAKE_SOURCE_DIR}/src/base"
 	"${CMAKE_SOURCE_DIR}/src/ui"
 	"${CMAKE_SOURCE_DIR}/src/dsp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors"
@@ -22,7 +21,7 @@ target_include_directories(Apex INTERFACE
 	)
 
 set(BASE
-	"${CMAKE_SOURCE_DIR}/src/StandardIncludes.h"
+	"${CMAKE_SOURCE_DIR}/src/base/StandardIncludes.h"
 	)
 
 set(UI
@@ -79,18 +78,6 @@ target_link_libraries(Apex PRIVATE
 	juce::juce_recommended_warning_flags
 	juce::juce_recommended_config_flags
 	juce::juce_recommended_lto_flags
-	juce::juce_audio_basics
-	juce::juce_audio_devices
-	juce::juce_audio_formats
-	juce::juce_audio_processors
-	juce::juce_audio_utils
-	juce::juce_core
-	juce::juce_cryptography
-	juce::juce_data_structures
-	juce::juce_events
-	juce::juce_graphics
 	juce::juce_gui_basics
 	juce::juce_gui_extra
-	juce::juce_opengl
 	)
-

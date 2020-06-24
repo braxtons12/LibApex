@@ -41,7 +41,7 @@ namespace apex {
 			mPopupTextBox->addListener(this);
 			mPopupTextBox->setSelectAllWhenFocused(true);
 			mPopupTextBox->setInputRestrictions(mNumTextBoxCharacters, "+-.0123456789");
-			setPaintingIsUnclipped(true);
+			//setPaintingIsUnclipped(true);
 			setSliderSnapsToMousePosition(false);
 			setVelocityBasedMode(true);
 			setVelocityModeParameters(0.4, 1, 0.02, false);
@@ -230,29 +230,44 @@ namespace apex {
 			jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
 
 			auto style = getSliderStyle();
-			if (style != IncDecButtons) {
+			if (style != IncDecButtons && mLookAndFeel != nullptr) {
 				if(isRotary()) {
 					auto rotaryParams = getRotaryParameters();
-					mLookAndFeel->drawRotaryApexSlider(g, getX(), getY(), getWidth(), getHeight(),
+					mLookAndFeel->drawRotaryApexSlider(g, 0, 0, getWidth(), getHeight(),
 							sliderPos, rotaryParams.startAngleRadians,
 							rotaryParams.endAngleRadians, *this);
 				}
 				else {
-					mLookAndFeel->drawLinearApexSlider(g, getX(), getY(), getWidth(), getHeight(),
+					mLookAndFeel->drawLinearApexSlider(g, 0, 0, getWidth(), getHeight(),
 							sliderPos, style, *this);
 				}
 			}
 		}
 
 		bool ApexSlider::isInBounds(Point<int> p) {
-			int x = p.x;
-			int y = p.y;
+			if(isRotary() && mLookAndFeel != nullptr) {
+				Rectangle<int> bounds = mLookAndFeel->getActualRotaryBounds(getX(), getY(),
+						getWidth(), getHeight());
 
-			x += getX();
-			y += getY();
+				int x = p.x;
+				int y = p.y;
 
-			return (x >= getX() && x <= getX() + getWidth()
-					&& y >= getY() && y <= getY() + getHeight());
+				x += getX();
+				y += getY();
+				Point<int> actual(x, y);
+
+				return bounds.contains(actual);
+			}
+			else {
+				int x = p.x;
+				int y = p.y;
+
+				x += getX();
+				y += getY();
+
+				return (x >= getX() && x <= getX() + getWidth()
+						&& y >= getY() && y <= getY() + getHeight());
+			}
 		}
 	}
 }

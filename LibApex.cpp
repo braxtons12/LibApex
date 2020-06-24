@@ -19,3 +19,11 @@
 #include "src/dsp/compressors/CompressorVCA.cpp"
 #include "src/dsp/expanders/Expander.cpp"
 #include "src/dsp/expanders/ExpanderVCA.cpp"
+
+#include "src/utils/Option.cpp"
+#include "src/utils/Result.cpp"
+
+#include "src/math/Decibels.cpp"
+#include "src/math/General.cpp"
+#include "src/math/Exponentials.cpp"
+#include "src/math/TrigFuncs.cpp"

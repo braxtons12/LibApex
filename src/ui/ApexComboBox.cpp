@@ -93,12 +93,14 @@ namespace apex {
 
 		void ApexComboBox::paint(Graphics& g) {
 			Label* temp = static_cast<Label*>(getChildComponent(0));
-			mLookAndFeel->drawApexComboBox(g, getWidth(), getHeight(), mIsButtonDown,
-					temp->getRight(), 0, getWidth() - temp->getRight(), getHeight(), *this);
+			if(mLookAndFeel != nullptr) {
+				mLookAndFeel->drawApexComboBox(g, getWidth(), getHeight(), mIsButtonDown,
+						temp->getRight(), 0, getWidth() - temp->getRight(), getHeight(), *this);
 
-			if(getTextWhenNothingSelected().isNotEmpty() && temp->getText().isEmpty()
-					&& !temp->isBeingEdited())
-				mLookAndFeel->drawApexComboBoxTextWhenNothingSelected(g, *this, *temp);
+				if(getTextWhenNothingSelected().isNotEmpty() && temp->getText().isEmpty()
+						&& !temp->isBeingEdited())
+					mLookAndFeel->drawApexComboBoxTextWhenNothingSelected(g, *this, *temp);
+			}
 		}
 	}
 }

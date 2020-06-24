@@ -3,7 +3,7 @@
 #include <functional>
 #include <memory>
 
-#include "../StandardIncludes.h"
+#include "../base/StandardIncludes.h"
 #include "ApexLookAndFeel.h"
 #include "ApexFilmStrip.h"
 
@@ -16,7 +16,7 @@ namespace apex {
 						float clipLevelProportional);
 				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
 						std::function<float(float)> valueToProportionOfHeightFunc,
-						int numSteps, float clipLevelProportional);
+						float clipLevelProportional, int numSteps);
 				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
 						std::function<float(float)> valueToProportionOfHeightFunc,
 						ApexFilmStrip filmStrip);

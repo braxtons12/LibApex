@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../StandardIncludes.h"
+#include "../base/StandardIncludes.h"
 #include "ApexFilmStrip.h"
 #include "ApexLookAndFeel.h"
 
@@ -10,7 +10,7 @@ namespace apex {
 			public:
 				ApexToggleButton(ApexFilmStrip filmStrip);
 				ApexToggleButton(Image buttonToggled, Image buttonHovered, Image buttonNormal);
-				ApexToggleButton();
+				ApexToggleButton(const String& text);
 
 				~ApexToggleButton();
 

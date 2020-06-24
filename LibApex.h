@@ -15,12 +15,13 @@ description:      A library for Apex Audio products.
 website:          https://www.apex-audio.com
 license:          Commercial
 
+dependencies:
 END_JUCE_MODULE_DECLARATION
 
  *******************************************************************************/
 #pragma once
 
-#include "src/StandardIncludes.h"
+#include "src/base/StandardIncludes.h"
 
 #include "src/ui/ApexComboBox.h"
 #include "src/ui/ApexFader.h"

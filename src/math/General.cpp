@@ -18,7 +18,7 @@ namespace apex {
 		}
 
 		inline float truncf(float x) {
-			return x - int(x);
+			return int(x);
 		}
 
 		inline float fmodf(float x, float y) {
@@ -41,7 +41,7 @@ namespace apex {
 		}
 
 		inline double trunc(double x) {
-			return x - int(x);
+			return int(x);
 		}
 
 		inline double fmod(double x, double y) {

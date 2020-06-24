@@ -18,10 +18,14 @@ namespace apex {
 
 		}
 
-		ApexToggleButton::ApexToggleButton()
-			: ToggleButton(),
+		ApexToggleButton::ApexToggleButton(const String& text)
+			: ToggleButton(text),
 			mUsesFilmStrip(false), mUsesImages(false)
 		{
+
+		}
+
+		ApexToggleButton::~ApexToggleButton() {
 
 		}
 
@@ -53,7 +57,10 @@ namespace apex {
 		void ApexToggleButton::paintButton(Graphics& g, bool shouldDrawButtonAsHighlighted,
 				bool shouldDrawButtonAsDown)
 		{
-			mLookAndFeel->drawApexToggleButton(g, *this, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
+			ignoreUnused(shouldDrawButtonAsDown);
+			if(mLookAndFeel != nullptr)
+				mLookAndFeel->drawApexToggleButton(g, *this, shouldDrawButtonAsHighlighted,
+						getToggleState());
 		}
 	}
 }

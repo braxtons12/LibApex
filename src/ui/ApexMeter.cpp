@@ -17,7 +17,7 @@ namespace apex {
 
 		ApexMeter::ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
 				std::function<float(float)> valueToProportionOfHeightFunc,
-				int numSteps, float clipLevelProportional)
+				float clipLevelProportional, int numSteps)
 			: Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
@@ -107,7 +107,8 @@ namespace apex {
 		}
 
 		void ApexMeter::paint(Graphics& g) {
-			mLookAndFeel->drawApexMeter(g, mLevel, mClipLevelProportion, mNumSteps, *this);
+			if(mLookAndFeel != nullptr)
+				mLookAndFeel->drawApexMeter(g, mLevel, mClipLevelProportion, mNumSteps, *this);
 		}
 	}
 }

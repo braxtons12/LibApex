@@ -75,11 +75,11 @@ namespace apex {
 			if(mUsesThumbImage) {
 				resizeThumb();
 			}
-			else if(mIsThumbOnly) {
+			else if(mIsThumbOnly && mLookAndFeel != nullptr) {
 				mLookAndFeel->drawLinearApexSliderThumb(g, getX(), getY(),
 						getWidth(), getHeight(), sliderPos, *this);
 			}
-			else {
+			else if(mLookAndFeel != nullptr) {
 				mLookAndFeel->drawLinearApexSlider(g, getX(), getY(), getWidth(), getHeight(),
 						sliderPos, style, *this);
 			}
