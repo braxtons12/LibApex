@@ -32,7 +32,7 @@ namespace apex {
 		{
 			Option<ApexFilmStrip> maybeStrip = slider.getFilmStrip();
 			if(maybeStrip.isSome()) {
-				ApexFilmStrip strip = maybeStrip.get();
+				ApexFilmStrip strip = *maybeStrip.getConst();
 				size_t index = size_t(sliderPos * strip.getNumFrames());
 				Image image = strip.getFrameScaled(index, size_t(width), size_t(height));
 				g.drawImageAt(image, x, y);
@@ -238,7 +238,7 @@ namespace apex {
 		{
 			Option<ApexFilmStrip> maybeFilmStrip = slider.getFilmStrip();
 			if(maybeFilmStrip.isSome()) {
-				ApexFilmStrip filmStrip = maybeFilmStrip.get();
+				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				size_t index = size_t(sliderPos * filmStrip.getNumFrames());
 				Image image = filmStrip.getFrameScaled(index, size_t(width), size_t(height));
 				g.drawImageAt(image, x, y);
@@ -405,9 +405,9 @@ namespace apex {
 			if(maybeActiveArrow.isSome()) {
 				Rectangle<int> arrowZone(width * 0.75f, 0, width * 0.25f, height);
 
-				Image activeArrow = maybeActiveArrow.get();
-				Image hoveredArrow = box.getHoveredArrowImage().get();
-				Image normalArrow = box.getNormalArrowImage().get();
+				Image activeArrow = *maybeActiveArrow.getConst();
+				Image hoveredArrow = *box.getHoveredArrowImage().getConst();
+				Image normalArrow = *box.getNormalArrowImage().getConst();
 
 				if(box.isPopupActive()) {
 					g.drawImageAt(activeArrow.rescaled(arrowZone.getWidth(), arrowZone.getHeight(),
@@ -603,7 +603,7 @@ namespace apex {
 			Option<ApexFilmStrip> maybeFilmStrip = button.getFilmStrip();
 			Option<Image> maybeToggledImage = button.getToggledImage();
 			if(maybeFilmStrip.isSome()) {
-				ApexFilmStrip filmStrip = maybeFilmStrip.get();
+				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				if(shouldDrawButtonAsDown) g.drawImageAt(
 						filmStrip.getFrameScaled(
 							0,
@@ -626,9 +626,9 @@ namespace apex {
 						button.getX(), button.getY());
 			}
 			else if(maybeToggledImage.isSome()) {
-				Image toggledImage = maybeToggledImage.get();
-				Image hoveredImage = button.getHoveredImage().get();
-				Image normalImage = button.getNormalImage().get();
+				Image toggledImage = *maybeToggledImage.getConst();
+				Image hoveredImage = *button.getHoveredImage().getConst();
+				Image normalImage = *button.getNormalImage().getConst();
 				if(shouldDrawButtonAsDown) g.drawImageAt(
 						toggledImage.rescaled(
 							button.getWidth(),
@@ -664,7 +664,7 @@ namespace apex {
 			Option<ApexFilmStrip> maybeFilmStrip = meter.getFilmStrip();
 			Option<Image> maybeMaxedImage = meter.getMaxedImage();
 			if(maybeFilmStrip.isSome()) {
-				ApexFilmStrip filmStrip = maybeFilmStrip.get();
+				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				size_t index = filmStrip.getNumFrames() * levelProportional;
 				g.drawImageAt(filmStrip.getFrameScaled(index,
 							size_t(meterWidth),
@@ -673,7 +673,7 @@ namespace apex {
 						meterX, meterY);
 			}
 			else if (maybeMaxedImage.isSome()) {
-				Image maxedImage = maybeMaxedImage.get();
+				Image maxedImage = *maybeMaxedImage.getConst();
 				int meterPeak = meterY + (1.0f - levelProportional) * meterHeight;
 				int meterDiff = meterHeight - meterPeak;
 				Rectangle<int> clip(0, meterDiff, meterWidth, meterHeight);

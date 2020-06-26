@@ -58,6 +58,7 @@ set(MATH
 set(UTILS
 	"${CMAKE_SOURCE_DIR}/src/utils/Option.cpp"
 	"${CMAKE_SOURCE_DIR}/src/utils/Result.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils/Error.cpp"
 	)
 
 target_sources(Apex PUBLIC
