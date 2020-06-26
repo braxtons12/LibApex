@@ -175,7 +175,10 @@ namespace apex {
 		/// @return A pointer to the contained `T`
 		template<typename T>
 			const T* Option<T>::getMut() {
-				if(mIsSome) return &mSome;
+				if(mIsSome) {
+					if(std::is_pointer<T>::value) return mSome;
+					else return &mSome;
+				}
 				else return nullptr;
 			}
 
@@ -185,7 +188,10 @@ namespace apex {
 		/// @return An immutable pointer to the contained `T`
 		template<typename T>
 			const T* const Option<T>::getConst() const {
-				if(mIsSome) return &mSome;
+				if(mIsSome) {
+					if(std::is_pointer<T>::value) return mSome;
+					else return &mSome;
+				}
 				else return nullptr;
 			}
 

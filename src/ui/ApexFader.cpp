@@ -56,7 +56,7 @@ namespace apex {
 		}
 
 		void ApexFader::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
-			double reversed = wheel.deltaY / math::fabs(wheel.deltaY);
+			double reversed = wheel.isReversed ? -1.0 : 1.0;
 			double val = getValueFromProportion(getValue());
 			if (e.mods.isShiftDown()) {
 				setValue(getProportionFromValue(val + 1.0 * reversed), sendNotificationAsync);

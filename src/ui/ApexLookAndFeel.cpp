@@ -893,6 +893,7 @@ namespace apex {
 													 mSliderTextColour);
 										 }
 										 break;
+				default: break;
 			}
 		}
 

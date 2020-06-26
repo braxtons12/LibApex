@@ -35,6 +35,7 @@ namespace apex {
 				case 1: return -cos_helperf(pif - angle);
 				case 2: return -cos_helperf(angle - pif);
 				case 3: return  cos_helperf(twoPif - angle);
+				default: return cos_helperf(angle);
 			}
 			return 0.0f;
 		}
@@ -68,6 +69,7 @@ namespace apex {
 				case 5: return  1.0f / tan_helperf((threePiOver2f - angle) * fourOverPif);
 				case 6: return -1.0f / tan_helperf((angle - threePiOver2f) * fourOverPif);
 				case 7: return -tan_helperf((twoPif - angle) * fourOverPif);
+				default: return tan_helperf(angle * fourOverPif);
 			}
 			return 0.0f;
 		}
@@ -142,6 +144,7 @@ namespace apex {
 				case 1: return -cos_helper(pi - angle);
 				case 2: return -cos_helper(angle - pi);
 				case 3: return  cos_helper(twoPi - angle);
+				default: return cos_helper(angle);
 			}
 			return 0.0;
 		}
@@ -175,6 +178,7 @@ namespace apex {
 				case 5: return  1.0 / tan_helper((threePiOver2 - angle) * fourOverPi);
 				case 6: return -1.0 / tan_helper((angle - threePiOver2) * fourOverPi);
 				case 7: return -tan_helper((twoPi - angle) * fourOverPi);
+				default: return tan_helper(angle * fourOverPi);
 			}
 			return 0.0;
 		}

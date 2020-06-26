@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(Apex VERSION 0.1.0)
-set(COVERAGE_COMPILE_FLAGS "-std=c++17")
+set(COVERAGE_COMPILE_FLAGS "-std=c++17 -Wall -Wextra -Wpedantic -Weverything -Werror")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
@@ -76,7 +76,7 @@ target_compile_definitions(Apex PRIVATE
 	)
 
 target_link_libraries(Apex PRIVATE
-	juce::juce_recommended_warning_flags
+	#juce::juce_recommended_warning_flags
 	juce::juce_recommended_config_flags
 	juce::juce_recommended_lto_flags
 	juce::juce_gui_basics

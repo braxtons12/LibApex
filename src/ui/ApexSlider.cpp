@@ -125,12 +125,12 @@ namespace apex {
 		}
 
 		void ApexSlider::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
-			double reversed = wheel.deltaY / math::fabs(wheel.deltaY);
+			double reversed = wheel.isReversed ? -1.0 : 1.0;
 			double val = getValue();
 			if(e.mods.isShiftDown())
-				setValue(val + wheel.deltaY * (reversed / 25.0f), sendNotificationAsync);
+				setValue(val + wheel.deltaY * (reversed / 100.0f), sendNotificationAsync);
 			else
-				setValue(val + wheel.deltaY * (reversed / 6.25f), sendNotificationAsync);
+				setValue(val + wheel.deltaY * (reversed / 25.0f), sendNotificationAsync);
 		}
 
 		void ApexSlider::globalFocusChanged(Component* focusedComponent) {

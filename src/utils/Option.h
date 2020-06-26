@@ -18,6 +18,8 @@ namespace apex {
 		/// * * Return values for functions not defined over their entire input range
 		///
 		/// @tparam T - The type of the potentially-contained value
+		///
+		/// @tags {`utils`}
 		template<typename T>
 			class Option {
 				public:

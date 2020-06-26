@@ -1,19 +1,19 @@
-#include "Exponentials.h"
-
-#include <stdint.h>
-
-#include "General.h"
-
 //for explanations of these approximations, refer to:
 //logs and pow10s:
 //http://openaudio.blogspot.com/2017/02/faster-log10-and-pow.html
 //exps:
 //https://www.musicdsp.org/en/latest/Other/222-fast-exp-approximations.html
 
+#include "Exponentials.h"
+
+#include <stdint.h>
+
+#include "General.h"
+
 namespace apex {
 	namespace math {
 
-		inline float frexpf(float x, int *e) {
+		inline float frexpf(float x, int* e) {
 			union { float f; uint32_t i; } y = { x };
 			int ee = y.i>>23 & 0xff;
 
@@ -46,7 +46,7 @@ namespace apex {
 
 		inline float log2f(float x) {
 			float y, f;
-			int e;
+			int e = 0;
 			f = frexpf(fabsf(x), &e);
 			y = 1.23149591368684f;
 			y *= f;
@@ -100,7 +100,7 @@ namespace apex {
 
 		inline double log2(double x) {
 			float y, f;
-			int e;
+			int e = 0;
 			f = frexp(fabs(x), &e);
 			y = 1.23149591368684;
 			y *= f;
