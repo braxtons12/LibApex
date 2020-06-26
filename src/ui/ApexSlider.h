@@ -41,11 +41,11 @@ namespace apex {
 				void labelTextChanged(Label* label) override;
 
 				void setXScaleFactor(float scaleFactor);
-				float getXScaleFactor();
+				float getXScaleFactor() const;
 				void setYScaleFactor(float scaleFactor);
-				float getYScaleFactor();
+				float getYScaleFactor() const;
 
-				virtual bool isValueValid(double value);
+				virtual bool isValueValid(double value) const;
 
 				void setPopupTextBoxFont(Font font);
 				void setTextBoxFont(Font font);
@@ -53,15 +53,16 @@ namespace apex {
 				void setTextBoxBounds(Rectangle<int> bounds);
 				Label* getTextBox();
 
-				void setNormalSensitivity(double set);
-				void setFineSensitivity(double set);
+				void setNormalSensitivity(double sensitivity, double initialVelocity);
+				void setFineSensitivity(double sensitivity, double initialVelocity);
+				void setNormalModeIsVelocityBased(bool set);
 
 				void hideEditor();
 
 				Option<ApexFilmStrip> getFilmStrip();
 
-				float getValueFromProportion(float prop);
-				float getProportionFromValue(float value);
+				float getValueFromProportion(float prop) const;
+				float getProportionFromValue(float value) const;
 
 				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel);
 
@@ -78,7 +79,10 @@ namespace apex {
 				float mXScaleFactor = 1.0f;
 				float mYScaleFactor = 1.0f;
 				double mNormalSensitivity = 2.4;
+				double mNormalInitialVelocity = 0.08;
 				double mFineSensitivity = 0.8;
+				double mFineInitialVelocity = 0.04;
+				bool mNormalModeIsVelocityMode = false;
 
 				int mNumTextBoxCharacters = 6;
 

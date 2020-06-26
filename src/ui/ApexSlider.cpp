@@ -106,17 +106,22 @@ namespace apex {
 		}
 
 		void ApexSlider::mouseDrag(const MouseEvent& e) {
-			if(e.mods.isShiftDown())
-				setVelocityModeParameters(mFineSensitivity, 1, 0.02, false);
-			else
-				setVelocityModeParameters(mNormalSensitivity, 1, 0.05, false);
+			if(e.mods.isShiftDown()) {
+				setVelocityBasedMode(true);
+				setVelocityModeParameters(mFineSensitivity, 1, mFineInitialVelocity, false);
+			}
+			else {
+				setVelocityBasedMode(mNormalModeIsVelocityMode);
+				setVelocityModeParameters(mNormalSensitivity, 1, mNormalInitialVelocity, false);
+			}
 
 			if(e.mods.isLeftButtonDown()) {
 				if(isInBounds(e.getMouseDownPosition())) {
 					Slider::mouseDrag(e);
 				}
 			}
-			e.source.enableUnboundedMouseMovement(false, true);
+			if(e.mods.isShiftDown() || mNormalModeIsVelocityMode)
+				e.source.enableUnboundedMouseMovement(false, true);
 		}
 
 		void ApexSlider::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
@@ -161,7 +166,7 @@ namespace apex {
 			mXScaleFactor = scaleFactor;
 		}
 
-		float ApexSlider::getXScaleFactor() {
+		float ApexSlider::getXScaleFactor() const {
 			return mXScaleFactor;
 		}
 
@@ -169,11 +174,11 @@ namespace apex {
 			mYScaleFactor = scaleFactor;
 		}
 
-		float ApexSlider::getYScaleFactor() {
+		float ApexSlider::getYScaleFactor() const {
 			return mYScaleFactor;
 		}
 
-		bool ApexSlider::isValueValid(double value) {
+		bool ApexSlider::isValueValid(double value) const {
 			return value <= 1.00 && value >= 0.00;
 		}
 
@@ -195,12 +200,18 @@ namespace apex {
 			return &mTextBox;
 		}
 
-		void ApexSlider::setNormalSensitivity(double set) {
-			mNormalSensitivity = set;
+		void ApexSlider::setNormalSensitivity(double sensitivity, double initialVelocity) {
+			mNormalSensitivity = sensitivity;
+			mNormalInitialVelocity = initialVelocity;
 		}
 
-		void ApexSlider::setFineSensitivity(double set) {
-			mFineSensitivity = set;
+		void ApexSlider::setFineSensitivity(double sensitivity, double initialVelocity) {
+			mFineSensitivity = sensitivity;
+			mFineInitialVelocity = initialVelocity;
+		}
+
+		void ApexSlider::setNormalModeIsVelocityBased(bool set) {
+			mNormalModeIsVelocityMode = set;
 		}
 
 		void ApexSlider::hideEditor() {
@@ -212,11 +223,11 @@ namespace apex {
 				Option<ApexFilmStrip>::None();
 		}
 
-		float ApexSlider::getValueFromProportion(float prop) {
+		float ApexSlider::getValueFromProportion(float prop) const {
 			return mProportionToValueFunc(prop);
 		}
 
-		float ApexSlider::getProportionFromValue(float value) {
+		float ApexSlider::getProportionFromValue(float value) const {
 			return mValueToProportionFunc(value);
 		}
 
