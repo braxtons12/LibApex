@@ -4,6 +4,10 @@
 namespace apex {
 	namespace utils {
 
+		Error::~Error() {
+
+		}
+
 		/// @brief Returns the source/cause `Error` of this error aka `Some(sourceError)`,
 		/// if applicable, or `None` otherwise
 		///

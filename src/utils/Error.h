@@ -18,7 +18,7 @@ namespace apex {
 
 			public:
 				Error() = delete;
-				~Error() = delete;
+				~Error();
 
 				/// @brief Returns the source/cause `Error` of this error aka `Some(sourceError)`,
 				/// if applicable, or `None` otherwise

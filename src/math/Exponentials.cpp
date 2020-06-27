@@ -63,8 +63,20 @@ namespace apex {
 			return log2f(x) * 0.3010299956639812f;
 		}
 
+		inline float logf(float x) {
+			return log2f(x) * 0.69314718055995f;
+		}
+
+		inline float pow2f(float x) {
+			return expf(x * 0.69314718055995f);
+		}
+
 		inline float pow10f(float x) {
 			return expf(2.302585092994046f * x);
+		}
+
+		inline float powf(float base, float exponent) {
+			return pow2f(exponent * log2f(base));
 		}
 
 		inline double frexp(double x, int *e) {
@@ -118,8 +130,20 @@ namespace apex {
 
 		}
 
+		inline double log(double x) {
+			return log2(x) * 0.69314718055995;
+		}
+
+		inline double pow2(double x) {
+			return exp(x * 0.69314718055995);
+		}
+
 		inline double pow10(double x) {
 			return exp(2.302585092994046 * x);
+		}
+
+		inline double pow(double base, double exponent) {
+			return pow2(exponent * log2(base));
 		}
 	}
 }
