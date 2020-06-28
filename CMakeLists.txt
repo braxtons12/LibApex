@@ -17,6 +17,7 @@ target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions"
 	"${CMAKE_SOURCE_DIR}/src/math"
 	"${CMAKE_SOURCE_DIR}/src/utils"
 	)
@@ -48,6 +49,10 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStage.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageVCA.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReduction.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionFET.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionOpto.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 
