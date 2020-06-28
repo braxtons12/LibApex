@@ -50,7 +50,7 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
-					/// @param actualGainReduction - The actualGainReduction determined by other adjustment processes in the signal chain
+					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return The adjusted gain reduction
@@ -111,7 +111,7 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
-					/// @param actualGainReduction - The actualGainReduction determined by other adjustment processes in the signal chain
+					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return The adjusted gain reduction

@@ -52,7 +52,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReduction.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionOpto.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionFET.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 
