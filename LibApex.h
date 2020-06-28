@@ -34,7 +34,9 @@ END_JUCE_MODULE_DECLARATION
 
 #include "src/dsp/EQ.h"
 #include "src/dsp/Gain.h"
-#include "src/dsp/GainStage.h"
+#include "src/dsp/gainstages/GainStage.h"
+#include "src/dsp/gainstages/GainStageFET.h"
+#include "src/dsp/gainstages/GainStageVCA.h"
 #include "src/dsp/WaveShaper.h"
 #include "src/dsp/compressors/Compressor.h"
 #include "src/dsp/compressors/CompressorFET.h"

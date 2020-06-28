@@ -16,6 +16,7 @@ target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/dsp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages"
 	"${CMAKE_SOURCE_DIR}/src/math"
 	"${CMAKE_SOURCE_DIR}/src/utils"
 	)
@@ -44,7 +45,9 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/Expander.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/ExpanderVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/Gain.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/GainStage.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStage.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 
@@ -81,4 +84,5 @@ target_link_libraries(Apex PRIVATE
 	juce::juce_recommended_lto_flags
 	juce::juce_gui_basics
 	juce::juce_gui_extra
+	juce::juce_dsp
 	)

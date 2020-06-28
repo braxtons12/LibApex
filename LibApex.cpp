@@ -11,7 +11,9 @@
 
 #include "src/dsp/EQ.cpp"
 #include "src/dsp/Gain.cpp"
-#include "src/dsp/GainStage.cpp"
+#include "src/dsp/gainstages/GainStage.cpp"
+#include "src/dsp/gainstages/GainStageFET.cpp"
+#include "src/dsp/gainstages/GainStageVCA.cpp"
 #include "src/dsp/WaveShaper.cpp"
 #include "src/dsp/compressors/Compressor.cpp"
 #include "src/dsp/compressors/CompressorFET.cpp"

@@ -2,6 +2,7 @@
 
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_gui_extra/juce_gui_extra.h"
+#include "juce_dsp/juce_dsp.h"
 
 #include "../utils/Option.h"
 #include "../utils/Result.h"
@@ -40,4 +41,3 @@ namespace apex {
 }
 
 using namespace apex::math;
-
