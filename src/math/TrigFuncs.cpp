@@ -35,9 +35,8 @@ namespace apex {
 				case 1: return -cos_helperf(pif - angle);
 				case 2: return -cos_helperf(angle - pif);
 				case 3: return  cos_helperf(twoPif - angle);
-				default: return cos_helperf(angle);
+				default: return 0.0f;
 			}
-			return 0.0f;
 		}
 
 		inline float sinf(float angle) {
@@ -69,9 +68,8 @@ namespace apex {
 				case 5: return  1.0f / tan_helperf((threePiOver2f - angle) * fourOverPif);
 				case 6: return -1.0f / tan_helperf((angle - threePiOver2f) * fourOverPif);
 				case 7: return -tan_helperf((twoPif - angle) * fourOverPif);
-				default: return tan_helperf(angle * fourOverPif);
+				default: return 0.0f;
 			}
-			return 0.0f;
 		}
 
 		const float tanPiOver6f = tanf(piOver6f);
@@ -144,9 +142,8 @@ namespace apex {
 				case 1: return -cos_helper(pi - angle);
 				case 2: return -cos_helper(angle - pi);
 				case 3: return  cos_helper(twoPi - angle);
-				default: return cos_helper(angle);
+				default: return 0.0;
 			}
-			return 0.0;
 		}
 
 		inline double sin(double angle) {
@@ -178,9 +175,8 @@ namespace apex {
 				case 5: return  1.0 / tan_helper((threePiOver2 - angle) * fourOverPi);
 				case 6: return -1.0 / tan_helper((angle - threePiOver2) * fourOverPi);
 				case 7: return -tan_helper((twoPi - angle) * fourOverPi);
-				default: return tan_helper(angle * fourOverPi);
+				default: return 0.0;
 			}
-			return 0.0;
 		}
 
 		const double tanPiOver6 = tan(piOver6);

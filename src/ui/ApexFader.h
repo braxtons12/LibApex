@@ -9,12 +9,12 @@ namespace apex {
 	namespace ui {
 		class ApexFader: public ApexSlider {
 			public:
-				ApexFader(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc, ApexFilmStrip strip);
-				ApexFader(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc, Image thumbImage);
-				ApexFader(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc, bool isThumbOnlySlider,
+				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, ApexFilmStrip strip);
+				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, Image thumbImage);
+				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, bool isThumbOnlySlider,
 						int initialThumbWidth, int initialThumbHeight);
 
 				~ApexFader();

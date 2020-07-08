@@ -71,8 +71,8 @@ namespace apex {
 			return mFont;
 		}
 
-		void ApexComboBox::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel) {
-			mLookAndFeel = lookAndFeel;
+		void ApexComboBox::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
+			mLookAndFeel = lookNFeel;
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 

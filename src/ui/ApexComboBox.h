@@ -31,7 +31,7 @@ namespace apex {
 
 				Font getFont();
 
-				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel);
+				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
 				Option<Image> getActiveArrowImage();
 				Option<Image> getHoveredArrowImage();

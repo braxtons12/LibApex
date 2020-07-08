@@ -49,8 +49,8 @@ namespace apex {
 				: Option<Image>::None();
 		}
 
-		void ApexToggleButton::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel) {
-			mLookAndFeel = lookAndFeel;
+		void ApexToggleButton::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
+			mLookAndFeel = lookNFeel;
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 

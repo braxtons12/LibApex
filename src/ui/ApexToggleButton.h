@@ -19,7 +19,7 @@ namespace apex {
 				Option<Image> getHoveredImage();
 				Option<Image> getNormalImage();
 
-				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel);
+				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
 			protected:
 				virtual void paintButton(Graphics& g, bool shouldDrawButtonAsHighlighted,

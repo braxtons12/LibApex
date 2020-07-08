@@ -5,7 +5,7 @@
 namespace apex {
 	namespace math {
 		inline float Decibels::linearToDecibels(float linear) {
-			return 20.0f * log10(linear);
+			return 20.0f * log10f(linear);
 		}
 
 		inline float Decibels::decibelsToLinear(float decibels) {

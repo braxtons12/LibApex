@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(Apex VERSION 0.1.0)
-set(COVERAGE_COMPILE_FLAGS "-std=c++17 -Wall -Wextra -Wpedantic -Weverything -Werror")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 find_package(JUCE CONFIG REQUIRED)
 
 add_library(Apex STATIC)
+
+if(MSVC)
+	target_compile_options(Apex PRIVATE /WX /W4 /std:c++17)
+else()
+	target_compile_options(Apex PRIVATE -std=c++17 -Wall -Wextra -Wpedantic -Weverything -Werror)
+endif()
 
 target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src"

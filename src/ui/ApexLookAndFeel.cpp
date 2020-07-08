@@ -78,8 +78,8 @@ namespace apex {
 			//incase we decide we DO want to do something different for our own types
 			//vs built-ins
 			//also, Why TF do we need to dynamic cast to Slider& when ApexSlider : Slider?????
-			float sliderMaxPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x : y;
-			float sliderMinPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height;
+			float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
+			float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
 			drawLinearSliderBackground(g, x, y, width, height, sliderPosProp, sliderMinPos,
 					sliderMaxPos, style, dynamic_cast<Slider&>(slider));
 		}
@@ -161,8 +161,8 @@ namespace apex {
 			//incase we decide we DO want to do something different for our own types
 			//vs built-ins
 			//also, Why TF do we need to dynamic cast to Slider& when ApexSlider : Slider?????
-			float sliderMaxPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x : y;
-			float sliderMinPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height;
+			float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
+			float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
 			drawLinearSliderThumb(g, x, y, width, height, sliderPos, sliderMinPos, sliderMaxPos,
 					dynamic_cast<Slider&>(slider).getSliderStyle(), dynamic_cast<Slider&>(slider));
 		}
@@ -244,15 +244,15 @@ namespace apex {
 				g.drawImageAt(image, x, y);
 			}
 			else {
-				float sliderMaxPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x : y;
-				float sliderMinPos = dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height;
+				float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
+				float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
 				drawLinearSlider(g, x, y, width, height, sliderPos, sliderMinPos, sliderMaxPos,
 						style, dynamic_cast<Slider&>(slider));
 			}
 		}
 
 		void ApexLookAndFeel::drawPopupMenuBackground(Graphics& g, int width, int height) {
-			Rectangle<float> bounds(0, 0, width, height);
+			Rectangle<float> bounds(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
 			g.setColour(mPopupMenuBackgroundColour.darker(0.4f).withAlpha(0.9f));
 			g.fillAll();
 			g.setColour(mComboBoxShadowColour.withAlpha(0.8f));
@@ -350,7 +350,7 @@ namespace apex {
 			Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
 			Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
 			Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
-			Rectangle<int> arrowZone(width * 0.75f, 0, width * 0.2f, height);
+			Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
 
 			g.setColour(mComboBoxBackgroundColour);
 			g.fillRect(boxBounds);
@@ -403,7 +403,7 @@ namespace apex {
 
 			Option<Image> maybeActiveArrow = box.getActiveArrowImage();
 			if(maybeActiveArrow.isSome()) {
-				Rectangle<int> arrowZone(width * 0.75f, 0, width * 0.25f, height);
+				Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.25f), height);
 
 				Image activeArrow = *maybeActiveArrow.getConst();
 				Image hoveredArrow = *box.getHoveredArrowImage().getConst();
@@ -429,7 +429,7 @@ namespace apex {
 				Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
 				Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
 				Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
-				Rectangle<int> arrowZone(width * 0.75f, 0, width * 0.2f, height);
+				Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
 
 				g.setColour(mComboBoxBackgroundColour);
 				g.fillRect(boxBounds);
@@ -482,7 +482,7 @@ namespace apex {
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
 			label.setColour(Label::textColourId, textColour);
-			label.setBounds(0, 0, box.getWidth() * 0.7f, box.getHeight());
+			label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7f), box.getHeight());
 			label.setFont(jmin(box.getWidth(), box.getHeight()) * 0.33f);
 		}
 
@@ -492,7 +492,7 @@ namespace apex {
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
 			label.setColour(Label::textColourId, textColour);
-			label.setBounds(0, 0, box.getWidth() * 0.7f, box.getHeight());
+			label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7f), box.getHeight());
 			label.setFont(jmin(box.getWidth(), box.getHeight()) * 0.33f);
 		}
 
@@ -654,7 +654,7 @@ namespace apex {
 		}
 
 		void ApexLookAndFeel::drawApexMeter(Graphics& g, float levelProportional,
-				float clipLevelProportional, int numSteps, ApexMeter& meter) {
+				float clipLevelProportional, size_t numSteps, ApexMeter& meter) {
 
 			int meterX = 0;
 			int meterY = 0;
@@ -665,7 +665,7 @@ namespace apex {
 			Option<Image> maybeMaxedImage = meter.getMaxedImage();
 			if(maybeFilmStrip.isSome()) {
 				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
-				size_t index = filmStrip.getNumFrames() * levelProportional;
+				size_t index = static_cast<size_t>(filmStrip.getNumFrames() * levelProportional);
 				g.drawImageAt(filmStrip.getFrameScaled(index,
 							size_t(meterWidth),
 							size_t(meterHeight)
@@ -674,30 +674,36 @@ namespace apex {
 			}
 			else if (maybeMaxedImage.isSome()) {
 				Image maxedImage = *maybeMaxedImage.getConst();
-				int meterPeak = meterY + (1.0f - levelProportional) * meterHeight;
+				int meterPeak = static_cast<int>(meterY + (1.0f - levelProportional) * meterHeight);
 				int meterDiff = meterHeight - meterPeak;
 				Rectangle<int> clip(0, meterDiff, meterWidth, meterHeight);
 				Image clipped = maxedImage.getClippedImage(clip);
 				g.drawImageAt(clipped, meterX, meterY + meterDiff);
 			}
 			else {
-				int meterLevelY = meterY + (1.0f - levelProportional) * meterHeight;
+				int meterLevelY = static_cast<int>(meterY + (1.0f - levelProportional) * meterHeight);
 
-				float stepHeight = meterHeight / float(numSteps);
+				float stepHeight = meterHeight / static_cast<float>(numSteps);
 
-				Rectangle<float> bounds(meterX, meterY, meterWidth, meterHeight);
+				Rectangle<float> bounds(
+					static_cast<float>(meterX),
+					static_cast<float>(meterY),
+					static_cast<float>(meterWidth),
+					static_cast<float>(meterHeight)
+					);
 				Rectangle<float> troughBounds = bounds.reduced(2.0f, 2.0f);
 
 				Rectangle<float> meterBounds = troughBounds.reduced(2.0f, 2.0f);
 				float meterHeightDiff = meterLevelY - (meterY + 2.0f);
 				float meterBoundsHeight = meterBounds.getHeight();
-				meterBounds = meterBounds.withY(meterLevelY + 2.0f).withHeight(meterBoundsHeight  + 2.0f - meterHeightDiff);
+				meterBounds = meterBounds.withY(static_cast<float>(meterLevelY) + 2.0f)
+					.withHeight(static_cast<float>(meterBoundsHeight)  + 2.0f - static_cast<float>(meterHeightDiff));
 
 				float troughX = troughBounds.getX() + 2.0f;
 				float troughWidth = troughBounds.getWidth() - 2.0f;
 
-				ColourGradient meterGradient(mMeterClipColour, troughX, meterY,
-						mMeterLowerColour, troughX, meterY + meterHeight, false);
+				ColourGradient meterGradient(mMeterClipColour, troughX, static_cast<float>(meterY),
+						mMeterLowerColour, troughX, static_cast<float>(meterY + meterHeight), false);
 				meterGradient.addColour(clipLevelProportional, mMeterUpperColour);
 
 				g.setColour(mBackgroundColour);
@@ -955,17 +961,17 @@ namespace apex {
 
 		Rectangle<int> ApexLookAndFeel::getActualRotaryBounds(int x, int y, int width, int height) {
 #if defined USE_PHYSICAL_ROTARIES
-			float diameter = jmin(width, height);
+			float diameter = static_cast<float>(jmin(width, height));
 			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter);
 			return bounds.toNearestInt();
 #elif defined USE_2D_SEMICIRCULAR_ROTARIES
-			float diameter = jmin(width, height);
+			float diameter = static_cast<float>(jmin(width, height));
 			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter / 2.0f);
 			return bounds.toNearestInt();
 #else
-			float diameter = jmin(width, height);
+			float diameter = static_cast<float>(jmin(width, height));
 			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter);
 			return bounds.toNearestInt();
@@ -1229,7 +1235,7 @@ namespace apex {
 			g.setColour(mBackgroundColour);
 			g.fillRect(rawBounds);
 
-			float diameter = jmin(width, height);
+			float diameter = static_cast<float>(jmin(width, height));
 
 			Rectangle<float> troughBounds = rawBounds
 				.withWidth(diameter)

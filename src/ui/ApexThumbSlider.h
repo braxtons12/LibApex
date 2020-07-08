@@ -8,11 +8,11 @@ namespace apex {
 		class ApexThumbSlider : public ApexSlider {
 			public:
 				ApexThumbSlider(Slider::SliderStyle style,
-						std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc, Image thumbImage);
+						std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, Image thumbImage);
 				ApexThumbSlider(Slider::SliderStyle style,
-						std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc,
+						std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc,
 						int initialThumbWidth, int initialThumbHeight);
 
 				~ApexThumbSlider();

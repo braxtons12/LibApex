@@ -11,34 +11,34 @@ namespace apex {
 	namespace ui {
 		class ApexMeter : public Component {
 			public:
-				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-						std::function<float(float)> valueToProportionOfHeightFunc,
-						float clipLevelProportional);
-				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-						std::function<float(float)> valueToProportionOfHeightFunc,
-						float clipLevelProportional, int numSteps);
-				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-						std::function<float(float)> valueToProportionOfHeightFunc,
+				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						std::function<double(double)> valueToProportionOfHeightFunc,
+						double clipLevelProportional);
+				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						std::function<double(double)> valueToProportionOfHeightFunc,
+						double clipLevelProportional, size_t numSteps);
+				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						std::function<double(double)> valueToProportionOfHeightFunc,
 						ApexFilmStrip filmStrip);
-				ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-						std::function<float(float)> valueToProportionOfHeightFunc,
+				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						std::function<double(double)> valueToProportionOfHeightFunc,
 						Image maxedMeterImage);
 
 				~ApexMeter();
 
-				float getLevel();
-				void setLevel(float level);
+				double getLevel();
+				void setLevel(double level);
 
-				int getNumSteps();
-				void setNumSteps(int numSteps);
+				size_t getNumSteps();
+				void setNumSteps(size_t numSteps);
 
-				float getClipProportion();
-				void setClipProportion(float proportion);
+				double getClipProportion();
+				void setClipProportion(double proportion);
 
-				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel);
+				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
-				float getValueFromProportionOfHeight(float proportion);
-				float getProportionOfHeightFromValue(float value);
+				double getValueFromProportionOfHeight(double proportion);
+				double getProportionOfHeightFromValue(double value);
 
 				Option<ApexFilmStrip> getFilmStrip();
 				Option<Image> getMaxedImage();
@@ -47,8 +47,8 @@ namespace apex {
 
 			protected:
 				std::shared_ptr<ApexLookAndFeel> mLookAndFeel;
-				std::function<float(float)> mProportionOfHeightToValueFunc;
-				std::function<float(float)> mValueToProportionOfHeightFunc;
+				std::function<double(double)> mProportionOfHeightToValueFunc;
+				std::function<double(double)> mValueToProportionOfHeightFunc;
 
 				ApexFilmStrip mFilmStrip;
 				bool mUsesFilmStrip = false;
@@ -56,9 +56,9 @@ namespace apex {
 				Image mMaxedMeterImage;
 				bool mUsesMaxedImage = false;
 
-				int mNumSteps = 10;
-				float mLevel = 0.0f;
-				float mClipLevelProportion = 1.0f;
+				size_t mNumSteps = 10;
+				double mLevel = 0.0f;
+				double mClipLevelProportion = 1.0f;
 		};
 	}
 }

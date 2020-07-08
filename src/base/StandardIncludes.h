@@ -13,6 +13,7 @@
 #include "../math/Exponentials.h"
 #include "../math/General.h"
 #include "../math/Constants.h"
+#include "../math/Random.h"
 
 using namespace juce;
 

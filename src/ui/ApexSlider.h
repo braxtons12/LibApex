@@ -16,10 +16,10 @@ namespace apex {
 		class ApexSlider: public Slider, public TextEditor::Listener, public FocusChangeListener, public Label::Listener {
 
 			public:
-				ApexSlider(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc, ApexFilmStrip strip);
-				ApexSlider(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-						std::function<float(float)> valueToProportionFunc);
+				ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, ApexFilmStrip strip);
+				ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc);
 
 				~ApexSlider();
 
@@ -61,10 +61,10 @@ namespace apex {
 
 				Option<ApexFilmStrip> getFilmStrip();
 
-				float getValueFromProportion(float prop) const;
-				float getProportionFromValue(float value) const;
+				double getValueFromProportion(double prop) const;
+				double getProportionFromValue(double value) const;
 
-				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel);
+				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
 				virtual void paint(Graphics& g) override;
 
@@ -73,8 +73,8 @@ namespace apex {
 				ApexFilmStrip mFilmStrip;
 				bool mUsesFilmStrip = false;
 
-				std::function<float(float)> mProportionToValueFunc;
-				std::function<float(float)> mValueToProportionFunc;
+				std::function<double(double)> mProportionToValueFunc;
+				std::function<double(double)> mValueToProportionFunc;
 
 				float mXScaleFactor = 1.0f;
 				float mYScaleFactor = 1.0f;

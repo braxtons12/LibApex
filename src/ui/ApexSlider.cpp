@@ -3,8 +3,8 @@
 namespace apex {
 	namespace ui {
 
-		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-				std::function<float(float)> valueToProportionFunc, ApexFilmStrip filmStrip)
+		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				std::function<double(double)> valueToProportionFunc, ApexFilmStrip filmStrip)
 			: Slider(style, Slider::TextEntryBoxPosition::NoTextBox), mFilmStrip(filmStrip)
 		{
 			mPopupTextBox = std::make_unique<TextEditor>();
@@ -32,8 +32,8 @@ namespace apex {
 			mValueToProportionFunc = valueToProportionFunc;
 		}
 
-		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<float(float)> proportionToValueFunc,
-				std::function<float(float)> valueToProportionFunc)
+		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				std::function<double(double)> valueToProportionFunc)
 			: Slider(style, Slider::TextEntryBoxPosition::NoTextBox)
 		{
 			mPopupTextBox = std::make_unique<TextEditor>();
@@ -93,11 +93,16 @@ namespace apex {
 			String text = getTextFromValue(getValue());
 			String textUntilDecimal = text.upToFirstOccurrenceOf(".", true, true);
 			String newText = text.dropLastCharacters(text.length() - (textUntilDecimal.length() + 2));
-			mPopupTextBox->setSize(jmax(SliderFloatingTextBoxStartWidth * mXScaleFactor * newText.length() + 0.5f,
-						SliderFloatingTextBoxStartWidth * mXScaleFactor * 3), SliderFloatingTextBoxStartHeight * mYScaleFactor + 0.5f);
+			mPopupTextBox->setSize(
+				static_cast<int>(
+					jmax(SliderFloatingTextBoxStartWidth * mXScaleFactor * newText.length() + 0.5f,
+						SliderFloatingTextBoxStartWidth * mXScaleFactor * 3)
+						), 
+				static_cast<int>(SliderFloatingTextBoxStartHeight * mYScaleFactor + 0.5f)
+						);
 			size_t left = size_t(e.getPosition().x - mPopupTextBox->getWidth() / 2);
 			size_t top = size_t(e.getPosition().y - mPopupTextBox->getHeight() / 2);
-			mPopupTextBox->setTopLeftPosition(left, top);
+			mPopupTextBox->setTopLeftPosition(static_cast<int>(left), static_cast<int>(top));
 			mPopupTextBox->setText(newText);
 			mPopupTextBox->setVisible(true);
 			mPopupTextBox->toFront(true);
@@ -223,34 +228,34 @@ namespace apex {
 				Option<ApexFilmStrip>::None();
 		}
 
-		float ApexSlider::getValueFromProportion(float prop) const {
+		double ApexSlider::getValueFromProportion(double prop) const {
 			return mProportionToValueFunc(prop);
 		}
 
-		float ApexSlider::getProportionFromValue(float value) const {
+		double ApexSlider::getProportionFromValue(double value) const {
 			return mValueToProportionFunc(value);
 		}
 
-		void ApexSlider::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel) {
-			mLookAndFeel = lookAndFeel;
+		void ApexSlider::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
+			mLookAndFeel = lookNFeel;
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 
 		void ApexSlider::paint(Graphics& g) {
-			float sliderPos = getProportionFromValue(getValue());
-			jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
+			double sliderPos = getProportionFromValue(getValue());
+			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
 			auto style = getSliderStyle();
 			if (style != IncDecButtons && mLookAndFeel != nullptr) {
 				if(isRotary()) {
 					auto rotaryParams = getRotaryParameters();
 					mLookAndFeel->drawRotaryApexSlider(g, 0, 0, getWidth(), getHeight(),
-							sliderPos, rotaryParams.startAngleRadians,
+							static_cast<float>(sliderPos), rotaryParams.startAngleRadians,
 							rotaryParams.endAngleRadians, *this);
 				}
 				else {
 					mLookAndFeel->drawLinearApexSlider(g, 0, 0, getWidth(), getHeight(),
-							sliderPos, style, *this);
+							static_cast<float>(sliderPos), style, *this);
 				}
 			}
 		}

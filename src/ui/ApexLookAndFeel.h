@@ -99,7 +99,7 @@ namespace apex {
 						bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown);
 
 				virtual void drawApexMeter(Graphics& g, float levelProportional,
-						float clipLevelProportional, int numSteps, ApexMeter& meter);
+						float clipLevelProportional, size_t numSteps, ApexMeter& meter);
 
 				virtual void setFont(Font newFont);
 

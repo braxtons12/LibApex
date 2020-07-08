@@ -3,8 +3,8 @@
 namespace apex {
 	namespace ui {
 		ApexFader::ApexFader(Slider::SliderStyle style,
-				std::function<float(float)> proportionToValueFunc,
-				std::function<float(float)> valueToProportionFunc,
+				std::function<double(double)> proportionToValueFunc,
+				std::function<double(double)> valueToProportionFunc,
 				ApexFilmStrip filmStrip)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc, filmStrip),
 			mUsesThumbImage(false), mIsThumbOnly(false)
@@ -13,8 +13,8 @@ namespace apex {
 		}
 
 		ApexFader::ApexFader(Slider::SliderStyle style,
-				std::function<float(float)> proportionToValueFunc,
-				std::function<float(float)> valueToProportionFunc,
+				std::function<double(double)> proportionToValueFunc,
+				std::function<double(double)> valueToProportionFunc,
 				Image thumbImage)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
 			mThumbImage(thumbImage), mUsesThumbImage(true), mIsThumbOnly(true)
@@ -28,8 +28,8 @@ namespace apex {
 		}
 
 		ApexFader::ApexFader(Slider::SliderStyle style,
-				std::function<float(float)> proportionToValueFunc,
-				std::function<float(float)> valueToProportionFunc,
+				std::function<double(double)> proportionToValueFunc,
+				std::function<double(double)> valueToProportionFunc,
 				bool isThumbOnlySlider,
 				int initialThumbWidth, int initialThumbHeight)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
@@ -67,8 +67,8 @@ namespace apex {
 		}
 
 		void ApexFader::paint(Graphics& g) {
-			float sliderPos = getProportionFromValue(getValue());
-			jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
+			double sliderPos = getProportionFromValue(getValue());
+			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
 			auto style = getSliderStyle();
 
@@ -77,11 +77,11 @@ namespace apex {
 			}
 			else if(mIsThumbOnly && mLookAndFeel != nullptr) {
 				mLookAndFeel->drawLinearApexSliderThumb(g, getX(), getY(),
-						getWidth(), getHeight(), sliderPos, *this);
+						getWidth(), getHeight(), static_cast<float>(sliderPos), *this);
 			}
 			else if(mLookAndFeel != nullptr) {
 				mLookAndFeel->drawLinearApexSlider(g, getX(), getY(), getWidth(), getHeight(),
-						sliderPos, style, *this);
+						static_cast<float>(sliderPos), style, *this);
 			}
 		}
 
@@ -92,21 +92,21 @@ namespace apex {
 		}
 
 		void ApexFader::resizeThumb() {
-			float sliderPos = getProportionFromValue(getValue());
-			jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
+			double sliderPos = getProportionFromValue(getValue());
+			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-			int thumbWidth = mInitialThumbWidth * mXScaleFactor + 0.5f;
-			int thumbHeight = mInitialThumbHeight * mYScaleFactor + 0.5f;
+			int thumbWidth = static_cast<int>(mInitialThumbWidth * mXScaleFactor + 0.5f);
+			int thumbHeight = static_cast<int>(mInitialThumbHeight * mYScaleFactor + 0.5f);
 
 			if(isHorizontal()) {
-				int thumbX = sliderPos * getWidth() - (thumbWidth / 2.0f);
-				int thumbY = getHeight() * 0.5f - (thumbHeight / 2.0f);
+				int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
+				int thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
 				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
 			else {
-				int thumbX = getWidth() * 0.5f - (thumbWidth / 2.0f);
-				int thumbY = sliderPos * getHeight() - (thumbHeight / 2.0f);
+				int thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
+				int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
 				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
@@ -120,20 +120,20 @@ namespace apex {
 			y += getY();
 
 			if(mIsThumbOnly) {
-				float sliderPos = getProportionFromValue(getValue());
-				jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
+				double sliderPos = getProportionFromValue(getValue());
+				jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-				int thumbWidth = mInitialThumbWidth * mXScaleFactor + 0.5f;
-				int thumbHeight = mInitialThumbHeight * mYScaleFactor + 0.5f;
+				int thumbWidth = static_cast<int>(mInitialThumbWidth * mXScaleFactor + 0.5f);
+				int thumbHeight = static_cast<int>(mInitialThumbHeight * mYScaleFactor + 0.5f);
 				int thumbX;
 				int thumbY;
 				if(isHorizontal()) {
-					thumbX = sliderPos * getWidth() - (thumbWidth / 2.0f);
-					thumbY = getHeight() * 0.5f - (thumbHeight / 2.0f);
+					thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
+					thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
 				}
 				else {
-					thumbX = getWidth() * 0.5f - (thumbWidth / 2.0f);
-					thumbY = sliderPos * getHeight() - (thumbHeight / 2.0f);
+					thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
+					thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
 				}
 				return (x >= thumbX && x <= thumbX + thumbWidth
 						&& y >= thumbY && y <= thumbY + thumbWidth);

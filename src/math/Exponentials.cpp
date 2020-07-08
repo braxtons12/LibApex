@@ -19,7 +19,7 @@ namespace apex {
 
 			if (!ee) {
 				if (x) {
-					x = frexpf(x*0x1p64, e);
+					x = frexpf(static_cast<float>(x*0x1p64), e);
 					*e -= 64;
 				} else *e = 0;
 				return x;
@@ -105,13 +105,13 @@ namespace apex {
 		}
 
 		inline double exp(double x) {
-			if(x < 2.5) return 2.7182818 * exp_helperf(x - 1.0);
-			else if (x < 5.0) return 33.115452 * exp_helperf(x - 3.5);
-			else return 483.42879 * exp_helperf(x - 6.0);
+			if(x < 2.5) return 2.7182818 * exp_helper(x - 1.0);
+			else if (x < 5.0) return 33.115452 * exp_helper(x - 3.5);
+			else return 483.42879 * exp_helper(x - 6.0);
 		}
 
 		inline double log2(double x) {
-			float y, f;
+			double y, f;
 			int e = 0;
 			f = frexp(fabs(x), &e);
 			y = 1.23149591368684;
@@ -125,7 +125,7 @@ namespace apex {
 			return(y);
 		}
 
-		inline double log10(float x) {
+		inline double log10(double x) {
 			return log2(x) * 0.3010299956639812;
 
 		}

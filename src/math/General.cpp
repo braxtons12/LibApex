@@ -18,7 +18,7 @@ namespace apex {
 		}
 
 		inline float truncf(float x) {
-			return int(x);
+			return static_cast<float>(static_cast<int>(x));
 		}
 
 		inline float fmodf(float x, float y) {

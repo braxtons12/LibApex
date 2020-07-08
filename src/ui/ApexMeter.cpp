@@ -2,9 +2,9 @@
 
 namespace apex {
 	namespace ui {
-		ApexMeter::ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-				std::function<float(float)> valueToProportionOfHeightFunc,
-				float clipLevelProportional)
+		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+				std::function<double(double)> valueToProportionOfHeightFunc,
+				double clipLevelProportional)
 			: Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
@@ -15,9 +15,9 @@ namespace apex {
 
 		}
 
-		ApexMeter::ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-				std::function<float(float)> valueToProportionOfHeightFunc,
-				float clipLevelProportional, int numSteps)
+		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+				std::function<double(double)> valueToProportionOfHeightFunc,
+				double clipLevelProportional, size_t numSteps)
 			: Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
@@ -29,8 +29,8 @@ namespace apex {
 
 		}
 
-		ApexMeter::ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-				std::function<float(float)> valueToProportionOfHeightFunc,
+		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+				std::function<double(double)> valueToProportionOfHeightFunc,
 				ApexFilmStrip filmStrip)
 			: Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
@@ -42,8 +42,8 @@ namespace apex {
 
 		}
 
-		ApexMeter::ApexMeter(std::function<float(float)> proportionOfHeightToValueFunc,
-				std::function<float(float)> valueToProportionOfHeightFunc,
+		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+				std::function<double(double)> valueToProportionOfHeightFunc,
 				Image maxedMeterImage)
 			: Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
@@ -59,40 +59,40 @@ namespace apex {
 
 		}
 
-		float ApexMeter::getLevel() {
+		double ApexMeter::getLevel() {
 			return mLevel;
 		}
 
-		void ApexMeter::setLevel(float level) {
+		void ApexMeter::setLevel(double level) {
 			mLevel = level;
 		}
 
-		int ApexMeter::getNumSteps() {
+		size_t ApexMeter::getNumSteps() {
 			return mNumSteps;
 		}
 
-		void ApexMeter::setNumSteps(int numSteps) {
+		void ApexMeter::setNumSteps(size_t numSteps) {
 			mNumSteps = numSteps;
 		}
 
-		float ApexMeter::getClipProportion() {
+		double ApexMeter::getClipProportion() {
 			return mClipLevelProportion;
 		}
 
-		void ApexMeter::setClipProportion(float proportion) {
+		void ApexMeter::setClipProportion(double proportion) {
 			mClipLevelProportion = proportion;
 		}
 
-		void ApexMeter::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookAndFeel) {
-			mLookAndFeel = lookAndFeel;
+		void ApexMeter::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
+			mLookAndFeel = lookNFeel;
 			Component::setLookAndFeel(mLookAndFeel.get());
 		}
 
-		float ApexMeter::getValueFromProportionOfHeight(float proportion) {
+		double ApexMeter::getValueFromProportionOfHeight(double proportion) {
 			return mProportionOfHeightToValueFunc(proportion);
 		}
 
-		float ApexMeter::getProportionOfHeightFromValue(float value) {
+		double ApexMeter::getProportionOfHeightFromValue(double value) {
 			return mValueToProportionOfHeightFunc(value);
 		}
 
@@ -108,7 +108,12 @@ namespace apex {
 
 		void ApexMeter::paint(Graphics& g) {
 			if(mLookAndFeel != nullptr)
-				mLookAndFeel->drawApexMeter(g, mLevel, mClipLevelProportion, mNumSteps, *this);
+				mLookAndFeel->drawApexMeter(
+					g,
+					static_cast<float>(mLevel),
+					static_cast<float>(mClipLevelProportion),
+					mNumSteps,
+					*this);
 		}
 	}
 }

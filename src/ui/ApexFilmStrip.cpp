@@ -26,16 +26,30 @@ namespace apex {
 		Image ApexFilmStrip::getFrame(size_t index) {
 			if(mIsHorizontal) {
 				size_t height = size_t(mFilmStrip.getHeight());
-				return mFilmStrip.getClippedImage(Rectangle<int>(index * mFrameSize, 0, mFrameSize, height));
+				return mFilmStrip.getClippedImage(Rectangle<int>(
+					static_cast<int>(index * mFrameSize),
+					0,
+					static_cast<int>(mFrameSize),
+					static_cast<int>(height)
+					));
 			}
 			else {
 				size_t width = size_t(mFilmStrip.getWidth());
-				return mFilmStrip.getClippedImage(Rectangle<int>(0, index * mFrameSize, width, mFrameSize));
+				return mFilmStrip.getClippedImage(Rectangle<int>(
+					0,
+					static_cast<int>(index * mFrameSize),
+					static_cast<int>(width),
+					static_cast<int>(mFrameSize)
+					));
 			}
 		}
 
 		Image ApexFilmStrip::getFrameScaled(size_t index, size_t width, size_t height) {
-			return getFrame(index).rescaled(width, height, Graphics::highResamplingQuality);
+			return getFrame(index).rescaled(
+				static_cast<int>(width),
+				static_cast<int>(height),
+				Graphics::highResamplingQuality
+				);
 		}
 
 	}
