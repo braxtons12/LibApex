@@ -3,40 +3,40 @@
 namespace apex {
 	namespace ui {
 
-		ApexComboBox::ApexComboBox(Image activeArrowImage, Image hoveredArrowImage,
-				Image normalArrowImage)
-			: ComboBox(), mActiveArrowImage(activeArrowImage),
+		ApexComboBox::ApexComboBox(juce::Image activeArrowImage, juce::Image hoveredArrowImage,
+				juce::Image normalArrowImage)
+			: juce::ComboBox(), mActiveArrowImage(activeArrowImage),
 			mHoveredArrowImage(hoveredArrowImage), mNormalArrowImage(normalArrowImage),
 			mUsesArrowImages(true)
 		{
-			setJustificationType(Justification::centred);
+			setJustificationType(juce::Justification::centred);
 		}
 
 		ApexComboBox::ApexComboBox()
-			: ComboBox(), mUsesArrowImages(false)
+			: juce::ComboBox(), mUsesArrowImages(false)
 		{
-			setJustificationType(Justification::centred);
+			setJustificationType(juce::Justification::centred);
 		}
 
-		void ApexComboBox::mouseDown(const MouseEvent& e) {
+		void ApexComboBox::mouseDown(const juce::MouseEvent& e) {
 			mIsButtonDown = isEnabled() && !e.mods.isPopupMenu();
 
-			ComboBox::mouseDown(e);
+			juce::ComboBox::mouseDown(e);
 		}
 
-		void ApexComboBox::mouseUp(const MouseEvent& e) {
+		void ApexComboBox::mouseUp(const juce::MouseEvent& e) {
 			if(mIsButtonDown) mIsButtonDown = false;
-			ComboBox::mouseUp(e);
+			juce::ComboBox::mouseUp(e);
 		}
 
-		void ApexComboBox::mouseEnter(const MouseEvent& e) {
+		void ApexComboBox::mouseEnter(const juce::MouseEvent& e) {
 			mHovered = true;
-			ComboBox::mouseEnter(e);
+			juce::ComboBox::mouseEnter(e);
 		}
 
-		void ApexComboBox::mouseExit(const MouseEvent& e) {
+		void ApexComboBox::mouseExit(const juce::MouseEvent& e) {
 			mHovered = false;
-			ComboBox::mouseExit(e);
+			juce::ComboBox::mouseExit(e);
 		}
 
 		bool ApexComboBox::isHovered() {
@@ -63,11 +63,11 @@ namespace apex {
 			return mYScaleFactor;
 		}
 
-		void ApexComboBox::setFont(Font newFont) {
+		void ApexComboBox::setFont(juce::Font newFont) {
 			mFont = newFont;
 		}
 
-		Font ApexComboBox::getFont() {
+		juce::Font ApexComboBox::getFont() {
 			return mFont;
 		}
 
@@ -76,23 +76,23 @@ namespace apex {
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 
-		Option<Image> ApexComboBox::getActiveArrowImage() {
-			return mUsesArrowImages ? Option<Image>::Some(mActiveArrowImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexComboBox::getActiveArrowImage() {
+			return mUsesArrowImages ? Option<juce::Image>::Some(mActiveArrowImage)
+				: Option<juce::Image>::None();
 		}
 
-		Option<Image> ApexComboBox::getHoveredArrowImage() {
-			return mUsesArrowImages ? Option<Image>::Some(mHoveredArrowImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexComboBox::getHoveredArrowImage() {
+			return mUsesArrowImages ? Option<juce::Image>::Some(mHoveredArrowImage)
+				: Option<juce::Image>::None();
 		}
 
-		Option<Image> ApexComboBox::getNormalArrowImage() {
-			return mUsesArrowImages ? Option<Image>::Some(mNormalArrowImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexComboBox::getNormalArrowImage() {
+			return mUsesArrowImages ? Option<juce::Image>::Some(mNormalArrowImage)
+				: Option<juce::Image>::None();
 		}
 
-		void ApexComboBox::paint(Graphics& g) {
-			Label* temp = static_cast<Label*>(getChildComponent(0));
+		void ApexComboBox::paint(juce::Graphics& g) {
+			juce::Label* temp = static_cast<juce::Label*>(getChildComponent(0));
 			if(mLookAndFeel != nullptr) {
 				mLookAndFeel->drawApexComboBox(g, getWidth(), getHeight(), mIsButtonDown,
 						temp->getRight(), 0, getWidth() - temp->getRight(), getHeight(), *this);

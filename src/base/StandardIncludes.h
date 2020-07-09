@@ -15,8 +15,6 @@
 #include "../math/Constants.h"
 #include "../math/Random.h"
 
-using namespace juce;
-
 using apex::utils::Option;
 using apex::utils::Result;
 using apex::utils::Error;
@@ -40,5 +38,3 @@ namespace apex {
 	namespace utils {
 	}
 }
-
-using namespace apex::math;

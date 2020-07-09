@@ -5,7 +5,7 @@ namespace apex {
 		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 				std::function<double(double)> valueToProportionOfHeightFunc,
 				double clipLevelProportional)
-			: Component(),
+			: juce::Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
 			mUsesFilmStrip(false),
@@ -18,7 +18,7 @@ namespace apex {
 		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 				std::function<double(double)> valueToProportionOfHeightFunc,
 				double clipLevelProportional, size_t numSteps)
-			: Component(),
+			: juce::Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
 			mUsesFilmStrip(false),
@@ -32,7 +32,7 @@ namespace apex {
 		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 				std::function<double(double)> valueToProportionOfHeightFunc,
 				ApexFilmStrip filmStrip)
-			: Component(),
+			: juce::Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
 			mFilmStrip(filmStrip),
@@ -44,8 +44,8 @@ namespace apex {
 
 		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 				std::function<double(double)> valueToProportionOfHeightFunc,
-				Image maxedMeterImage)
-			: Component(),
+				juce::Image maxedMeterImage)
+			: juce::Component(),
 			mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
 			mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc),
 			mUsesFilmStrip(false),
@@ -65,6 +65,7 @@ namespace apex {
 
 		void ApexMeter::setLevel(double level) {
 			mLevel = level;
+			repaint();
 		}
 
 		size_t ApexMeter::getNumSteps() {
@@ -73,6 +74,7 @@ namespace apex {
 
 		void ApexMeter::setNumSteps(size_t numSteps) {
 			mNumSteps = numSteps;
+			repaint();
 		}
 
 		double ApexMeter::getClipProportion() {
@@ -81,11 +83,13 @@ namespace apex {
 
 		void ApexMeter::setClipProportion(double proportion) {
 			mClipLevelProportion = proportion;
+			repaint();
 		}
 
 		void ApexMeter::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
 			mLookAndFeel = lookNFeel;
-			Component::setLookAndFeel(mLookAndFeel.get());
+			juce::Component::setLookAndFeel(mLookAndFeel.get());
+			repaint();
 		}
 
 		double ApexMeter::getValueFromProportionOfHeight(double proportion) {
@@ -101,19 +105,19 @@ namespace apex {
 				: Option<ApexFilmStrip>::None();
 		}
 
-		Option<Image> ApexMeter::getMaxedImage() {
-			return mUsesMaxedImage ? Option<Image>::Some(mMaxedMeterImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexMeter::getMaxedImage() {
+			return mUsesMaxedImage ? Option<juce::Image>::Some(mMaxedMeterImage)
+				: Option<juce::Image>::None();
 		}
 
-		void ApexMeter::paint(Graphics& g) {
+		void ApexMeter::paint(juce::Graphics& g) {
 			if(mLookAndFeel != nullptr)
 				mLookAndFeel->drawApexMeter(
-					g,
-					static_cast<float>(mLevel),
-					static_cast<float>(mClipLevelProportion),
-					mNumSteps,
-					*this);
+						g,
+						static_cast<float>(mLevel),
+						static_cast<float>(mClipLevelProportion),
+						mNumSteps,
+						*this);
 		}
 	}
 }

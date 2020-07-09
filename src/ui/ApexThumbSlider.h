@@ -7,23 +7,23 @@ namespace apex {
 	namespace ui {
 		class ApexThumbSlider : public ApexSlider {
 			public:
-				ApexThumbSlider(Slider::SliderStyle style,
+				ApexThumbSlider(juce::Slider::SliderStyle style,
 						std::function<double(double)> proportionToValueFunc,
-						std::function<double(double)> valueToProportionFunc, Image thumbImage);
-				ApexThumbSlider(Slider::SliderStyle style,
+						std::function<double(double)> valueToProportionFunc, juce::Image thumbImage);
+				ApexThumbSlider(juce::Slider::SliderStyle style,
 						std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc,
 						int initialThumbWidth, int initialThumbHeight);
 
-				~ApexThumbSlider();
+				~ApexThumbSlider() override;
 
-				virtual void paint(Graphics& g) override;
+				virtual void paint(juce::Graphics& g) override;
 
 				virtual void resized() override;
 
 			protected:
-				Image mThumbImage;
-				ImageComponent mThumbComponent;
+				juce::Image mThumbImage;
+				juce::ImageComponent mThumbComponent;
 				bool mUsesThumbImage = false;
 
 				int mInitialThumbWidth = 0;
@@ -31,7 +31,7 @@ namespace apex {
 
 				void resizeThumb();
 
-				virtual bool isInBounds(Point<int> p) override;
+				virtual bool isInBounds(juce::Point<int> p) override;
 
 			private:
 				JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ApexThumbSlider)

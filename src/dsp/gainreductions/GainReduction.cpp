@@ -31,7 +31,7 @@ namespace apex {
 		/// @param sampleRate - The sample rate to use
 		/// @param riseTimeSeconds - The slew rate to use
 		GainReduction<float>::GainReduction(size_t sampleRate, float riseTimeSeconds)
-			: mRiseTimeSeconds(riseTimeSeconds), mSampleRate(sampleRate)
+			: mSampleRate(sampleRate), mRiseTimeSeconds(riseTimeSeconds)
 		{
 			mNumSamplesToTransitionGain = static_cast<size_t>(riseTimeSeconds * sampleRate + 0.5f);
 		}
@@ -55,7 +55,7 @@ namespace apex {
 		///
 		/// @return The adjusted gain reduction
 		float GainReduction<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
 			float gainReductionStep = (actualGainReduction - mCurrentGainReduction)
 				/ static_cast<float>(mNumSamplesToTransitionGain - mCurrentSample);
@@ -108,7 +108,7 @@ namespace apex {
 		/// @param sampleRate - The sample rate to use
 		/// @param riseTimeSeconds - The slew rate to use
 		GainReduction<double>::GainReduction(size_t sampleRate, double riseTimeSeconds)
-			: mRiseTimeSeconds(riseTimeSeconds), mSampleRate(sampleRate)
+			: mSampleRate(sampleRate), mRiseTimeSeconds(riseTimeSeconds)
 		{
 			mNumSamplesToTransitionGain = static_cast<size_t>(riseTimeSeconds * sampleRate + 0.5);
 		}
@@ -132,7 +132,7 @@ namespace apex {
 		///
 		/// @return The adjusted gain reduction
 		double GainReduction<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
 			double gainReductionStep = (actualGainReduction - mCurrentGainReduction)
 				/ static_cast<double>(mNumSamplesToTransitionGain - mCurrentSample);

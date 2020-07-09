@@ -6,13 +6,13 @@
 
 namespace apex {
 	namespace ui {
-		ApexLookAndFeel::ApexLookAndFeel() : LookAndFeel_V4() {
+		ApexLookAndFeel::ApexLookAndFeel() : juce::LookAndFeel_V4() {
 			registerColours();
 		}
 
-		void ApexLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width, int height,
+		void ApexLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
 				float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
-				Slider& slider)
+				juce::Slider& slider)
 		{
 #if defined USE_PHYSICAL_ROTARIES
 			drawPhysicalRotary(g, x, y, width, height, sliderPos, rotaryStartAngle,
@@ -26,7 +26,7 @@ namespace apex {
 #endif
 		}
 
-		void ApexLookAndFeel::drawRotaryApexSlider(Graphics& g, int x, int y, int width, int height,
+		void ApexLookAndFeel::drawRotaryApexSlider(juce::Graphics& g, int x, int y, int width, int height,
 				float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
 				ApexSlider& slider)
 		{
@@ -34,29 +34,29 @@ namespace apex {
 			if(maybeStrip.isSome()) {
 				ApexFilmStrip strip = *maybeStrip.getConst();
 				size_t index = size_t(sliderPos * strip.getNumFrames());
-				Image image = strip.getFrameScaled(index, size_t(width), size_t(height));
+				juce::Image image = strip.getFrameScaled(index, size_t(width), size_t(height));
 				g.drawImageAt(image, x, y);
 			}
 			else {
 				drawRotarySlider(g, x, y, width, height, sliderPos, rotaryStartAngle,
-						rotaryEndAngle, dynamic_cast<Slider&>(slider));
+						rotaryEndAngle, slider);
 			}
 		}
 
-		void ApexLookAndFeel::drawLinearSliderBackground(Graphics& g, int x, int y, int width,
+		void ApexLookAndFeel::drawLinearSliderBackground(juce::Graphics& g, int x, int y, int width,
 				int height, float sliderPos, float minSliderPos, float maxSliderPos,
-				const Slider::SliderStyle style, Slider& slider)
+				const juce::Slider::SliderStyle style, juce::Slider& slider)
 		{
 			ignoreUnused(sliderPos, minSliderPos, maxSliderPos, style, slider);
 
-			Rectangle<int> rawBounds = Rectangle<int>(x, y, width, height);
+			juce::Rectangle<int> rawBounds = juce::Rectangle<int>(x, y, width, height);
 
 			g.fillAll(mBackgroundColour);
 
-			Rectangle<float> troughBounds = rawBounds.toFloat().reduced(2.0f, 2.0f);
-			Rectangle<float> shadowBounds = troughBounds.expanded(1.0f, 1.0f);
+			juce::Rectangle<float> troughBounds = rawBounds.toFloat().reduced(2.0f, 2.0f);
+			juce::Rectangle<float> shadowBounds = troughBounds.expanded(1.0f, 1.0f);
 
-			ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.8f),
+			juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.8f),
 					shadowBounds.getCentreX(),
 					shadowBounds.getCentreY(),
 					mSliderShadowColour.withAlpha(0.2f),
@@ -70,37 +70,37 @@ namespace apex {
 			g.fillRect(shadowBounds);
 		}
 
-		void ApexLookAndFeel::drawLinearApexSliderBackground(Graphics& g, int x, int y, int width,
-				int height, float sliderPosProp, const Slider::SliderStyle style,
+		void ApexLookAndFeel::drawLinearApexSliderBackground(juce::Graphics& g, int x, int y, int width,
+				int height, float sliderPosProp, const juce::Slider::SliderStyle style,
 				ApexSlider& slider)
 		{
 			//technically we don't need this function, but we'll keep it for future use
 			//incase we decide we DO want to do something different for our own types
 			//vs built-ins
 			//also, Why TF do we need to dynamic cast to Slider& when ApexSlider : Slider?????
-			float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
-			float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
+			float sliderMaxPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x : y);
+			float sliderMinPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x + width : y + height);
 			drawLinearSliderBackground(g, x, y, width, height, sliderPosProp, sliderMinPos,
-					sliderMaxPos, style, dynamic_cast<Slider&>(slider));
+					sliderMaxPos, style, dynamic_cast<juce::Slider&>(slider));
 		}
 
-		void ApexLookAndFeel::drawLinearSliderThumb(Graphics& g, int x, int y, int width, int height,
+		void ApexLookAndFeel::drawLinearSliderThumb(juce::Graphics& g, int x, int y, int width, int height,
 				float sliderPos, float minSliderPos, float maxSliderPos,
-				const Slider::SliderStyle style, Slider& slider)
+				const juce::Slider::SliderStyle style, juce::Slider& slider)
 		{
 			ignoreUnused(minSliderPos, maxSliderPos, style);
 
-			Rectangle<float> rawBounds = Rectangle<int>(x, y, width, height).toFloat();
-			Rectangle<float> bounds = rawBounds.reduced(1.0f, 1.0f);
+			juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
+			juce::Rectangle<float> bounds = rawBounds.reduced(1.0f, 1.0f);
 			float boundsW = bounds.getWidth();
 			float boundsH = bounds.getHeight();
 			float boundsX = bounds.getX();
 			float boundsY = bounds.getY();
 
-			float thumbWidth = slider.isHorizontal() ? jmin(20.0f, boundsW * 0.10f)
+			float thumbWidth = slider.isHorizontal() ? juce::jmin(20.0f, boundsW * 0.10f)
 				: boundsW - 4.0f;
 			float thumbHeight = slider.isHorizontal() ? boundsH - 4.0f
-				: jmin(20.0f, boundsH * 0.10f);
+				: juce::jmin(20.0f, boundsH * 0.10f);
 			float sliderPosX = slider.isHorizontal() ? sliderPos * boundsW + boundsX
 				: boundsX + boundsW / 2.0f;
 			float sliderPosY = slider.isHorizontal() ? boundsY + boundsH / 2.0f
@@ -127,9 +127,9 @@ namespace apex {
 				thumbHeight -= hDiffTop;
 			}
 
-			Rectangle<float> thumb = Rectangle<float>(sliderPosX, sliderPosY, thumbWidth, thumbHeight);
+			juce::Rectangle<float> thumb = juce::Rectangle<float>(sliderPosX, sliderPosY, thumbWidth, thumbHeight);
 
-			ColourGradient strokeGradient(
+			juce::ColourGradient strokeGradient(
 					mSliderStrokeColour.brighter(0.2f).withAlpha(0.5f),
 					sliderPosX,
 					sliderPosY,
@@ -138,7 +138,7 @@ namespace apex {
 					sliderPosY + (slider.isHorizontal() ? thumbHeight : 0.0f),
 					false);
 			strokeGradient.addColour(0.5f, mSliderStrokeColour.withAlpha(0.2f));
-			ColourGradient glowGradient(
+			juce::ColourGradient glowGradient(
 					mSliderGlowColour.brighter(0.2f).withAlpha(0.5f),
 					sliderPosX,
 					sliderPosY,
@@ -154,37 +154,37 @@ namespace apex {
 			g.fillRoundedRectangle(thumb, cornerSize);
 		}
 
-		void ApexLookAndFeel::drawLinearApexSliderThumb(Graphics& g, int x, int y, int width,
+		void ApexLookAndFeel::drawLinearApexSliderThumb(juce::Graphics& g, int x, int y, int width,
 				int height, float sliderPos, ApexSlider& slider)
 		{
 			//technically we don't need this function, but we'll keep it for future use
 			//incase we decide we DO want to do something different for our own types
 			//vs built-ins
 			//also, Why TF do we need to dynamic cast to Slider& when ApexSlider : Slider?????
-			float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
-			float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
+			float sliderMaxPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x : y);
+			float sliderMinPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x + width : y + height);
 			drawLinearSliderThumb(g, x, y, width, height, sliderPos, sliderMinPos, sliderMaxPos,
-					dynamic_cast<Slider&>(slider).getSliderStyle(), dynamic_cast<Slider&>(slider));
+					dynamic_cast<juce::Slider&>(slider).getSliderStyle(), dynamic_cast<juce::Slider&>(slider));
 		}
 
-		void ApexLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, int height,
+		void ApexLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
 				float sliderPos, float minSliderPos, float maxSliderPos,
-				const Slider::SliderStyle style, Slider& slider)
+				const juce::Slider::SliderStyle style, juce::Slider& slider)
 		{
 			drawLinearSliderBackground(g, x, y, width, height, sliderPos, minSliderPos,
 					maxSliderPos, style, slider);
 
-			Rectangle<float> rawBounds = Rectangle<int>(x, y, width, height).toFloat();
-			Rectangle<float> bounds = rawBounds.reduced(1.0f, 1.0f);
+			juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
+			juce::Rectangle<float> bounds = rawBounds.reduced(1.0f, 1.0f);
 			float boundsW = bounds.getWidth();
 			float boundsH = bounds.getHeight();
 			float boundsX = bounds.getX();
 			float boundsY = bounds.getY();
 
-			float thumbWidth = slider.isHorizontal() ? jmin(20.0f, boundsW * 0.10f)
+			float thumbWidth = slider.isHorizontal() ? juce::jmin(20.0f, boundsW * 0.10f)
 				: boundsW - 4.0f;
 			float thumbHeight = slider.isHorizontal() ? boundsH - 4.0f
-				: jmin(20.0f, boundsH * 0.10f);
+				: juce::jmin(20.0f, boundsH * 0.10f);
 			float sliderPosX = boundsX + 2.0f;
 			float sliderPosY = slider.isHorizontal() ? boundsY + 2.0f
 				: (1.0f - sliderPos) * boundsH + boundsY;
@@ -216,8 +216,8 @@ namespace apex {
 			strokeWidth += slider.isHorizontal() ? -1.0f + thumbWidth / 2.0f : 0.0f;
 			strokeHeight += slider.isHorizontal() ? 0.0f : thumbHeight / 2.0f;
 
-			Rectangle<float> stroke = Rectangle<float>(sliderPosX, sliderPosY, strokeWidth, strokeHeight);
-			ColourGradient strokeGradient(
+			juce::Rectangle<float> stroke = juce::Rectangle<float>(sliderPosX, sliderPosY, strokeWidth, strokeHeight);
+			juce::ColourGradient strokeGradient(
 					mSliderStrokeColour.withAlpha(0.5f),
 					sliderPosX,
 					sliderPosY,
@@ -233,26 +233,26 @@ namespace apex {
 					maxSliderPos, style, slider);
 		}
 
-		void ApexLookAndFeel::drawLinearApexSlider(Graphics& g, int x, int y, int width, int height,
-				float sliderPos, const Slider::SliderStyle style, ApexSlider& slider)
+		void ApexLookAndFeel::drawLinearApexSlider(juce::Graphics& g, int x, int y, int width, int height,
+				float sliderPos, const juce::Slider::SliderStyle style, ApexSlider& slider)
 		{
 			Option<ApexFilmStrip> maybeFilmStrip = slider.getFilmStrip();
 			if(maybeFilmStrip.isSome()) {
 				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				size_t index = size_t(sliderPos * filmStrip.getNumFrames());
-				Image image = filmStrip.getFrameScaled(index, size_t(width), size_t(height));
+				juce::Image image = filmStrip.getFrameScaled(index, size_t(width), size_t(height));
 				g.drawImageAt(image, x, y);
 			}
 			else {
-				float sliderMaxPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x : y);
-				float sliderMinPos = static_cast<float>(dynamic_cast<Slider&>(slider).isHorizontal() ? x + width : y + height);
+				float sliderMaxPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x : y);
+				float sliderMinPos = static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x + width : y + height);
 				drawLinearSlider(g, x, y, width, height, sliderPos, sliderMinPos, sliderMaxPos,
-						style, dynamic_cast<Slider&>(slider));
+						style, dynamic_cast<juce::Slider&>(slider));
 			}
 		}
 
-		void ApexLookAndFeel::drawPopupMenuBackground(Graphics& g, int width, int height) {
-			Rectangle<float> bounds(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
+		void ApexLookAndFeel::drawPopupMenuBackground(juce::Graphics& g, int width, int height) {
+			juce::Rectangle<float> bounds(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
 			g.setColour(mPopupMenuBackgroundColour.darker(0.4f).withAlpha(0.9f));
 			g.fillAll();
 			g.setColour(mComboBoxShadowColour.withAlpha(0.8f));
@@ -261,22 +261,22 @@ namespace apex {
 			g.fillRect(bounds.reduced(3.0f, 3.0f));
 		}
 
-		void ApexLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& area,
+		void ApexLookAndFeel::drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
 				bool isSeparator, bool isActive, bool isHighlighted, bool isTicked,
-				bool hasSubMenu, const String& text, const String& shortcutKeyText,
-				const Drawable* icon, const Colour* textColour)
+				bool hasSubMenu, const juce::String& text, const juce::String& shortcutKeyText,
+				const juce::Drawable* icon, const juce::Colour* textColour)
 		{
 			ignoreUnused(textColour);
 
 			if(isSeparator) {
-				Rectangle<int> r = area.reduced(5, 0);
-				r.removeFromTop(roundToInt((r.getHeight() * 0.5f) - 0.5f));
+				juce::Rectangle<int> r = area.reduced(5, 0);
+				r.removeFromTop(juce::roundToInt((r.getHeight() * 0.5f) - 0.5f));
 
 				g.setColour(mPopupMenuTextColour.withAlpha(0.3f));
 				g.fillRect(r.removeFromTop(1));
 			}
 			else {
-				Rectangle<int> r = area.reduced(1);
+				juce::Rectangle<int> r = area.reduced(1);
 
 				if(isHighlighted && isActive) {
 					g.setColour(mPopupMenuHighlightColour.withAlpha(0.5f).brighter(0.1f));
@@ -287,26 +287,26 @@ namespace apex {
 					g.setColour(mPopupMenuTextColour.withAlpha(isActive ? 1.0f : 0.5f));
 				}
 
-				r.reduce(jmin(5, area.getWidth() / 20), 0);
+				r.reduce(juce::jmin(5, area.getWidth() / 20), 0);
 
-				Font font = jmin(r.getWidth(), r.getHeight()) * 0.33f;
+				juce::Font font = juce::jmin(r.getWidth(), r.getHeight()) * 0.33f;
 				float maxFontHeight = r.getHeight() * 0.33f;
 
 				g.setFont(font);
 
-				Rectangle<float> iconArea;
+				juce::Rectangle<float> iconArea;
 				if(icon != nullptr) {
-					iconArea = r.removeFromLeft(roundToInt(maxFontHeight)).toFloat();
+					iconArea = r.removeFromLeft(juce::roundToInt(maxFontHeight)).toFloat();
 					icon->drawWithin(g, iconArea,
-							RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize, 1.0f);
-					r.removeFromLeft(roundToInt(maxFontHeight * 0.5f));
+							juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize, 1.0f);
+					r.removeFromLeft(juce::roundToInt(maxFontHeight * 0.5f));
 				}
 				else if (isTicked) {
-					Colour fill = mPopupMenuHighlightColour.withAlpha(0.5f).brighter(0.1f);
+					juce::Colour fill = mPopupMenuHighlightColour.withAlpha(0.5f).brighter(0.1f);
 					if(isHighlighted) fill = fill.brighter(0.2f);
 					g.setColour(fill);
 					g.fillRect(area.reduced(1));
-					iconArea = r.removeFromLeft(roundToInt(maxFontHeight)).toFloat();
+					iconArea = r.removeFromLeft(juce::roundToInt(maxFontHeight)).toFloat();
 					if(isHighlighted && isActive)
 						g.setColour(mPopupMenuTextColour.brighter(0.2f));
 					else
@@ -319,38 +319,38 @@ namespace apex {
 					float x = static_cast<float>(r.removeFromRight((int)arrowH).getX());
 					float halfH = static_cast<float>(r.getCentreY());
 
-					Path p;
+					juce::Path p;
 					p.startNewSubPath(x, halfH - arrowH * 0.5f);
 					p.lineTo(x + arrowH * 0.6f, halfH);
 					p.lineTo(x, halfH + arrowH * 0.5f);
 
-					g.strokePath(p, PathStrokeType(2.0f));
+					g.strokePath(p, juce::PathStrokeType(2.0f));
 				}
 
 				r.removeFromRight(3);
-				g.drawFittedText(text, r, Justification::centredLeft, 1);
+				g.drawFittedText(text, r, juce::Justification::centredLeft, 1);
 
 				if(shortcutKeyText.isNotEmpty()) {
-					Font font2 = font;
+					juce::Font font2 = font;
 					font2.setHeight(font2.getHeight() * 0.75f);
 					font2.setHorizontalScale(0.95f);
 					g.setFont(font2);
-					g.drawText(shortcutKeyText, r, Justification::centredRight, true);
+					g.drawText(shortcutKeyText, r, juce::Justification::centredRight, true);
 				}
 			}
 		}
 
-		void ApexLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool isButtonDown,
-				int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& box)
+		void ApexLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool isButtonDown,
+				int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box)
 		{
-			ignoreUnused(buttonX, buttonY, buttonW, buttonH, isButtonDown);
+			juce::ignoreUnused(buttonX, buttonY, buttonW, buttonH, isButtonDown);
 
-			float cornerSize = jmin(width, height) * 0.1f;
-			Rectangle<float> boxBounds = Rectangle<int>(0, 0, width, height).toFloat();
-			Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
-			Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
-			Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
-			Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
+			float cornerSize = juce::jmin(width, height) * 0.1f;
+			juce::Rectangle<float> boxBounds = juce::Rectangle<int>(0, 0, width, height).toFloat();
+			juce::Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
+			juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
+			juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
+			juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
 
 			g.setColour(mComboBoxBackgroundColour);
 			g.fillRect(boxBounds);
@@ -359,7 +359,7 @@ namespace apex {
 			g.setColour(mComboBoxTroughColour);
 			g.fillRoundedRectangle(troughBounds, cornerSize);
 
-			ColourGradient shadowGradient(
+			juce::ColourGradient shadowGradient(
 					mComboBoxShadowColour.withAlpha(0.8f),
 					shadowBounds.getCentre(),
 					mComboBoxShadowColour.withAlpha(0.2f),
@@ -368,10 +368,10 @@ namespace apex {
 			g.setGradientFill(shadowGradient);
 			g.fillRoundedRectangle(shadowBounds, cornerSize);
 
-			Colour buttonColour = (box.isPopupActive() ? mButtonNormalColour.brighter(0.2f)
+			juce::Colour buttonColour = (box.isPopupActive() ? mButtonNormalColour.brighter(0.2f)
 					: (box.isMouseOver() ? mButtonNormalColour.brighter(0.1f)
 						: (box.isEnabled() ? mButtonNormalColour : mButtonPressedColour)));
-			ColourGradient buttonGradient(
+			juce::ColourGradient buttonGradient(
 					buttonColour.withAlpha(0.4f),
 					buttonBounds.getCentre(),
 					buttonColour.withAlpha(0.1f),
@@ -380,7 +380,7 @@ namespace apex {
 			g.setGradientFill(buttonGradient);
 			g.fillRoundedRectangle(buttonBounds, cornerSize);
 
-			Path p;
+			juce::Path p;
 			p.startNewSubPath(arrowZone.getX() + 3.0f,
 					arrowZone.getY() + arrowZone.getHeight() * 0.45f);
 			p.lineTo(static_cast<float>(arrowZone.getCentreX()),
@@ -388,48 +388,48 @@ namespace apex {
 			p.lineTo(arrowZone.getRight() - 3.0f,
 					arrowZone.getY() + arrowZone.getHeight() * 0.45f);
 
-			Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+			juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 					: (box.isMouseOver() ? mComboBoxTextColour.brighter(0.1f)
 						: (box.isEnabled() ? mComboBoxTextColour : mComboBoxTextColour.darker(0.3f))));
 			g.setColour(textColour);
-			g.strokePath(p, PathStrokeType(2.0f));
+			g.strokePath(p, juce::PathStrokeType(2.0f));
 		}
 
-		void ApexLookAndFeel::drawApexComboBox(Graphics& g, int width, int height,
+		void ApexLookAndFeel::drawApexComboBox(juce::Graphics& g, int width, int height,
 				bool isButtonDown, int buttonX, int buttonY, int buttonW,
 				int buttonH, ApexComboBox& box)
 		{
-			ignoreUnused(isButtonDown, buttonX, buttonY, buttonW, buttonH);
+			juce::ignoreUnused(isButtonDown, buttonX, buttonY, buttonW, buttonH);
 
-			Option<Image> maybeActiveArrow = box.getActiveArrowImage();
+			Option<juce::Image> maybeActiveArrow = box.getActiveArrowImage();
 			if(maybeActiveArrow.isSome()) {
-				Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.25f), height);
+				juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.25f), height);
 
-				Image activeArrow = *maybeActiveArrow.getConst();
-				Image hoveredArrow = *box.getHoveredArrowImage().getConst();
-				Image normalArrow = *box.getNormalArrowImage().getConst();
+				juce::Image activeArrow = *maybeActiveArrow.getConst();
+				juce::Image hoveredArrow = *box.getHoveredArrowImage().getConst();
+				juce::Image normalArrow = *box.getNormalArrowImage().getConst();
 
 				if(box.isPopupActive()) {
 					g.drawImageAt(activeArrow.rescaled(arrowZone.getWidth(), arrowZone.getHeight(),
-								Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
+								juce::Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
 				}
 				else if(box.isHovered()) {
 					g.drawImageAt(hoveredArrow.rescaled(arrowZone.getWidth(), arrowZone.getHeight(),
-								Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
+								juce::Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
 				}
 				else {
 					g.drawImageAt(normalArrow.rescaled(arrowZone.getWidth(), arrowZone.getHeight(),
-								Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
+								juce::Graphics::highResamplingQuality), arrowZone.getX(), arrowZone.getY());
 				}
 			}
 			else {
 
-				float cornerSize = jmin(width, height) * 0.1f;
-				Rectangle<float> boxBounds = Rectangle<int>(0, 0, width, height).toFloat();
-				Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
-				Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
-				Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
-				Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
+				float cornerSize = juce::jmin(width, height) * 0.1f;
+				juce::Rectangle<float> boxBounds = juce::Rectangle<int>(0, 0, width, height).toFloat();
+				juce::Rectangle<float> troughBounds = boxBounds.reduced(2.0f, 2.0f);
+				juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
+				juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
+				juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75f), 0, static_cast<int>(width * 0.2f), height);
 
 				g.setColour(mComboBoxBackgroundColour);
 				g.fillRect(boxBounds);
@@ -438,7 +438,7 @@ namespace apex {
 				g.setColour(mComboBoxTroughColour);
 				g.fillRoundedRectangle(troughBounds, cornerSize);
 
-				ColourGradient shadowGradient(
+				juce::ColourGradient shadowGradient(
 						mComboBoxShadowColour.withAlpha(0.8f),
 						shadowBounds.getCentre(),
 						mComboBoxShadowColour.withAlpha(0.2f),
@@ -447,10 +447,10 @@ namespace apex {
 				g.setGradientFill(shadowGradient);
 				g.fillRoundedRectangle(shadowBounds, cornerSize);
 
-				Colour buttonColour = (box.isPopupActive() ? mButtonNormalColour.brighter(0.2f)
+				juce::Colour buttonColour = (box.isPopupActive() ? mButtonNormalColour.brighter(0.2f)
 						: (box.isHovered() ? mButtonNormalColour.brighter(0.1f)
 							: (box.isEnabled() ? mButtonNormalColour : mButtonPressedColour)));
-				ColourGradient buttonGradient(
+				juce::ColourGradient buttonGradient(
 						buttonColour.withAlpha(0.4f),
 						buttonBounds.getCentre(),
 						buttonColour.withAlpha(0.1f),
@@ -459,7 +459,7 @@ namespace apex {
 				g.setGradientFill(buttonGradient);
 				g.fillRoundedRectangle(buttonBounds, cornerSize);
 
-				Path p;
+				juce::Path p;
 				p.startNewSubPath(arrowZone.getX() + 3.0f,
 						arrowZone.getY() + arrowZone.getHeight() * 0.45f);
 				p.lineTo(static_cast<float>(arrowZone.getCentreX()),
@@ -467,77 +467,77 @@ namespace apex {
 				p.lineTo(arrowZone.getRight() - 3.0f,
 						arrowZone.getY() + arrowZone.getHeight() * 0.45f);
 
-				Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+				juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 						: (box.isHovered() ? mComboBoxTextColour.brighter(0.1f)
 							: (box.isEnabled() ? mComboBoxTextColour
 								: mComboBoxTextColour.darker(0.3f))));
 				g.setColour(textColour);
-				g.strokePath(p, PathStrokeType(2.0f));
+				g.strokePath(p, juce::PathStrokeType(2.0f));
 			}
 		}
 
-		void ApexLookAndFeel::positionComboBoxText(ComboBox& box, Label& label) {
-			Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+		void ApexLookAndFeel::positionComboBoxText(juce::ComboBox& box, juce::Label& label) {
+			juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 					: (box.isMouseOver() ? mComboBoxTextColour.brighter(0.1f)
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
-			label.setColour(Label::textColourId, textColour);
+			label.setColour(juce::Label::textColourId, textColour);
 			label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7f), box.getHeight());
-			label.setFont(jmin(box.getWidth(), box.getHeight()) * 0.33f);
+			label.setFont(juce::jmin(box.getWidth(), box.getHeight()) * 0.33f);
 		}
 
-		void ApexLookAndFeel::positionApexComboBoxText(ApexComboBox& box, Label& label) {
-			Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+		void ApexLookAndFeel::positionApexComboBoxText(ApexComboBox& box, juce::Label& label) {
+			juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 					: (box.isHovered() ? mComboBoxTextColour.brighter(0.1f)
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
-			label.setColour(Label::textColourId, textColour);
+			label.setColour(juce::Label::textColourId, textColour);
 			label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7f), box.getHeight());
-			label.setFont(jmin(box.getWidth(), box.getHeight()) * 0.33f);
+			label.setFont(juce::jmin(box.getWidth(), box.getHeight()) * 0.33f);
 		}
 
-		void ApexLookAndFeel::drawComboBoxTextWhenNothingSelected(Graphics& g, ComboBox& box,
-				Label& label) {
-			Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+		void ApexLookAndFeel::drawComboBoxTextWhenNothingSelected(juce::Graphics& g, juce::ComboBox& box,
+				juce::Label& label) {
+			juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 					: (box.isMouseOver() ? mComboBoxTextColour.brighter(0.1f)
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
 			g.setColour(textColour);
-			Font font = getLabelFont(label);
+			juce::Font font = getLabelFont(label);
 			g.setFont(font);
-			Rectangle<int> textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
+			juce::Rectangle<int> textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
 			g.drawFittedText(box.getTextWhenNothingSelected(), textArea, label.getJustificationType(),
-					jmax(1, (int)(textArea.getHeight() / font.getHeight())),
+					juce::jmax(1, static_cast<int>(textArea.getHeight() / font.getHeight())),
 					label.getMinimumHorizontalScale());
 		}
 
-		void ApexLookAndFeel::drawApexComboBoxTextWhenNothingSelected(Graphics& g,
-				ApexComboBox& box, Label& label)
+		void ApexLookAndFeel::drawApexComboBoxTextWhenNothingSelected(juce::Graphics& g,
+				ApexComboBox& box, juce::Label& label)
 		{
-			Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
+			juce::Colour textColour = (box.isPopupActive() ? mComboBoxTextColour.brighter(0.2f)
 					: (box.isHovered() ? mComboBoxTextColour.brighter(0.1f)
 						: (box.isEnabled() ? mComboBoxTextColour
 							: mComboBoxTextColour.darker(0.3f))));
 			g.setColour(textColour);
-			Font font = getLabelFont(label);
+			juce::Font font = getLabelFont(label);
 			g.setFont(font);
-			Rectangle<int> textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
+			juce::Rectangle<int> textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
 			g.drawFittedText(box.getTextWhenNothingSelected(), textArea, label.getJustificationType(),
-					jmax(1, (int)(textArea.getHeight() / font.getHeight())),
+					juce::jmax(1, static_cast<int>(textArea.getHeight() / font.getHeight())),
 					label.getMinimumHorizontalScale());
 		}
 
-		void ApexLookAndFeel::drawToggleButton(Graphics& g, ToggleButton& button,
+		void ApexLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
 				bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 		{
-			float cornerSize = jmax(5.0f, button.getWidth() * 0.1f, button.getHeight() * 0.1f);
+			float cornerSize = juce::jmax(5.0f, button.getWidth() * 0.1f, button.getHeight() * 0.1f);
 			float width = float(button.getWidth());
 			float height = float(button.getHeight());
-			float fontSize = jmin(width * 0.33f, height * 0.33f);
-			Rectangle<float> bounds(0.0f, 0.0f, width, height);
-			Rectangle<float> troughBounds = bounds.reduced(2.0f, 2.0f);
-			Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
-			Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
+			float fontSize = juce::jmin(width * 0.33f, height * 0.33f);
+			juce::Rectangle<float> bounds(0.0f, 0.0f, width, height);
+			juce::Rectangle<float> troughBounds = bounds.reduced(2.0f, 2.0f);
+			juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
+			juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0f, 2.0f);
 
 			g.setColour(mBackgroundColour);
 			g.fillRect(bounds);
@@ -545,7 +545,7 @@ namespace apex {
 			g.setColour(mButtonTroughColour);
 			g.fillRoundedRectangle(troughBounds, cornerSize);
 
-			ColourGradient shadowGradient(
+			juce::ColourGradient shadowGradient(
 					mSliderShadowColour.withAlpha(0.8f),
 					shadowBounds.getCentreX(),
 					shadowBounds.getCentreY(),
@@ -556,12 +556,12 @@ namespace apex {
 			g.setGradientFill(shadowGradient);
 			g.fillRoundedRectangle(shadowBounds, cornerSize);
 
-			Colour buttonColour = ((shouldDrawButtonAsHighlighted && shouldDrawButtonAsDown)
+			juce::Colour buttonColour = ((shouldDrawButtonAsHighlighted && shouldDrawButtonAsDown)
 					? mButtonPressedColour.brighter(0.1f)
 					: (shouldDrawButtonAsHighlighted ? mButtonNormalColour.brighter(0.1f)
 						: (shouldDrawButtonAsDown ? mButtonPressedColour
 							: mButtonNormalColour)));
-			ColourGradient buttonGradient(
+			juce::ColourGradient buttonGradient(
 					buttonColour.withAlpha(0.4f),
 					buttonBounds.getCentreX(),
 					buttonBounds.getCentreY(),
@@ -574,12 +574,12 @@ namespace apex {
 
 			g.setColour(mButtonTextColour);
 
-			Colour textColour = ((shouldDrawButtonAsHighlighted && shouldDrawButtonAsDown)
+			juce::Colour textColour = ((shouldDrawButtonAsHighlighted && shouldDrawButtonAsDown)
 					? mButtonTextColour.brighter(0.05f)
 					: (shouldDrawButtonAsHighlighted ? mButtonTextColour.brighter(0.1f)
 						: (shouldDrawButtonAsDown ? mButtonTextColour.darker(0.1f)
 							: mButtonTextColour)));
-			ColourGradient textGradient(
+			juce::ColourGradient textGradient(
 					textColour.withAlpha(0.8f),
 					buttonBounds.getCentreX(),
 					buttonBounds.getCentreY(),
@@ -594,14 +594,14 @@ namespace apex {
 
 			g.drawFittedText(button.getButtonText(),
 					troughBounds.reduced(2.0f, 2.0f).toNearestInt(),
-					Justification::centred, 1, 1.0f);
+					juce::Justification::centred, 1, 1.0f);
 		}
 
-		void ApexLookAndFeel::drawApexToggleButton(Graphics& g, ApexToggleButton& button,
+		void ApexLookAndFeel::drawApexToggleButton(juce::Graphics& g, ApexToggleButton& button,
 				bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 		{
 			Option<ApexFilmStrip> maybeFilmStrip = button.getFilmStrip();
-			Option<Image> maybeToggledImage = button.getToggledImage();
+			Option<juce::Image> maybeToggledImage = button.getToggledImage();
 			if(maybeFilmStrip.isSome()) {
 				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				if(shouldDrawButtonAsDown) g.drawImageAt(
@@ -626,9 +626,9 @@ namespace apex {
 						button.getX(), button.getY());
 			}
 			else if(maybeToggledImage.isSome()) {
-				Image toggledImage = *maybeToggledImage.getConst();
-				Image hoveredImage = *button.getHoveredImage().getConst();
-				Image normalImage = *button.getNormalImage().getConst();
+				juce::Image toggledImage = *maybeToggledImage.getConst();
+				juce::Image hoveredImage = *button.getHoveredImage().getConst();
+				juce::Image normalImage = *button.getNormalImage().getConst();
 				if(shouldDrawButtonAsDown) g.drawImageAt(
 						toggledImage.rescaled(
 							button.getWidth(),
@@ -648,12 +648,12 @@ namespace apex {
 						button.getX(), button.getY());
 			}
 			else {
-				drawToggleButton(g, dynamic_cast<ToggleButton&>(button),
+				drawToggleButton(g, dynamic_cast<juce::ToggleButton&>(button),
 						shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
 			}
 		}
 
-		void ApexLookAndFeel::drawApexMeter(Graphics& g, float levelProportional,
+		void ApexLookAndFeel::drawApexMeter(juce::Graphics& g, float levelProportional,
 				float clipLevelProportional, size_t numSteps, ApexMeter& meter) {
 
 			int meterX = 0;
@@ -662,22 +662,22 @@ namespace apex {
 			int meterHeight = meter.getHeight();
 
 			Option<ApexFilmStrip> maybeFilmStrip = meter.getFilmStrip();
-			Option<Image> maybeMaxedImage = meter.getMaxedImage();
+			Option<juce::Image> maybeMaxedImage = meter.getMaxedImage();
 			if(maybeFilmStrip.isSome()) {
 				ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
 				size_t index = static_cast<size_t>(filmStrip.getNumFrames() * levelProportional);
 				g.drawImageAt(filmStrip.getFrameScaled(index,
-							size_t(meterWidth),
-							size_t(meterHeight)
+							static_cast<size_t>(meterWidth),
+							static_cast<size_t>(meterHeight)
 							),
 						meterX, meterY);
 			}
 			else if (maybeMaxedImage.isSome()) {
-				Image maxedImage = *maybeMaxedImage.getConst();
+				juce::Image maxedImage = *maybeMaxedImage.getConst();
 				int meterPeak = static_cast<int>(meterY + (1.0f - levelProportional) * meterHeight);
 				int meterDiff = meterHeight - meterPeak;
-				Rectangle<int> clip(0, meterDiff, meterWidth, meterHeight);
-				Image clipped = maxedImage.getClippedImage(clip);
+				juce::Rectangle<int> clip(0, meterDiff, meterWidth, meterHeight);
+				juce::Image clipped = maxedImage.getClippedImage(clip);
 				g.drawImageAt(clipped, meterX, meterY + meterDiff);
 			}
 			else {
@@ -685,15 +685,15 @@ namespace apex {
 
 				float stepHeight = meterHeight / static_cast<float>(numSteps);
 
-				Rectangle<float> bounds(
-					static_cast<float>(meterX),
-					static_cast<float>(meterY),
-					static_cast<float>(meterWidth),
-					static_cast<float>(meterHeight)
-					);
-				Rectangle<float> troughBounds = bounds.reduced(2.0f, 2.0f);
+				juce::Rectangle<float> bounds(
+						static_cast<float>(meterX),
+						static_cast<float>(meterY),
+						static_cast<float>(meterWidth),
+						static_cast<float>(meterHeight)
+						);
+				juce::Rectangle<float> troughBounds = bounds.reduced(2.0f, 2.0f);
 
-				Rectangle<float> meterBounds = troughBounds.reduced(2.0f, 2.0f);
+				juce::Rectangle<float> meterBounds = troughBounds.reduced(2.0f, 2.0f);
 				float meterHeightDiff = meterLevelY - (meterY + 2.0f);
 				float meterBoundsHeight = meterBounds.getHeight();
 				meterBounds = meterBounds.withY(static_cast<float>(meterLevelY) + 2.0f)
@@ -702,7 +702,7 @@ namespace apex {
 				float troughX = troughBounds.getX() + 2.0f;
 				float troughWidth = troughBounds.getWidth() - 2.0f;
 
-				ColourGradient meterGradient(mMeterClipColour, troughX, static_cast<float>(meterY),
+				juce::ColourGradient meterGradient(mMeterClipColour, troughX, static_cast<float>(meterY),
 						mMeterLowerColour, troughX, static_cast<float>(meterY + meterHeight), false);
 				meterGradient.addColour(clipLevelProportional, mMeterUpperColour);
 
@@ -717,113 +717,113 @@ namespace apex {
 
 				g.setColour(mBackgroundColour.brighter(0.2f).withAlpha(0.3f));
 				float stepY = meterY + stepHeight;
-				for(int i = 1; i < numSteps; ++i) {
+				for(size_t i = 1; i < numSteps; ++i) {
 					g.drawLine(troughX, stepY, troughX + troughWidth, stepY);
 					stepY += stepHeight;
 				}
 			}
 		}
 
-		void ApexLookAndFeel::setFont(Font newFont) {
+		void ApexLookAndFeel::setFont(juce::Font newFont) {
 			mFont = newFont;
 		}
 
-		void ApexLookAndFeel::setColour(ApexColourId id, Colour colour) {
+		void ApexLookAndFeel::setColour(ApexColourId id, juce::Colour colour) {
 			switch(id) {
 				case backgroundColourId: {
 											 mBackgroundColour = colour;
-											 LookAndFeel::setColour(backgroundColourId,
+											 juce::LookAndFeel::setColour(backgroundColourId,
 													 mBackgroundColour);
-											 LookAndFeel::setColour(AlertWindow::outlineColourId,
+											 juce::LookAndFeel::setColour(juce::AlertWindow::outlineColourId,
 													 mBackgroundColour);
 										 }
 										 break;
 				case buttonShadowColourId: {
 											   mButtonShadowColour = colour;
-											   LookAndFeel::setColour(buttonShadowColourId,
+											   juce::LookAndFeel::setColour(buttonShadowColourId,
 													   mButtonShadowColour);
 										   }
 										   break;
 				case buttonNormalColourId: {
 											   mButtonNormalColour = colour;
-											   LookAndFeel::setColour(buttonNormalColourId,
+											   juce::LookAndFeel::setColour(buttonNormalColourId,
 													   mButtonNormalColour);
 										   }
 										   break;
 				case buttonPressedColourId: {
 												mButtonPressedColour = colour;
-												LookAndFeel::setColour(buttonPressedColourId,
+												juce::LookAndFeel::setColour(buttonPressedColourId,
 														mButtonPressedColour);
 											}
 											break;
 				case buttonTroughColourId: {
 											   mButtonTroughColour = colour;
-											   LookAndFeel::setColour(buttonTroughColourId,
+											   juce::LookAndFeel::setColour(buttonTroughColourId,
 													   mButtonTroughColour);
 										   }
 										   break;
 				case buttonTextColourId: {
 											 mButtonTextColour = colour;
-											 LookAndFeel::setColour(buttonTextColourId,
+											 juce::LookAndFeel::setColour(buttonTextColourId,
 													 mButtonTextColour);
 										 }
 										 break;
 				case comboBoxBackgroundColourId: {
 													 mComboBoxBackgroundColour = colour;
-													 LookAndFeel::setColour(comboBoxBackgroundColourId,
+													 juce::LookAndFeel::setColour(comboBoxBackgroundColourId,
 															 mComboBoxBackgroundColour);
 												 }
 												 break;
 				case comboBoxShadowColourId: {
 												 mComboBoxShadowColour = colour;
-												 LookAndFeel::setColour(comboBoxShadowColourId,
+												 juce::LookAndFeel::setColour(comboBoxShadowColourId,
 														 mComboBoxShadowColour);
 											 }
 											 break;
 				case comboBoxTroughColourId: {
 												 mComboBoxTroughColour = colour;
-												 LookAndFeel::setColour(comboBoxTroughColourId,
+												 juce::LookAndFeel::setColour(comboBoxTroughColourId,
 														 mComboBoxTroughColour);
 											 }
 											 break;
 				case comboBoxTextColourId: {
 											   mComboBoxTextColour = colour;
-											   LookAndFeel::setColour(comboBoxTextColourId,
+											   juce::LookAndFeel::setColour(comboBoxTextColourId,
 													   mComboBoxTextColour);
 										   }
 										   break;
 				case meterClipColourId: {
 											mMeterClipColour = colour;
-											LookAndFeel::setColour(meterClipColourId,
+											juce::LookAndFeel::setColour(meterClipColourId,
 													mMeterClipColour);
 										}
 										break;
 				case meterLowerColourId: {
 											 mMeterLowerColour = colour;
-											 LookAndFeel::setColour(meterLowerColourId,
+											 juce::LookAndFeel::setColour(meterLowerColourId,
 													 mMeterLowerColour);
 										 }
 										 break;
 				case meterTroughColourId: {
 											  mMeterTroughColour = colour;
-											  LookAndFeel::setColour(meterTroughColourId,
+											  juce::LookAndFeel::setColour(meterTroughColourId,
 													  mMeterTroughColour);
 										  }
 										  break;
 				case meterUpperColourId: {
 											 mMeterUpperColour = colour;
-											 LookAndFeel::setColour(meterUpperColourId,
+											 juce::LookAndFeel::setColour(meterUpperColourId,
 													 mMeterUpperColour);
 										 }
 										 break;
 				case popupMenuBackgroundColourId: {
 													  mPopupMenuBackgroundColour = colour;
-													  LookAndFeel::setColour(popupMenuBackgroundColourId,
+													  juce::LookAndFeel::setColour(popupMenuBackgroundColourId,
 															  mPopupMenuBackgroundColour);
-													  LookAndFeel::setColour(PopupMenu::backgroundColourId,
+													  juce::LookAndFeel::setColour(juce::PopupMenu::backgroundColourId,
 															  mPopupMenuBackgroundColour
 															  .withAlpha(0.9f));
-													  LookAndFeel::setColour(PopupMenu::highlightedBackgroundColourId,
+													  juce::LookAndFeel::setColour(juce::PopupMenu::highlightedBackgroundColourId,
 															  mPopupMenuBackgroundColour
 															  .brighter(0.2f)
 															  .withAlpha(0.9f));
@@ -831,53 +831,53 @@ namespace apex {
 												  break;
 				case popupMenuTextColourId: {
 												mPopupMenuTextColour = colour;
-												LookAndFeel::setColour(popupMenuTextColourId,
+												juce::LookAndFeel::setColour(popupMenuTextColourId,
 														mPopupMenuTextColour);
 											}
 											break;
 				case popupMenuHighlightColourId: {
 													 mPopupMenuHighlightColour = colour;
-													 LookAndFeel::setColour(popupMenuHighlightColourId,
+													 juce::LookAndFeel::setColour(popupMenuHighlightColourId,
 															 mPopupMenuHighlightColour);
 												 }
 												 break;
 				case rotarySliderFillColourId: {
 												   mRotarySliderFillColour = colour;
-												   LookAndFeel::setColour(rotarySliderFillColourId,
+												   juce::LookAndFeel::setColour(rotarySliderFillColourId,
 														   mRotarySliderFillColour);
 											   }
 											   break;
 				case rotarySliderIndicatorColourId: {
 														mRotarySliderIndicatorColour = colour;
-														LookAndFeel::setColour(rotarySliderIndicatorColourId,
+														juce::LookAndFeel::setColour(rotarySliderIndicatorColourId,
 																mRotarySliderIndicatorColour);
 													}
 													break;
 				case sliderStrokeColourId: {
 											   mSliderStrokeColour = colour;
-											   LookAndFeel::setColour(sliderStrokeColourId,
+											   juce::LookAndFeel::setColour(sliderStrokeColourId,
 													   mSliderStrokeColour);
 										   }
 										   break;
 				case sliderShadowColourId: {
 											   mSliderShadowColour = colour;
-											   LookAndFeel::setColour(sliderShadowColourId,
+											   juce::LookAndFeel::setColour(sliderShadowColourId,
 													   mSliderShadowColour);
 										   }
 										   break;
 				case sliderTroughColourId: {
 											   mSliderTroughColour = colour;
-											   LookAndFeel::setColour(sliderTroughColourId,
+											   juce::LookAndFeel::setColour(sliderTroughColourId,
 													   mSliderTroughColour);
 
-											   LookAndFeel::setColour(Slider::textBoxOutlineColourId,
+											   juce::LookAndFeel::setColour(juce::Slider::textBoxOutlineColourId,
 													   mSliderTroughColour);
-											   LookAndFeel::setColour(AlertWindow::backgroundColourId,
+											   juce::LookAndFeel::setColour(juce::AlertWindow::backgroundColourId,
 													   mSliderTroughColour);
-											   LookAndFeel::setColour(TextEditor::backgroundColourId,
+											   juce::LookAndFeel::setColour(juce::TextEditor::backgroundColourId,
 													   mSliderTroughColour
 													   .withAlpha(0.85f));
-											   LookAndFeel::setColour(TextEditor::focusedOutlineColourId,
+											   juce::LookAndFeel::setColour(juce::TextEditor::focusedOutlineColourId,
 													   mSliderTroughColour
 													   .brighter(0.1f)
 													   .withAlpha(0.85f));
@@ -885,17 +885,17 @@ namespace apex {
 										   break;
 				case sliderGlowColourId: {
 											 mSliderGlowColour = colour;
-											 LookAndFeel::setColour(sliderGlowColourId,
+											 juce::LookAndFeel::setColour(sliderGlowColourId,
 													 mSliderGlowColour);
 										 }
 										 break;
 				case sliderTextColourId: {
 											 mSliderTextColour = colour;
-											 LookAndFeel::setColour(sliderTextColourId,
+											 juce::LookAndFeel::setColour(sliderTextColourId,
 													 mSliderTextColour);
-											 LookAndFeel::setColour(TextEditor::textColourId,
+											 juce::LookAndFeel::setColour(juce::TextEditor::textColourId,
 													 mSliderTextColour);
-											 LookAndFeel::setColour(AlertWindow::textColourId,
+											 juce::LookAndFeel::setColour(juce::AlertWindow::textColourId,
 													 mSliderTextColour);
 										 }
 										 break;
@@ -903,101 +903,101 @@ namespace apex {
 			}
 		}
 
-		Colour ApexLookAndFeel::getColour(ApexColourId id) {
+		juce::Colour ApexLookAndFeel::getColour(ApexColourId id) {
 			return findColour(id);
 		}
 
 		void ApexLookAndFeel::registerColours() {
-			LookAndFeel::setColour(backgroundColourId, mBackgroundColour);
+			juce::LookAndFeel::setColour(backgroundColourId, mBackgroundColour);
 
-			LookAndFeel::setColour(buttonShadowColourId, mButtonShadowColour);
-			LookAndFeel::setColour(buttonNormalColourId, mButtonNormalColour);
-			LookAndFeel::setColour(buttonPressedColourId, mButtonPressedColour);
-			LookAndFeel::setColour(buttonTroughColourId, mButtonTroughColour);
-			LookAndFeel::setColour(buttonTextColourId, mButtonTextColour);
+			juce::LookAndFeel::setColour(buttonShadowColourId, mButtonShadowColour);
+			juce::LookAndFeel::setColour(buttonNormalColourId, mButtonNormalColour);
+			juce::LookAndFeel::setColour(buttonPressedColourId, mButtonPressedColour);
+			juce::LookAndFeel::setColour(buttonTroughColourId, mButtonTroughColour);
+			juce::LookAndFeel::setColour(buttonTextColourId, mButtonTextColour);
 
-			LookAndFeel::setColour(comboBoxBackgroundColourId, mComboBoxBackgroundColour);
-			LookAndFeel::setColour(comboBoxShadowColourId, mComboBoxShadowColour);
-			LookAndFeel::setColour(comboBoxTroughColourId, mComboBoxTroughColour);
-			LookAndFeel::setColour(comboBoxTextColourId, mComboBoxTextColour);
+			juce::LookAndFeel::setColour(comboBoxBackgroundColourId, mComboBoxBackgroundColour);
+			juce::LookAndFeel::setColour(comboBoxShadowColourId, mComboBoxShadowColour);
+			juce::LookAndFeel::setColour(comboBoxTroughColourId, mComboBoxTroughColour);
+			juce::LookAndFeel::setColour(comboBoxTextColourId, mComboBoxTextColour);
 
-			LookAndFeel::setColour(meterClipColourId, mMeterClipColour);
-			LookAndFeel::setColour(meterLowerColourId, mMeterLowerColour);
-			LookAndFeel::setColour(meterTroughColourId, mMeterTroughColour);
-			LookAndFeel::setColour(meterUpperColourId, mMeterUpperColour);
+			juce::LookAndFeel::setColour(meterClipColourId, mMeterClipColour);
+			juce::LookAndFeel::setColour(meterLowerColourId, mMeterLowerColour);
+			juce::LookAndFeel::setColour(meterTroughColourId, mMeterTroughColour);
+			juce::LookAndFeel::setColour(meterUpperColourId, mMeterUpperColour);
 
-			LookAndFeel::setColour(popupMenuBackgroundColourId, mPopupMenuBackgroundColour);
-			LookAndFeel::setColour(popupMenuTextColourId, mPopupMenuTextColour);
-			LookAndFeel::setColour(popupMenuHighlightColourId, mPopupMenuHighlightColour);
-			LookAndFeel::setColour(PopupMenu::backgroundColourId, mPopupMenuBackgroundColour
+			juce::LookAndFeel::setColour(popupMenuBackgroundColourId, mPopupMenuBackgroundColour);
+			juce::LookAndFeel::setColour(popupMenuTextColourId, mPopupMenuTextColour);
+			juce::LookAndFeel::setColour(popupMenuHighlightColourId, mPopupMenuHighlightColour);
+			juce::LookAndFeel::setColour(juce::PopupMenu::backgroundColourId, mPopupMenuBackgroundColour
 					.withAlpha(0.9f));
-			LookAndFeel::setColour(PopupMenu::highlightedBackgroundColourId, mPopupMenuBackgroundColour
+			juce::LookAndFeel::setColour(juce::PopupMenu::highlightedBackgroundColourId, mPopupMenuBackgroundColour
 					.brighter(0.2f)
 					.withAlpha(0.9f));
 
-			LookAndFeel::setColour(rotarySliderFillColourId, mRotarySliderFillColour);
-			LookAndFeel::setColour(rotarySliderIndicatorColourId, mRotarySliderIndicatorColour);
+			juce::LookAndFeel::setColour(rotarySliderFillColourId, mRotarySliderFillColour);
+			juce::LookAndFeel::setColour(rotarySliderIndicatorColourId, mRotarySliderIndicatorColour);
 
-			LookAndFeel::setColour(sliderStrokeColourId, mSliderStrokeColour);
-			LookAndFeel::setColour(sliderShadowColourId, mSliderShadowColour);
-			LookAndFeel::setColour(sliderTroughColourId, mSliderTroughColour);
-			LookAndFeel::setColour(sliderGlowColourId, mSliderGlowColour);
-			LookAndFeel::setColour(sliderTextColourId, mSliderTextColour);
-			LookAndFeel::setColour(Slider::textBoxOutlineColourId, mSliderTroughColour);
+			juce::LookAndFeel::setColour(sliderStrokeColourId, mSliderStrokeColour);
+			juce::LookAndFeel::setColour(sliderShadowColourId, mSliderShadowColour);
+			juce::LookAndFeel::setColour(sliderTroughColourId, mSliderTroughColour);
+			juce::LookAndFeel::setColour(sliderGlowColourId, mSliderGlowColour);
+			juce::LookAndFeel::setColour(sliderTextColourId, mSliderTextColour);
+			juce::LookAndFeel::setColour(juce::Slider::textBoxOutlineColourId, mSliderTroughColour);
 
-			LookAndFeel::setColour(AlertWindow::backgroundColourId, mSliderTroughColour);
-			LookAndFeel::setColour(AlertWindow::outlineColourId, mBackgroundColour);
-			LookAndFeel::setColour(AlertWindow::textColourId, mSliderTextColour);
+			juce::LookAndFeel::setColour(juce::AlertWindow::backgroundColourId, mSliderTroughColour);
+			juce::LookAndFeel::setColour(juce::AlertWindow::outlineColourId, mBackgroundColour);
+			juce::LookAndFeel::setColour(juce::AlertWindow::textColourId, mSliderTextColour);
 
-			LookAndFeel::setColour(TextEditor::backgroundColourId, mSliderTroughColour
+			juce::LookAndFeel::setColour(juce::TextEditor::backgroundColourId, mSliderTroughColour
 					.withAlpha(0.85f));
-			LookAndFeel::setColour(TextEditor::outlineColourId, mSliderTroughColour
+			juce::LookAndFeel::setColour(juce::TextEditor::outlineColourId, mSliderTroughColour
 					.withAlpha(0.85f));
-			LookAndFeel::setColour(TextEditor::focusedOutlineColourId, mSliderTroughColour
+			juce::LookAndFeel::setColour(juce::TextEditor::focusedOutlineColourId, mSliderTroughColour
 					.brighter(0.1f)
 					.withAlpha(0.85f));
-			LookAndFeel::setColour(TextEditor::textColourId, mSliderTextColour);
+			juce::LookAndFeel::setColour(juce::TextEditor::textColourId, mSliderTextColour);
 		}
 
-		Rectangle<int> ApexLookAndFeel::getActualRotaryBounds(int x, int y, int width, int height) {
+		juce::Rectangle<int> ApexLookAndFeel::getActualRotaryBounds(int x, int y, int width, int height) {
 #if defined USE_PHYSICAL_ROTARIES
-			float diameter = static_cast<float>(jmin(width, height));
-			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
+			float diameter = static_cast<float>(juce::jmin(width, height));
+			juce::Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter);
 			return bounds.toNearestInt();
 #elif defined USE_2D_SEMICIRCULAR_ROTARIES
-			float diameter = static_cast<float>(jmin(width, height));
-			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
+			float diameter = static_cast<float>(juce::jmin(width, height));
+			juce::Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter / 2.0f);
 			return bounds.toNearestInt();
 #else
-			float diameter = static_cast<float>(jmin(width, height));
-			Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
+			float diameter = static_cast<float>(juce::jmin(width, height));
+			juce::Rectangle<float> bounds(x + (width - diameter) / 2.0f, y + (height - diameter) / 2.0f,
 					diameter, diameter);
 			return bounds.toNearestInt();
 #endif
 		}
 
-		void ApexLookAndFeel::drawPhysicalRotary(Graphics& g, int x, int y, int width, int height,
+		void ApexLookAndFeel::drawPhysicalRotary(juce::Graphics& g, int x, int y, int width, int height,
 				float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
-				Slider& slider)
+				juce::Slider& slider)
 		{
-			ignoreUnused(slider);
+			juce::ignoreUnused(slider);
 
-			Rectangle<float> rawBounds = Rectangle<int>(x, y, width, height).toFloat();
+			juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
 
 			g.setColour(mBackgroundColour);
 			g.fillRect(rawBounds);
 
-			float diameter = jmin(rawBounds.getWidth(), rawBounds.getHeight());
+			float diameter = juce::jmin(rawBounds.getWidth(), rawBounds.getHeight());
 
-			Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
+			juce::Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
 				.withHeight(diameter)
 				.reduced(2.0f, 2.0f)
 				.withCentre(rawBounds.getCentre());
-			Rectangle<float> circleBounds = troughBounds.reduced(2.0f, 2.0f);
-			Rectangle<float> innerShadowBounds = troughBounds.expanded(2.0f, 2.0f);
-			Rectangle<float> outerShadowBounds = Rectangle<float>(
+			juce::Rectangle<float> circleBounds = troughBounds.reduced(2.0f, 2.0f);
+			juce::Rectangle<float> innerShadowBounds = troughBounds.expanded(2.0f, 2.0f);
+			juce::Rectangle<float> outerShadowBounds = juce::Rectangle<float>(
 					innerShadowBounds.getX() - 3.0f,
 					innerShadowBounds.getY(),
 					innerShadowBounds.getWidth() + 3.0f,
@@ -1005,7 +1005,7 @@ namespace apex {
 
 			float lineWidth = diameter * 0.02f;
 
-			ColourGradient innerShadowGradient(
+			juce::ColourGradient innerShadowGradient(
 					mSliderShadowColour.withAlpha(0.8f),
 					innerShadowBounds.getX() + innerShadowBounds.getWidth() / 2.0f,
 					innerShadowBounds.getY() + innerShadowBounds.getHeight() / 2.0f,
@@ -1013,7 +1013,7 @@ namespace apex {
 					innerShadowBounds.getX() + innerShadowBounds.getWidth(),
 					innerShadowBounds.getY() + innerShadowBounds.getHeight(),
 					true);
-			ColourGradient outerShadowGradient(
+			juce::ColourGradient outerShadowGradient(
 					mSliderShadowColour.withAlpha(0.8f),
 					outerShadowBounds.getX() + outerShadowBounds.getWidth() / 2.0f,
 					outerShadowBounds.getY() + outerShadowBounds.getHeight() / 2.0f,
@@ -1021,7 +1021,7 @@ namespace apex {
 					outerShadowBounds.getX(),
 					outerShadowBounds.getY() + outerShadowBounds.getHeight(),
 					true);
-			ColourGradient circleGradient(
+			juce::ColourGradient circleGradient(
 					mRotarySliderFillColour.brighter(0.1f),
 					circleBounds.getX() + circleBounds.getWidth() / 2,
 					circleBounds.getY() + circleBounds.getHeight() / 2,
@@ -1029,7 +1029,7 @@ namespace apex {
 					circleBounds.getX() + circleBounds.getWidth(),
 					circleBounds.getY() + circleBounds.getHeight(),
 					true);
-			ColourGradient circleHighlight(
+			juce::ColourGradient circleHighlight(
 					mRotarySliderFillColour.darker(0.2f).withAlpha(0.3f),
 					circleBounds.getX(),
 					circleBounds.getY(),
@@ -1056,86 +1056,86 @@ namespace apex {
 			float radius = circleBounds.getWidth() / 2.0f;
 			float angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
-			Point<float> indicatorStart(circleBounds.getCentreX()
+			juce::Point<float> indicatorStart(circleBounds.getCentreX()
 					+ (radius / 2.0f) * math::cosf(angle - math::piOver2f),
 					circleBounds.getCentreY()
 					+ (radius / 2.0f) * math::sinf(angle - math::piOver2f));
-			Point<float> indicatorEnd(circleBounds.getCentreX()
+			juce::Point<float> indicatorEnd(circleBounds.getCentreX()
 					+ radius * math::cosf(angle - math::piOver2f),
 					circleBounds.getCentreY()
 					+ radius * math::sinf(angle - math::piOver2f));
 
-			ColourGradient indicatorGradient(
+			juce::ColourGradient indicatorGradient(
 					mRotarySliderIndicatorColour.brighter(0.2f),
 					indicatorStart,
 					mRotarySliderIndicatorColour.darker(0.3f),
 					indicatorEnd,
 					false);
-			ColourGradient indicatorBackgroundGradient(
+			juce::ColourGradient indicatorBackgroundGradient(
 					mSliderShadowColour.darker(0.2f).withAlpha(0.5f),
 					indicatorStart,
 					mSliderShadowColour.darker(0.2f).withAlpha(0.2f),
 					indicatorEnd,
 					false);
 
-			Line<float> indicatorLine = Line<float>(indicatorStart, indicatorEnd);
-			Path indicator;
+			juce::Line<float> indicatorLine = juce::Line<float>(indicatorStart, indicatorEnd);
+			juce::Path indicator;
 			indicator.addLineSegment(indicatorLine, lineWidth);
-			Path indicatorBackground;
+			juce::Path indicatorBackground;
 			indicatorBackground.addLineSegment(indicatorLine, lineWidth + 2.0f);
 
 			g.setGradientFill(indicatorBackgroundGradient);
-			g.strokePath(indicatorBackground, PathStrokeType(lineWidth + 2.0f,
-						PathStrokeType::curved,
-						PathStrokeType::rounded));
+			g.strokePath(indicatorBackground, juce::PathStrokeType(lineWidth + 2.0f,
+						juce::PathStrokeType::curved,
+						juce::PathStrokeType::rounded));
 			g.setGradientFill(indicatorGradient);
-			g.strokePath(indicator, PathStrokeType(lineWidth, PathStrokeType::curved,
-						PathStrokeType::rounded));
+			g.strokePath(indicator, juce::PathStrokeType(lineWidth, juce::PathStrokeType::curved,
+						juce::PathStrokeType::rounded));
 
-			ColourGradient glowGradient(
+			juce::ColourGradient glowGradient(
 					mRotarySliderIndicatorColour.withAlpha(0.0f),
 					indicatorStart,
 					mRotarySliderIndicatorColour.brighter(0.4f).withAlpha(0.3f),
 					indicatorEnd,
 					false);
 			g.setGradientFill(glowGradient);
-			g.strokePath(indicator, PathStrokeType(lineWidth, PathStrokeType::curved,
-						PathStrokeType::rounded));
+			g.strokePath(indicator, juce::PathStrokeType(lineWidth, juce::PathStrokeType::curved,
+						juce::PathStrokeType::rounded));
 		}
 
-		void ApexLookAndFeel::drawSemiCircularRotary(Graphics& g, int x, int y, int width,
+		void ApexLookAndFeel::drawSemiCircularRotary(juce::Graphics& g, int x, int y, int width,
 				int height, float sliderPos, const float rotaryStartAngle,
-				const float rotaryEndAngle, Slider& slider)
+				const float rotaryEndAngle, juce::Slider& slider)
 		{
-			ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
+			juce::ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
 
-			Rectangle<float> rawBounds = Rectangle<int>(x, y, width, height).toFloat();
+			juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
 
 			g.setColour(mBackgroundColour);
 			g.fillRect(rawBounds);
 
-			float diameter = jmin(rawBounds.getWidth(), rawBounds.getHeight());
+			float diameter = juce::jmin(rawBounds.getWidth(), rawBounds.getHeight());
 
-			Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
+			juce::Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
 				.withHeight(diameter).reduced(2.0f, 2.0f)
 				.withCentre(rawBounds.getCentre());
-			Rectangle<float> circleBounds = troughBounds
+			juce::Rectangle<float> circleBounds = troughBounds
 				.reduced(2.0f, 2.0f)
-				.withCentre(Point<float>(
+				.withCentre(juce::Point<float>(
 							troughBounds.getCentreX(),
 							troughBounds.getCentreY() - 2.0f));
-			Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
+			juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
 
-			Point<float> troughCentre = troughBounds.getCentre();
-			Point<float> shadowCentre = shadowBounds.getCentre();
-			Point<float> circleCentre = circleBounds.getCentre();
+			juce::Point<float> troughCentre = troughBounds.getCentre();
+			juce::Point<float> shadowCentre = shadowBounds.getCentre();
+			juce::Point<float> circleCentre = circleBounds.getCentre();
 
-			Point<float> troughLeft(troughBounds.getX(), troughBounds.getCentreY());
-			Point<float> shadowLeft(shadowBounds.getX(), shadowBounds.getCentreY());
+			juce::Point<float> troughLeft(troughBounds.getX(), troughBounds.getCentreY());
+			juce::Point<float> shadowLeft(shadowBounds.getX(), shadowBounds.getCentreY());
 
-			Point<float> troughRight(troughBounds.getX() + troughBounds.getWidth(),
+			juce::Point<float> troughRight(troughBounds.getX() + troughBounds.getWidth(),
 					troughBounds.getCentreY());
-			Point<float> shadowRight(shadowBounds.getX() + shadowBounds.getWidth(),
+			juce::Point<float> shadowRight(shadowBounds.getX() + shadowBounds.getWidth(),
 					shadowBounds.getCentreY());
 
 			float troughRadius = troughBounds.getWidth() / 2.0f;
@@ -1146,16 +1146,16 @@ namespace apex {
 			float startAngle = math::pif;
 			float angle = startAngle + sliderPos * (endAngle - startAngle);
 
-			Path trough;
+			juce::Path trough;
 			trough.addCentredArc(troughCentre.getX(), troughCentre.getY(),
 					troughRadius / 2.0f, troughRadius / 2.0f, 0.0f,
 					startAngle + math::piOver2f, endAngle + math::piOver2f, true);
 
 			g.setColour(mSliderTroughColour);
-			g.strokePath(trough, PathStrokeType(troughRadius, PathStrokeType::mitered,
-						PathStrokeType::butt));
+			g.strokePath(trough, juce::PathStrokeType(troughRadius, juce::PathStrokeType::mitered,
+						juce::PathStrokeType::butt));
 
-			ColourGradient shadowGradient(
+			juce::ColourGradient shadowGradient(
 					mSliderShadowColour.withAlpha(0.9f),
 					shadowBounds.getX() + shadowBounds.getWidth() / 2.0f,
 					shadowBounds.getY() + shadowBounds.getHeight() / 2.0f,
@@ -1164,16 +1164,16 @@ namespace apex {
 					shadowBounds.getY(),
 					true);
 
-			Path shadow;
+			juce::Path shadow;
 			shadow.addCentredArc(shadowCentre.getX(), shadowCentre.getY(),
 					shadowRadius / 2.0f, shadowRadius / 2.0f, 0.0f,
 					startAngle + math::piOver2f, endAngle + math::piOver2f, true);
 			g.setGradientFill(shadowGradient);
-			g.strokePath(shadow, PathStrokeType(shadowRadius, PathStrokeType::mitered,
-						PathStrokeType::butt));
+			g.strokePath(shadow, juce::PathStrokeType(shadowRadius, juce::PathStrokeType::mitered,
+						juce::PathStrokeType::butt));
 
-			Point<float> thumbStart = circleCentre;
-			Point<float> thumbEnd(circleCentre.getX()
+			juce::Point<float> thumbStart = circleCentre;
+			juce::Point<float> thumbEnd(circleCentre.getX()
 					+ circleRadius * math::cosf(angle),
 					circleCentre.getY()
 					+ circleRadius * math::sinf(angle));
@@ -1182,26 +1182,26 @@ namespace apex {
 
 			float strokeRadius = circleRadius + 5.0f;
 
-			Path fillPath;
+			juce::Path fillPath;
 			fillPath.addCentredArc(circleCentre.getX(), circleCentre.getY(), circleRadius / 2.0f,
 					circleRadius / 2.0f, 0.0f, startAngle + math::piOver2f,
 					angle + math::piOver2f, true);
 
-			ColourGradient strokeGradient(
+			juce::ColourGradient strokeGradient(
 					mSliderStrokeColour.withAlpha(0.5f),
 					thumbStart,
 					mSliderStrokeColour.withAlpha(0.5f),
-					Point<float>(thumbStart.getX(), thumbStart.getY() + strokeRadius),
+					juce::Point<float>(thumbStart.getX(), thumbStart.getY() + strokeRadius),
 					true);
 			strokeGradient.addColour(0.5f, mSliderStrokeColour.withAlpha(0.2f));
 			g.setGradientFill(strokeGradient);
-			g.strokePath(fillPath, PathStrokeType(circleRadius, PathStrokeType::mitered,
-						PathStrokeType::butt));
+			g.strokePath(fillPath, juce::PathStrokeType(circleRadius, juce::PathStrokeType::mitered,
+						juce::PathStrokeType::butt));
 
-			Line<float> thumbLine(thumbStart, thumbEnd);
-			Path thumb;
+			juce::Line<float> thumbLine(thumbStart, thumbEnd);
+			juce::Path thumb;
 			thumb.addLineSegment(thumbLine, thumbWidth);
-			ColourGradient thumbGradient(
+			juce::ColourGradient thumbGradient(
 					mSliderStrokeColour.brighter(0.2f),
 					thumbStart,
 					mSliderStrokeColour.brighter(0.2f),
@@ -1209,10 +1209,10 @@ namespace apex {
 					true);
 			thumbGradient.addColour(0.5f, mSliderStrokeColour.darker(0.8f));
 			g.setGradientFill(thumbGradient);
-			g.strokePath(thumb, PathStrokeType(thumbWidth, PathStrokeType::curved,
-						PathStrokeType::rounded));
+			g.strokePath(thumb, juce::PathStrokeType(thumbWidth, juce::PathStrokeType::curved,
+						juce::PathStrokeType::rounded));
 			float cornerSize = thumbWidth * 0.1f;
-			ColourGradient glowGradient(
+			juce::ColourGradient glowGradient(
 					mSliderGlowColour.brighter(0.2f).withAlpha(0.5f),
 					thumbStart,
 					mSliderGlowColour.brighter(0.2f).withAlpha(0.5f),
@@ -1220,36 +1220,36 @@ namespace apex {
 					true);
 			glowGradient.addColour(0.5f, mSliderGlowColour.darker(0.2f).withAlpha(0.5f));
 			g.setGradientFill(glowGradient);
-			g.strokePath(thumb, PathStrokeType(thumbWidth - cornerSize, PathStrokeType::curved,
-						PathStrokeType::rounded));
+			g.strokePath(thumb, juce::PathStrokeType(thumbWidth - cornerSize, juce::PathStrokeType::curved,
+						juce::PathStrokeType::rounded));
 		}
 
-		void ApexLookAndFeel::drawCircularFillRotary(Graphics& g, int x, int y, int width,
+		void ApexLookAndFeel::drawCircularFillRotary(juce::Graphics& g, int x, int y, int width,
 				int height, float sliderPos, const float rotaryStartAngle,
-				const float rotaryEndAngle, Slider& slider)
+				const float rotaryEndAngle, juce::Slider& slider)
 		{
-			ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
+			juce::ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
 
-			Rectangle<float> rawBounds = Rectangle<int>(x, y, width, height).toFloat();
+			juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
 
 			g.setColour(mBackgroundColour);
 			g.fillRect(rawBounds);
 
-			float diameter = static_cast<float>(jmin(width, height));
+			float diameter = static_cast<float>(juce::jmin(width, height));
 
-			Rectangle<float> troughBounds = rawBounds
+			juce::Rectangle<float> troughBounds = rawBounds
 				.withWidth(diameter)
 				.withHeight(diameter)
 				.reduced(2.0f, 2.0f)
 				.withCentre(rawBounds.getCentre());
-			Rectangle<float> circleBounds = troughBounds
-				.withWidth(jmax(diameter * sliderPos, 20.0f))
-				.withHeight(jmax(diameter * sliderPos, 20.0f))
+			juce::Rectangle<float> circleBounds = troughBounds
+				.withWidth(juce::jmax(diameter * sliderPos, 20.0f))
+				.withHeight(juce::jmax(diameter * sliderPos, 20.0f))
 				.reduced(2.0f, 2.0f)
 				.withCentre(troughBounds.getCentre());
-			Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
+			juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0f, 2.0f);
 
-			ColourGradient shadowGradient(
+			juce::ColourGradient shadowGradient(
 					mSliderShadowColour.withAlpha(0.8f),
 					shadowBounds.getCentreX(),
 					shadowBounds.getCentreY(),
@@ -1257,7 +1257,7 @@ namespace apex {
 					shadowBounds.getRight(),
 					shadowBounds.getBottom(),
 					true);
-			ColourGradient circleGradient(
+			juce::ColourGradient circleGradient(
 					mSliderStrokeColour.withAlpha(0.1f),
 					circleBounds.getCentreX(),
 					circleBounds.getCentreY(),

@@ -3,11 +3,11 @@
 namespace apex {
 	namespace ui {
 
-		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+		ApexSlider::ApexSlider(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc, ApexFilmStrip filmStrip)
-			: Slider(style, Slider::TextEntryBoxPosition::NoTextBox), mFilmStrip(filmStrip)
+			: juce::Slider(style, juce::Slider::TextEntryBoxPosition::NoTextBox), mFilmStrip(filmStrip)
 		{
-			mPopupTextBox = std::make_unique<TextEditor>();
+			mPopupTextBox = std::make_unique<juce::TextEditor>();
 			addChildComponent(mPopupTextBox.get());
 			mPopupTextBox->addListener(this);
 			mPopupTextBox->setSelectAllWhenFocused(true);
@@ -18,13 +18,13 @@ namespace apex {
 			setVelocityModeParameters(0.4, 1, 0.02, false);
 
 			mTextBox.setEditable(true, true, false);
-			mTextBox.setText("0", dontSendNotification);
+			mTextBox.setText("0", juce::dontSendNotification);
 			mTextBox.addListener(this);
-			mTextBox.setJustificationType(Justification::centred);
-			mTextBox.setColour(Label::textColourId, mTextBoxFontColour);
+			mTextBox.setJustificationType(juce::Justification::centred);
+			mTextBox.setColour(juce::Label::textColourId, mTextBoxFontColour);
 
 			onValueChange = [&] {
-				mTextBox.setText(getTextFromValue(getValue()), dontSendNotification);
+				mTextBox.setText(getTextFromValue(getValue()), juce::dontSendNotification);
 			};
 
 			mUsesFilmStrip = true;
@@ -32,11 +32,11 @@ namespace apex {
 			mValueToProportionFunc = valueToProportionFunc;
 		}
 
-		ApexSlider::ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+		ApexSlider::ApexSlider(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc)
-			: Slider(style, Slider::TextEntryBoxPosition::NoTextBox)
+			: juce::Slider(style, juce::Slider::TextEntryBoxPosition::NoTextBox)
 		{
-			mPopupTextBox = std::make_unique<TextEditor>();
+			mPopupTextBox = std::make_unique<juce::TextEditor>();
 			addChildComponent(mPopupTextBox.get());
 			mPopupTextBox->addListener(this);
 			mPopupTextBox->setSelectAllWhenFocused(true);
@@ -47,13 +47,13 @@ namespace apex {
 			setVelocityModeParameters(0.4, 1, 0.02, false);
 
 			mTextBox.setEditable(true, true, false);
-			mTextBox.setText("0", dontSendNotification);
+			mTextBox.setText("0", juce::dontSendNotification);
 			mTextBox.addListener(this);
-			mTextBox.setJustificationType(Justification::centred);
-			mTextBox.setColour(Label::textColourId, mTextBoxFontColour);
+			mTextBox.setJustificationType(juce::Justification::centred);
+			mTextBox.setColour(juce::Label::textColourId, mTextBoxFontColour);
 
 			onValueChange = [&] {
-				mTextBox.setText(getTextFromValue(getValue()), dontSendNotification);
+				mTextBox.setText(getTextFromValue(getValue()), juce::dontSendNotification);
 			};
 
 			mUsesFilmStrip = false;
@@ -65,41 +65,41 @@ namespace apex {
 
 		}
 
-		String ApexSlider::getTextFromValue(double value) {
+		juce::String ApexSlider::getTextFromValue(double value) {
 			double val = getValueFromProportion(value);
-			String temp = String(val);
+			juce::String temp = juce::String(val);
 			return temp.dropLastCharacters(temp.length() -
 					(temp.upToFirstOccurrenceOf(".", true, true).length() + 2));
 		}
 
-		double ApexSlider::getValueFromText(const String& text) {
+		double ApexSlider::getValueFromText(const juce::String& text) {
 			return getProportionFromValue(text.getDoubleValue());
 		}
 
-		void ApexSlider::mouseDown(const MouseEvent& e) {
+		void ApexSlider::mouseDown(const juce::MouseEvent& e) {
 			mPopupTextBox->setVisible(false);
 			if(e.mods.isLeftButtonDown() && e.mods.isCtrlDown())
-				setValue(getDoubleClickReturnValue(), sendNotificationAsync);
+				setValue(getDoubleClickReturnValue(), juce::sendNotificationAsync);
 			else if (isInBounds(e.getMouseDownPosition()))
-				Slider::mouseDown(e);
+				juce::Slider::mouseDown(e);
 		}
 
-		void ApexSlider::mouseUp(const MouseEvent& e) {
+		void ApexSlider::mouseUp(const juce::MouseEvent& e) {
 			if(isInBounds(e.getMouseDownPosition()))
-				Slider::mouseUp(e);
+				juce::Slider::mouseUp(e);
 		}
 
-		void ApexSlider::mouseDoubleClick(const MouseEvent& e) {
-			String text = getTextFromValue(getValue());
-			String textUntilDecimal = text.upToFirstOccurrenceOf(".", true, true);
-			String newText = text.dropLastCharacters(text.length() - (textUntilDecimal.length() + 2));
+		void ApexSlider::mouseDoubleClick(const juce::MouseEvent& e) {
+			juce::String text = getTextFromValue(getValue());
+			juce::String textUntilDecimal = text.upToFirstOccurrenceOf(".", true, true);
+			juce::String newText = text.dropLastCharacters(text.length() - (textUntilDecimal.length() + 2));
 			mPopupTextBox->setSize(
-				static_cast<int>(
-					jmax(SliderFloatingTextBoxStartWidth * mXScaleFactor * newText.length() + 0.5f,
-						SliderFloatingTextBoxStartWidth * mXScaleFactor * 3)
-						), 
-				static_cast<int>(SliderFloatingTextBoxStartHeight * mYScaleFactor + 0.5f)
-						);
+					static_cast<int>(
+						juce::jmax(SliderFloatingTextBoxStartWidth * mXScaleFactor * newText.length() + 0.5f,
+							SliderFloatingTextBoxStartWidth * mXScaleFactor * 3)
+						),
+					static_cast<int>(SliderFloatingTextBoxStartHeight * mYScaleFactor + 0.5f)
+					);
 			size_t left = size_t(e.getPosition().x - mPopupTextBox->getWidth() / 2);
 			size_t top = size_t(e.getPosition().y - mPopupTextBox->getHeight() / 2);
 			mPopupTextBox->setTopLeftPosition(static_cast<int>(left), static_cast<int>(top));
@@ -107,10 +107,10 @@ namespace apex {
 			mPopupTextBox->setVisible(true);
 			mPopupTextBox->toFront(true);
 			mPopupTextBox->grabKeyboardFocus();
-			mPopupTextBox->setJustification(Justification::centred);
+			mPopupTextBox->setJustification(juce::Justification::centred);
 		}
 
-		void ApexSlider::mouseDrag(const MouseEvent& e) {
+		void ApexSlider::mouseDrag(const juce::MouseEvent& e) {
 			if(e.mods.isShiftDown()) {
 				setVelocityBasedMode(true);
 				setVelocityModeParameters(mFineSensitivity, 1, mFineInitialVelocity, false);
@@ -122,48 +122,49 @@ namespace apex {
 
 			if(e.mods.isLeftButtonDown()) {
 				if(isInBounds(e.getMouseDownPosition())) {
-					Slider::mouseDrag(e);
+					juce::Slider::mouseDrag(e);
 				}
 			}
 			if(e.mods.isShiftDown() || mNormalModeIsVelocityMode)
 				e.source.enableUnboundedMouseMovement(false, true);
 		}
 
-		void ApexSlider::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
+		void ApexSlider::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) {
 			double reversed = wheel.isReversed ? -1.0 : 1.0;
 			double val = getValue();
 			if(e.mods.isShiftDown())
-				setValue(val + wheel.deltaY * (reversed / 100.0f), sendNotificationAsync);
+				setValue(val + wheel.deltaY * (reversed / 100.0f), juce::sendNotificationAsync);
 			else
-				setValue(val + wheel.deltaY * (reversed / 25.0f), sendNotificationAsync);
+				setValue(val + wheel.deltaY * (reversed / 25.0f), juce::sendNotificationAsync);
 		}
 
-		void ApexSlider::globalFocusChanged(Component* focusedComponent) {
+		void ApexSlider::globalFocusChanged(juce::Component* focusedComponent) {
 			ignoreUnused(focusedComponent);
 			mPopupTextBox->setVisible(false);
 		}
 
-		void ApexSlider::textEditorReturnKeyPressed(TextEditor& editor) {
+		void ApexSlider::textEditorReturnKeyPressed(juce::TextEditor& editor) {
 			double value = getValueFromText(editor.getText());
 			isValueValid(value) ? setValue(value) : setValue(getValue());
 			mPopupTextBox->setVisible(false);
 		}
 
-		void ApexSlider::textEditorEscapeKeyPressed(TextEditor& editor) {
-			ignoreUnused(editor);
+		void ApexSlider::textEditorEscapeKeyPressed(juce::TextEditor& editor) {
+			juce::ignoreUnused(editor);
 			mPopupTextBox->setVisible(false);
 		}
 
-		void ApexSlider::textEditorFocusLost(TextEditor& editor) {
-			ignoreUnused(editor);
+		void ApexSlider::textEditorFocusLost(juce::TextEditor& editor) {
+			juce::ignoreUnused(editor);
 			if(mPopupTextBox->isVisible() && ! mPopupTextBox->hasKeyboardFocus(true))
 				mPopupTextBox->setVisible(false);
 		}
 
-		void ApexSlider::labelTextChanged(Label* label) {
+		void ApexSlider::labelTextChanged(juce::Label* label) {
 			if(label) {
 				double val = getValueFromText(label->getText());
-				isValueValid(val) ? setValue(val, sendNotificationAsync) : label->setText(getTextFromValue(getValue()), dontSendNotification);
+				isValueValid(val) ? setValue(val, juce::sendNotificationAsync) :
+					label->setText(getTextFromValue(getValue()), juce::dontSendNotification);
 			}
 		}
 
@@ -187,21 +188,21 @@ namespace apex {
 			return value <= 1.00 && value >= 0.00;
 		}
 
-		void ApexSlider::setPopupTextBoxFont(Font font) {
+		void ApexSlider::setPopupTextBoxFont(juce::Font font) {
 			mPopupTextBoxFont = font;
 			mPopupTextBox->applyFontToAllText(mPopupTextBoxFont, true);
 		}
 
-		void ApexSlider::setTextBoxFont(Font font) {
+		void ApexSlider::setTextBoxFont(juce::Font font) {
 			mTextBoxFont = font;
 			mTextBox.setFont(mTextBoxFont);
 		}
 
-		void ApexSlider::setTextBoxBounds(Rectangle<int> bounds) {
+		void ApexSlider::setTextBoxBounds(juce::Rectangle<int> bounds) {
 			mTextBox.setBounds(bounds);
 		}
 
-		Label* ApexSlider::getTextBox() {
+		juce::Label* ApexSlider::getTextBox() {
 			return &mTextBox;
 		}
 
@@ -241,7 +242,7 @@ namespace apex {
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 
-		void ApexSlider::paint(Graphics& g) {
+		void ApexSlider::paint(juce::Graphics& g) {
 			double sliderPos = getProportionFromValue(getValue());
 			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
@@ -260,9 +261,9 @@ namespace apex {
 			}
 		}
 
-		bool ApexSlider::isInBounds(Point<int> p) {
+		bool ApexSlider::isInBounds(juce::Point<int> p) {
 			if(isRotary() && mLookAndFeel != nullptr) {
-				Rectangle<int> bounds = mLookAndFeel->getActualRotaryBounds(getX(), getY(),
+				juce::Rectangle<int> bounds = mLookAndFeel->getActualRotaryBounds(getX(), getY(),
 						getWidth(), getHeight());
 
 				int x = p.x;
@@ -270,7 +271,7 @@ namespace apex {
 
 				x += getX();
 				y += getY();
-				Point<int> actual(x, y);
+				juce::Point<int> actual(x, y);
 
 				return bounds.contains(actual);
 			}

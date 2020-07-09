@@ -3,23 +3,23 @@
 namespace apex {
 	namespace ui {
 		ApexToggleButton::ApexToggleButton(ApexFilmStrip filmStrip)
-			: ToggleButton(),
+			: juce::ToggleButton(),
 			mFilmStrip(filmStrip), mUsesFilmStrip(true), mUsesImages(false)
 		{
 
 		}
 
-		ApexToggleButton::ApexToggleButton(Image buttonToggled, Image buttonHovered,
-				Image buttonNormal)
-			: ToggleButton(),
+		ApexToggleButton::ApexToggleButton(juce::Image buttonToggled, juce::Image buttonHovered,
+				juce::Image buttonNormal)
+			: juce::ToggleButton(),
 			mToggledImage(buttonToggled), mHoveredImage(buttonHovered),
 			mNormalImage(buttonNormal), mUsesFilmStrip(false), mUsesImages(true)
 		{
 
 		}
 
-		ApexToggleButton::ApexToggleButton(const String& text)
-			: ToggleButton(text),
+		ApexToggleButton::ApexToggleButton(const juce::String& text)
+			: juce::ToggleButton(text),
 			mUsesFilmStrip(false), mUsesImages(false)
 		{
 
@@ -34,19 +34,19 @@ namespace apex {
 				: Option<ApexFilmStrip>::None();
 		}
 
-		Option<Image> ApexToggleButton::getToggledImage() {
-			return mUsesImages ? Option<Image>::Some(mToggledImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexToggleButton::getToggledImage() {
+			return mUsesImages ? Option<juce::Image>::Some(mToggledImage)
+				: Option<juce::Image>::None();
 		}
 
-		Option<Image> ApexToggleButton::getHoveredImage() {
-			return mUsesImages ? Option<Image>::Some(mHoveredImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexToggleButton::getHoveredImage() {
+			return mUsesImages ? Option<juce::Image>::Some(mHoveredImage)
+				: Option<juce::Image>::None();
 		}
 
-		Option<Image> ApexToggleButton::getNormalImage() {
-			return mUsesImages ? Option<Image>::Some(mNormalImage)
-				: Option<Image>::None();
+		Option<juce::Image> ApexToggleButton::getNormalImage() {
+			return mUsesImages ? Option<juce::Image>::Some(mNormalImage)
+				: Option<juce::Image>::None();
 		}
 
 		void ApexToggleButton::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
@@ -54,10 +54,10 @@ namespace apex {
 			juce::Component::setLookAndFeel(mLookAndFeel.get());
 		}
 
-		void ApexToggleButton::paintButton(Graphics& g, bool shouldDrawButtonAsHighlighted,
+		void ApexToggleButton::paintButton(juce::Graphics& g, bool shouldDrawButtonAsHighlighted,
 				bool shouldDrawButtonAsDown)
 		{
-			ignoreUnused(shouldDrawButtonAsDown);
+			juce::ignoreUnused(shouldDrawButtonAsDown);
 			if(mLookAndFeel != nullptr)
 				mLookAndFeel->drawApexToggleButton(g, *this, shouldDrawButtonAsHighlighted,
 						getToggleState());

@@ -6,29 +6,29 @@
 
 namespace apex {
 	namespace ui{
-		class ApexToggleButton : public ToggleButton {
+		class ApexToggleButton : public juce::ToggleButton {
 			public:
 				ApexToggleButton(ApexFilmStrip filmStrip);
-				ApexToggleButton(Image buttonToggled, Image buttonHovered, Image buttonNormal);
-				ApexToggleButton(const String& text);
+				ApexToggleButton(juce::Image buttonToggled, juce::Image buttonHovered, juce::Image buttonNormal);
+				ApexToggleButton(const juce::String& text);
 
-				~ApexToggleButton();
+				~ApexToggleButton() override;
 
 				Option<ApexFilmStrip> getFilmStrip();
-				Option<Image> getToggledImage();
-				Option<Image> getHoveredImage();
-				Option<Image> getNormalImage();
+				Option<juce::Image> getToggledImage();
+				Option<juce::Image> getHoveredImage();
+				Option<juce::Image> getNormalImage();
 
 				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
 			protected:
-				virtual void paintButton(Graphics& g, bool shouldDrawButtonAsHighlighted,
+				virtual void paintButton(juce::Graphics& g, bool shouldDrawButtonAsHighlighted,
 						bool shouldDrawButtonAsDown) override;
 				std::shared_ptr<ApexLookAndFeel> mLookAndFeel;
 				ApexFilmStrip mFilmStrip;
-				Image mToggledImage;
-				Image mHoveredImage;
-				Image mNormalImage;
+				juce::Image mToggledImage;
+				juce::Image mHoveredImage;
+				juce::Image mNormalImage;
 				bool mUsesFilmStrip = false;
 				bool mUsesImages = false;
 

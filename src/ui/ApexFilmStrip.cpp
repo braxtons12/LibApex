@@ -7,12 +7,19 @@ namespace apex {
 
 		}
 
-		ApexFilmStrip::ApexFilmStrip(Image image, size_t frameSize, bool isHorizontal) {
+		ApexFilmStrip::ApexFilmStrip(juce::Image image, size_t frameSize, bool isHorizontal) {
 
 			mFilmStrip = image;
 			mFrameSize = frameSize;
 			mIsHorizontal = isHorizontal;
 			mNumFrames = mIsHorizontal ? (size_t(mFilmStrip.getWidth()) / mFrameSize) : (size_t(mFilmStrip.getHeight()) / mFrameSize);
+		}
+
+		ApexFilmStrip::ApexFilmStrip(const ApexFilmStrip& strip) {
+			mFilmStrip = strip.mFilmStrip;
+			mFrameSize = strip.mFrameSize;
+			mIsHorizontal = strip.mIsHorizontal;
+			mNumFrames = strip.mNumFrames;
 		}
 
 		ApexFilmStrip::~ApexFilmStrip() {
@@ -23,33 +30,37 @@ namespace apex {
 			return mNumFrames;
 		}
 
-		Image ApexFilmStrip::getFrame(size_t index) {
+		juce::Image ApexFilmStrip::getFrame(size_t index) {
 			if(mIsHorizontal) {
 				size_t height = size_t(mFilmStrip.getHeight());
-				return mFilmStrip.getClippedImage(Rectangle<int>(
-					static_cast<int>(index * mFrameSize),
-					0,
-					static_cast<int>(mFrameSize),
-					static_cast<int>(height)
-					));
+				return mFilmStrip.getClippedImage(juce::Rectangle<int>(
+							static_cast<int>(index * mFrameSize),
+							0,
+							static_cast<int>(mFrameSize),
+							static_cast<int>(height)
+							));
 			}
 			else {
 				size_t width = size_t(mFilmStrip.getWidth());
-				return mFilmStrip.getClippedImage(Rectangle<int>(
-					0,
-					static_cast<int>(index * mFrameSize),
-					static_cast<int>(width),
-					static_cast<int>(mFrameSize)
-					));
+				return mFilmStrip.getClippedImage(juce::Rectangle<int>(
+							0,
+							static_cast<int>(index * mFrameSize),
+							static_cast<int>(width),
+							static_cast<int>(mFrameSize)
+							));
 			}
 		}
 
-		Image ApexFilmStrip::getFrameScaled(size_t index, size_t width, size_t height) {
+		juce::Image ApexFilmStrip::getFrameScaled(size_t index, size_t width, size_t height) {
 			return getFrame(index).rescaled(
-				static_cast<int>(width),
-				static_cast<int>(height),
-				Graphics::highResamplingQuality
-				);
+					static_cast<int>(width),
+					static_cast<int>(height),
+					juce::Graphics::highResamplingQuality
+					);
+		}
+
+		ApexFilmStrip ApexFilmStrip::operator=(const ApexFilmStrip& strip) {
+			return ApexFilmStrip(strip);
 		}
 
 	}

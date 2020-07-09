@@ -8,15 +8,15 @@
 namespace apex {
 	namespace ui {
 
-		class ApexComboBox : public ComboBox {
+		class ApexComboBox : public juce::ComboBox {
 			public:
-				ApexComboBox(Image activeArrowImage, Image hoveredArrowImage, Image normalArrowImage);
+				ApexComboBox(juce::Image activeArrowImage, juce::Image hoveredArrowImage, juce::Image normalArrowImage);
 				ApexComboBox();
 
-				virtual void mouseDown(const MouseEvent& e) override;
-				virtual void mouseUp(const MouseEvent& e) override;
-				virtual void mouseEnter(const MouseEvent& e) override;
-				virtual void mouseExit(const MouseEvent& e) override;
+				virtual void mouseDown(const juce::MouseEvent& e) override;
+				virtual void mouseUp(const juce::MouseEvent& e) override;
+				virtual void mouseEnter(const juce::MouseEvent& e) override;
+				virtual void mouseExit(const juce::MouseEvent& e) override;
 
 				bool isHovered();
 
@@ -27,29 +27,29 @@ namespace apex {
 				void setYScaleFactor(float scaleFactor);
 				float getYScaleFactor();
 
-				void setFont(Font newFont);
+				void setFont(juce::Font newFont);
 
-				Font getFont();
+				juce::Font getFont();
 
 				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
-				Option<Image> getActiveArrowImage();
-				Option<Image> getHoveredArrowImage();
-				Option<Image> getNormalArrowImage();
+				Option<juce::Image> getActiveArrowImage();
+				Option<juce::Image> getHoveredArrowImage();
+				Option<juce::Image> getNormalArrowImage();
 
-				virtual void paint(Graphics& g) override;
+				virtual void paint(juce::Graphics& g) override;
 
 			protected:
 				std::shared_ptr<ApexLookAndFeel> mLookAndFeel;
-				Image mActiveArrowImage;
-				Image mHoveredArrowImage;
-				Image mNormalArrowImage;
+				juce::Image mActiveArrowImage;
+				juce::Image mHoveredArrowImage;
+				juce::Image mNormalArrowImage;
 				bool mUsesArrowImages = false;
 
 				bool mHovered = false;
 				float mXScaleFactor = 1.0f;
 				float mYScaleFactor = 1.0f;
-				Font mFont;
+				juce::Font mFont;
 
 				bool mIsButtonDown = false;
 

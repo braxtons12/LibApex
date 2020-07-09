@@ -2,7 +2,7 @@
 
 namespace apex {
 	namespace ui {
-		ApexFader::ApexFader(Slider::SliderStyle style,
+		ApexFader::ApexFader(juce::Slider::SliderStyle style,
 				std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc,
 				ApexFilmStrip filmStrip)
@@ -12,22 +12,22 @@ namespace apex {
 
 		}
 
-		ApexFader::ApexFader(Slider::SliderStyle style,
+		ApexFader::ApexFader(juce::Slider::SliderStyle style,
 				std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc,
-				Image thumbImage)
+				juce::Image thumbImage)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
 			mThumbImage(thumbImage), mUsesThumbImage(true), mIsThumbOnly(true)
 		{
 			mThumbComponent.setImage(mThumbImage);
-			mThumbComponent.setImagePlacement(RectanglePlacement(
-						RectanglePlacement::xMid | RectanglePlacement::yTop));
+			mThumbComponent.setImagePlacement(juce::RectanglePlacement(
+						juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
 			addAndMakeVisible(mThumbComponent);
 			mInitialThumbWidth = mThumbImage.getWidth();
 			mInitialThumbHeight = mThumbImage.getHeight();
 		}
 
-		ApexFader::ApexFader(Slider::SliderStyle style,
+		ApexFader::ApexFader(juce::Slider::SliderStyle style,
 				std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc,
 				bool isThumbOnlySlider,
@@ -43,30 +43,30 @@ namespace apex {
 
 		}
 
-		String ApexFader::getTextFromValue(double value) {
+		juce::String ApexFader::getTextFromValue(double value) {
 			double val = getValueFromProportion(value);
-			String temp = String(val);
-			if (math::fabs(val) <= 0.010) return String("0.0");
+			juce::String temp = juce::String(val);
+			if (math::fabs(val) <= 0.010) return juce::String("0.0");
 			else return temp.dropLastCharacters(temp.length() -
 					(temp.upToFirstOccurrenceOf(".", true, true).length() + 2));
 		}
 
-		double ApexFader::getValueFromText(const String& text) {
+		double ApexFader::getValueFromText(const juce::String& text) {
 			return getProportionFromValue(text.getDoubleValue());
 		}
 
-		void ApexFader::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
+		void ApexFader::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) {
 			double reversed = wheel.isReversed ? -1.0 : 1.0;
 			double val = getValueFromProportion(getValue());
 			if (e.mods.isShiftDown()) {
-				setValue(getProportionFromValue(val + 1.0 * reversed), sendNotificationAsync);
+				setValue(getProportionFromValue(val + 1.0 * reversed), juce::sendNotificationAsync);
 			}
 			else {
-				setValue(getProportionFromValue(val + 3.0 * reversed), sendNotificationAsync);
+				setValue(getProportionFromValue(val + 3.0 * reversed), juce::sendNotificationAsync);
 			}
 		}
 
-		void ApexFader::paint(Graphics& g) {
+		void ApexFader::paint(juce::Graphics& g) {
 			double sliderPos = getProportionFromValue(getValue());
 			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
@@ -101,18 +101,18 @@ namespace apex {
 			if(isHorizontal()) {
 				int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
-				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
 			else {
 				int thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
-				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
 		}
 
-		bool ApexFader::isInBounds(Point<int> p) {
+		bool ApexFader::isInBounds(juce::Point<int> p) {
 			int x = p.x;
 			int y = p.y;
 

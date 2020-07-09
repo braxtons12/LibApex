@@ -13,32 +13,33 @@ namespace apex {
 #define SliderFloatingTextBoxStartWidth  25
 #define SliderFloatingTextBoxStartHeight 30
 
-		class ApexSlider: public Slider, public TextEditor::Listener, public FocusChangeListener, public Label::Listener {
-
+		class ApexSlider: public juce::Slider, public juce::TextEditor::Listener,
+		public juce::FocusChangeListener, public juce::Label::Listener
+		{
 			public:
-				ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				ApexSlider(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc, ApexFilmStrip strip);
-				ApexSlider(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				ApexSlider(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc);
 
-				~ApexSlider();
+				~ApexSlider() override;
 
-				virtual String getTextFromValue(double value) override;
-				virtual double getValueFromText(const String& text) override;
+				virtual juce::String getTextFromValue(double value) override;
+				virtual double getValueFromText(const juce::String& text) override;
 
-				virtual void mouseDown(const MouseEvent& e) override;
-				virtual void mouseUp(const MouseEvent& e) override;
-				virtual void mouseDoubleClick(const MouseEvent& e) override;
-				virtual void mouseDrag(const MouseEvent& e) override;
-				virtual void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
+				virtual void mouseDown(const juce::MouseEvent& e) override;
+				virtual void mouseUp(const juce::MouseEvent& e) override;
+				virtual void mouseDoubleClick(const juce::MouseEvent& e) override;
+				virtual void mouseDrag(const juce::MouseEvent& e) override;
+				virtual void mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) override;
 
-				void globalFocusChanged(Component* focusedComponent) override;
+				void globalFocusChanged(juce::Component* focusedComponent) override;
 
-				void textEditorReturnKeyPressed(TextEditor& editor) override;
-				void textEditorEscapeKeyPressed(TextEditor& editor) override;
-				void textEditorFocusLost(TextEditor& editor) override;
+				void textEditorReturnKeyPressed(juce::TextEditor& editor) override;
+				void textEditorEscapeKeyPressed(juce::TextEditor& editor) override;
+				void textEditorFocusLost(juce::TextEditor& editor) override;
 
-				void labelTextChanged(Label* label) override;
+				void labelTextChanged(juce::Label* label) override;
 
 				void setXScaleFactor(float scaleFactor);
 				float getXScaleFactor() const;
@@ -47,11 +48,11 @@ namespace apex {
 
 				virtual bool isValueValid(double value) const;
 
-				void setPopupTextBoxFont(Font font);
-				void setTextBoxFont(Font font);
-				void setTextBoxFontColour(Colour newColour);
-				void setTextBoxBounds(Rectangle<int> bounds);
-				Label* getTextBox();
+				void setPopupTextBoxFont(juce::Font font);
+				void setTextBoxFont(juce::Font font);
+				void setTextBoxFontColour(juce::Colour newColour);
+				void setTextBoxBounds(juce::Rectangle<int> bounds);
+				juce::Label* getTextBox();
 
 				void setNormalSensitivity(double sensitivity, double initialVelocity);
 				void setFineSensitivity(double sensitivity, double initialVelocity);
@@ -66,7 +67,7 @@ namespace apex {
 
 				void setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel);
 
-				virtual void paint(Graphics& g) override;
+				virtual void paint(juce::Graphics& g) override;
 
 			protected:
 				std::shared_ptr<ApexLookAndFeel> mLookAndFeel;
@@ -86,15 +87,15 @@ namespace apex {
 
 				int mNumTextBoxCharacters = 6;
 
-				Font mPopupTextBoxFont;
-				std::unique_ptr<TextEditor> mPopupTextBox;
+				juce::Font mPopupTextBoxFont;
+				std::unique_ptr<juce::TextEditor> mPopupTextBox;
 
-				Font mTextBoxFont;
-				Label mTextBox;
+				juce::Font mTextBoxFont;
+				juce::Label mTextBox;
 
-				Colour mTextBoxFontColour = Colour(0xffcde3ec);
+				juce::Colour mTextBoxFontColour = juce::Colour(0xffcde3ec);
 
-				virtual bool isInBounds(Point<int> p);
+				virtual bool isInBounds(juce::Point<int> p);
 
 			private:
 				JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ApexSlider)

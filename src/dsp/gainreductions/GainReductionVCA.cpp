@@ -23,6 +23,10 @@ namespace apex {
 			mNumSamplesToTransitionGain = static_cast<size_t>(mRiseTimeSeconds * sampleRate + 0.5f);
 		}
 
+		GainReductionVCA<float>::~GainReductionVCA() {
+
+		}
+
 		/// @brief Resets this `GainReductionVCA` to an initial state
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
@@ -79,6 +83,10 @@ namespace apex {
 		{
 			mRiseTimeSeconds = 0.004;
 			mNumSamplesToTransitionGain = static_cast<size_t>(mRiseTimeSeconds * sampleRate + 0.5);
+		}
+
+		GainReductionVCA<double>::~GainReductionVCA() {
+
 		}
 
 		/// @brief Resets this `GainReductionVCA` to an initial state

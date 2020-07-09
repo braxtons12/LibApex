@@ -18,7 +18,7 @@ namespace apex {
 			int ee = y.i>>23 & 0xff;
 
 			if (!ee) {
-				if (x) {
+				if (static_cast<bool>(x)) {
 					x = frexpf(static_cast<float>(x*0x1p64), e);
 					*e -= 64;
 				} else *e = 0;
@@ -84,7 +84,7 @@ namespace apex {
 			int ee = y.i>>52 & 0x7ff;
 
 			if (!ee) {
-				if (x) {
+				if (static_cast<bool>(x)) {
 					x = frexp(x*0x1p64, e);
 					*e -= 64;
 				} else *e = 0;

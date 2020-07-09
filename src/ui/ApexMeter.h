@@ -9,7 +9,7 @@
 
 namespace apex {
 	namespace ui {
-		class ApexMeter : public Component {
+		class ApexMeter : public juce::Component {
 			public:
 				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 						std::function<double(double)> valueToProportionOfHeightFunc,
@@ -22,9 +22,9 @@ namespace apex {
 						ApexFilmStrip filmStrip);
 				ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 						std::function<double(double)> valueToProportionOfHeightFunc,
-						Image maxedMeterImage);
+						juce::Image maxedMeterImage);
 
-				~ApexMeter();
+				~ApexMeter() override;
 
 				double getLevel();
 				void setLevel(double level);
@@ -41,9 +41,9 @@ namespace apex {
 				double getProportionOfHeightFromValue(double value);
 
 				Option<ApexFilmStrip> getFilmStrip();
-				Option<Image> getMaxedImage();
+				Option<juce::Image> getMaxedImage();
 
-				virtual void paint(Graphics& g) override;
+				virtual void paint(juce::Graphics& g) override;
 
 			protected:
 				std::shared_ptr<ApexLookAndFeel> mLookAndFeel;
@@ -53,12 +53,14 @@ namespace apex {
 				ApexFilmStrip mFilmStrip;
 				bool mUsesFilmStrip = false;
 
-				Image mMaxedMeterImage;
+				juce::Image mMaxedMeterImage;
 				bool mUsesMaxedImage = false;
 
 				size_t mNumSteps = 10;
 				double mLevel = 0.0f;
 				double mClipLevelProportion = 1.0f;
+			private:
+				JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ApexMeter)
 		};
 	}
 }

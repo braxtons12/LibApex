@@ -30,7 +30,7 @@ namespace apex {
 					///
 					/// @param sampleRate
 					GainReductionOptical(size_t sampleRate);
-					~GainReductionOptical();
+					virtual ~GainReductionOptical() override;
 
 					/// @brief Resets this `GainReductionOptical` to an initial state
 					///
@@ -78,7 +78,7 @@ namespace apex {
 					///
 					/// @param sampleRate
 					GainReductionOptical(size_t sampleRate);
-					~GainReductionOptical();
+					virtual ~GainReductionOptical() override;
 
 					/// @brief Resets this `GainReductionOptical` to an initial state
 					///

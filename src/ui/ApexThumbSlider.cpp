@@ -2,22 +2,22 @@
 
 namespace apex {
 	namespace ui {
-		ApexThumbSlider::ApexThumbSlider(Slider::SliderStyle style,
+		ApexThumbSlider::ApexThumbSlider(juce::Slider::SliderStyle style,
 				std::function<double(double)> proportionToValueFunc,
-				std::function<double(double)> valueToProportionFunc, Image thumbImage)
+				std::function<double(double)> valueToProportionFunc, juce::Image thumbImage)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
 			mThumbImage(thumbImage),
 			mUsesThumbImage(true)
 		{
 			mThumbComponent.setImage(mThumbImage);
-			mThumbComponent.setImagePlacement(RectanglePlacement(
-						RectanglePlacement::xMid | RectanglePlacement::yTop));
+			mThumbComponent.setImagePlacement(juce::RectanglePlacement(
+						juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
 			addAndMakeVisible(mThumbComponent);
 			mInitialThumbWidth = mThumbImage.getWidth();
 			mInitialThumbHeight = mThumbImage.getHeight();
 		}
 
-		ApexThumbSlider::ApexThumbSlider(Slider::SliderStyle style,
+		ApexThumbSlider::ApexThumbSlider(juce::Slider::SliderStyle style,
 				std::function<double(double)> proportionToValueFunc,
 				std::function<double(double)> valueToProportionFunc,
 				int initialThumbWidth, int initialThumbHeight)
@@ -33,7 +33,7 @@ namespace apex {
 
 		}
 
-		void ApexThumbSlider::paint(Graphics& g) {
+		void ApexThumbSlider::paint(juce::Graphics& g) {
 			double sliderPos = getProportionFromValue(getValue());
 			jassert(sliderPos >= 0.00f && sliderPos <= 1.00f);
 
@@ -63,18 +63,18 @@ namespace apex {
 			if(isHorizontal()) {
 				int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
-				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
 			else {
 				int thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
-				Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
 				mThumbComponent.setBounds(bounds);
 			}
 		}
 
-		bool ApexThumbSlider::isInBounds(Point<int> p) {
+		bool ApexThumbSlider::isInBounds(juce::Point<int> p) {
 			int x = p.x;
 			int y = p.y;
 

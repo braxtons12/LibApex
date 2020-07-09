@@ -9,27 +9,27 @@ namespace apex {
 	namespace ui {
 		class ApexFader: public ApexSlider {
 			public:
-				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				ApexFader(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc, ApexFilmStrip strip);
-				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
-						std::function<double(double)> valueToProportionFunc, Image thumbImage);
-				ApexFader(Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+				ApexFader(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
+						std::function<double(double)> valueToProportionFunc, juce::Image thumbImage);
+				ApexFader(juce::Slider::SliderStyle style, std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc, bool isThumbOnlySlider,
 						int initialThumbWidth, int initialThumbHeight);
 
-				~ApexFader();
+				~ApexFader() override;
 
-				virtual String getTextFromValue(double value) override;
-				virtual double getValueFromText(const String& text) override;
+				virtual juce::String getTextFromValue(double value) override;
+				virtual double getValueFromText(const juce::String& text) override;
 
-				virtual void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
+				virtual void mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) override;
 
-				virtual void paint(Graphics& g) override;
+				virtual void paint(juce::Graphics& g) override;
 
 				virtual void resized() override;
 			protected:
-				Image mThumbImage;
-				ImageComponent mThumbComponent;
+				juce::Image mThumbImage;
+				juce::ImageComponent mThumbComponent;
 				bool mUsesThumbImage = false;
 				bool mIsThumbOnly = false;
 
@@ -38,9 +38,9 @@ namespace apex {
 
 				void resizeThumb();
 
-				virtual bool isInBounds(Point<int> p) override;
+				virtual bool isInBounds(juce::Point<int> p) override;
 			private:
-				JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ApexFader);
+				JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ApexFader)
 		};
 	}
 }

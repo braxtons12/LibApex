@@ -40,7 +40,7 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReductionFET(size_t sampleRate, float riseTimeSeconds);
-					~GainReductionFET();
+					virtual ~GainReductionFET() override;
 
 					/// @brief Resets this `GainReductionFET` to an initial state
 					///
@@ -100,7 +100,7 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReductionFET(size_t sampleRate, double riseTimeSeconds);
-					~GainReductionFET();
+					virtual ~GainReductionFET() override;
 
 					/// @brief Resets this `GainReductionFET` to an initial state
 					///

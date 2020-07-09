@@ -41,7 +41,7 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReduction(size_t sampleRate, float riseTimeSeconds);
-					~GainReduction();
+					virtual ~GainReduction();
 
 					/// @brief Resets this `GainReduction` to an initial state.
 					///
@@ -102,7 +102,7 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReduction(size_t sampleRate, double riseTimeSeconds);
-					~GainReduction();
+					virtual ~GainReduction();
 
 					/// @brief Resets this `GainReduction` to an initial state.
 					///

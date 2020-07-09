@@ -1,4 +1,5 @@
 #include "GainReductionFET.h"
+
 #include "../WaveShaper.h"
 
 namespace apex {
@@ -41,6 +42,10 @@ namespace apex {
 
 		}
 
+		GainReductionFET<float>::~GainReductionFET() {
+
+		}
+
 		/// @brief Resets this `GainReductionFET` to an initial state
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
@@ -56,7 +61,7 @@ namespace apex {
 		///
 		/// @return  - The adjusted gain reduction
 		float GainReductionFET<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
 			float gainReductionStep = (actualGainReduction - mCurrentGainReduction)
 				/ static_cast<float>(mNumSamplesToTransitionGain - mCurrentSample);
@@ -128,6 +133,10 @@ namespace apex {
 
 		}
 
+		GainReductionFET<double>::~GainReductionFET() {
+
+		}
+
 		/// @brief Resets this `GainReductionFET` to an initial state
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
@@ -143,7 +152,7 @@ namespace apex {
 		///
 		/// @return  - The adjusted gain reduction
 		double GainReductionFET<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
 			double gainReductionStep = (actualGainReduction - mCurrentGainReduction)
 				/ static_cast<double>(mNumSamplesToTransitionGain - mCurrentSample);

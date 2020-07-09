@@ -62,7 +62,7 @@ namespace apex {
 		///
 		/// @return - The adjusted gain reduction
 		float GainReductionOptical<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			float oldGainReduction = mCurrentGainReduction;
 			float coefficient = actualGainReduction;
 			size_t coefficientIndex = static_cast<size_t>(coefficient * static_cast<float>(mNUM_COEFFICIENTS_PER_STEP));
@@ -161,7 +161,7 @@ namespace apex {
 		///
 		/// @return - The adjusted gain reduction
 		double GainReductionOptical<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) {
-			ignoreUnused(idealGainReduction);
+			juce::ignoreUnused(idealGainReduction);
 			double oldGainReduction = mCurrentGainReduction;
 			double coefficient = actualGainReduction;
 			size_t coefficientIndex = static_cast<size_t>(coefficient * static_cast<double>(mNUM_COEFFICIENTS_PER_STEP));

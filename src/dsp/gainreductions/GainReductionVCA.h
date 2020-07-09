@@ -29,6 +29,7 @@ namespace apex {
 					///
 					/// @param sampleRate - The sample rate to use
 					GainReductionVCA(size_t sampleRate);
+					virtual ~GainReductionVCA() override;
 
 					/// @brief Resets this `GainReductionVCA` to an initial state
 					///
@@ -66,6 +67,7 @@ namespace apex {
 					///
 					/// @param sampleRate - The sample rate to use
 					GainReductionVCA(size_t sampleRate);
+					virtual ~GainReductionVCA() override;
 
 					/// @brief Resets this `GainReductionVCA` to an initial state
 					///
