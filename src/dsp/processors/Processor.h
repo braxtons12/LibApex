@@ -1,3 +1,5 @@
+#pragma once
+
 #include <type_traits>
 #include <utility>
 
@@ -13,6 +15,13 @@ namespace apex {
 			class Processor {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
+					Processor() {
+
+					}
+
+					virtual ~Processor() {
+
+					}
 
 					/// @brief Processes the input value
 					///

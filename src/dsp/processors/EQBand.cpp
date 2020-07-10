@@ -1,0 +1,996 @@
+#include "EQBand.h"
+
+namespace apex {
+	namespace dsp {
+
+		/// @brief Creates an `EQBand` with the given parameters
+		///
+		/// @param frequency - The frequency to use, in Hertz
+		/// @param q - The Q to use
+		/// @param gainDB - The gain to use, in Decibels
+		/// @param sampleRate - The sample rate to use, in Hertz
+		/// @param type - The type of band
+		EQBand<float>::EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type)
+			: Processor<float>(),
+			mType(type),
+			mFrequency(frequency),
+			mQ(q),
+			mGain(gainDB),
+			mSampleRate(sampleRate),
+			mFilter(std::move(BiQuadFilter<float>::MakeAllpass()))
+		{
+			if(mType < BandType::Allpass) {
+				if(mType % 4 == 0) mOrder = 1;
+				if(mType % 4 == 1) mOrder = 2;
+				if(mType % 4 == 2) mOrder = 4;
+				if(mType % 4 == 3) mOrder = 8;
+			}
+
+			mFilters.resize(mOrder);
+			createFilters();
+		}
+
+		EQBand<float>::~EQBand() {
+
+		}
+
+		/// @brief Sets the frequency of this `EQBand` to the given value
+		///
+		/// @param frequency - The new frequency, in Hertz
+		void EQBand<float>::setFrequency(float frequency) {
+			mFrequency = frequency;
+			mFilter.setFrequency(mFrequency);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setFrequency(mFrequency);
+				}
+			}
+		}
+
+		/// @brief Returns the frequency of this `EQBand`
+		///
+		/// @return - The current frequency, in Hertz
+		float EQBand<float>::getFrequency() const {
+			return mFrequency;
+		}
+
+		/// @brief Sets the Q of this `EQBand` to the given value
+		///
+		/// @param q - The new Q
+		void EQBand<float>::setQ(float q) {
+			mQ = q;
+			mFilter.setQ(mQ);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setQ(mQ);
+				}
+			}
+		}
+
+		/// @brief Returns the Q of this `EQBand`
+		///
+		/// @return - The current Q
+		float EQBand<float>::getQ() const {
+			return mQ;
+		}
+
+		/// @brief Sets the gain of this `EQBand`
+		///
+		/// @param gainDB - The new gain, in Decibels
+		void EQBand<float>::setGainDB(float gainDB) {
+			mGain = gainDB;
+			mFilter.setGainDB(mGain);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setGainDB(mGain);
+				}
+			}
+		}
+
+		/// @brief Returns the gain of this `EQBand`
+		///
+		/// @return - The current gain, in Decibels
+		float EQBand<float>::getGainDB() const {
+			return mGain;
+		}
+
+		/// @brief Sets the sample rate of this `EQBand` to the given value
+		///
+		/// @param sampleRate - The new sample rate, in Hertz
+		void EQBand<float>::setSampleRate(size_t sampleRate) {
+			mSampleRate = sampleRate;
+			mFilter.setSampleRate(mSampleRate);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setSampleRate(mSampleRate);
+				}
+			}
+		}
+
+		/// @brief Returns the sample rate of this `EQBand`
+		///
+		/// @return - The current sample rate, in Hertz
+		size_t EQBand<float>::getSampleRate() const {
+			return mSampleRate;
+		}
+
+		/// @brief Sets the type of this `EQBand` to the given value
+		///
+		/// @param type - The new type
+		void EQBand<float>::setBandType(BandType type) {
+			mType = type;
+			if(mType < BandType::Allpass) {
+				if(mType % 4 == 0) mOrder = 1;
+				if(mType % 4 == 1) mOrder = 2;
+				if(mType % 4 == 2) mOrder = 4;
+				if(mType % 4 == 3) mOrder = 8;
+				mFilters.resize(mOrder);
+			}
+			createFilters();
+		}
+
+		/// @brief Returns the type of this `EQBand`
+		///
+		/// @return - The current type
+		EQBand<float>::BandType EQBand<float>::getBandType() const {
+			return mType;
+		}
+
+		/// @brief Applies this `EQBand` to the given input value
+		///
+		/// @param input - The input to apply EQ to
+		///
+		/// @return - The processed value
+		float EQBand<float>::process(float input) {
+			float x = 0.0f;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x = mFilters[ord].process(input);
+				}
+			}
+			else {
+				x = mFilter.process(input);
+			}
+			return x;
+		}
+
+		/// @brief Applies this `EQBand` to the given array of input values, in place
+		///
+		/// @param input - The input values to apply EQ to
+		/// @param numSamples - The number of input samples
+		void EQBand<float>::process(float* input, size_t numSamples) {
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].process(input, numSamples);
+				}
+			}
+			else {
+				mFilter.process(input, numSamples);
+			}
+		}
+
+		/// @brief Resets this `EQBand` to an initial state
+		void EQBand<float>::reset() {
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].reset();
+				}
+			}
+			else {
+				mFilter.reset();
+			}
+		}
+
+		/// @brief Returns the shifted frequency for the Nth filter stage in
+		/// a multi-order filter
+		///
+		/// @param filterIndex - The filter stage to calculate the shift for
+		///
+		/// @return - The shifted frequency
+		float EQBand<float>::frequencyShift(size_t filterIndex) const {
+			float shiftMultiplier = 0.25f * filterIndex;
+			if(mType < BandType::Highpass12DB) {
+				float nextOctFreq = mFrequency * 2.0f;
+				return mFrequency + (shiftMultiplier * (nextOctFreq - mFrequency));
+			}
+			else {
+				float nextOctFreq = mFrequency / 2.0f;
+				return mFrequency - (shiftMultiplier * (nextOctFreq - mFrequency));
+			}
+		}
+
+		/// @brief Creates the necessary filter(s) for this `EQBand`
+		void EQBand<float>::createFilters() {
+
+			switch(mType) {
+				case Lowpass12DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<float>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<float>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass24DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<float>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<float>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass48DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<float>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<float>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass96DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<float>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<float>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Highpass12DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass24DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass48DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass96DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass12DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass24DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass48DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass96DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<float>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<float>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Allpass: {
+								  mFilter = std::move(
+										  BiQuadFilter<float>::MakeAllpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
+											  )
+										  );
+							  }
+							  break;
+				case Notch: {
+								mFilter = std::move(
+										BiQuadFilter<float>::MakeNotch(
+											mFrequency,
+											mQ,
+											mSampleRate
+											)
+										);
+							}
+							break;
+				case LowShelf: {
+								   mFilter = std::move(
+										   BiQuadFilter<float>::MakeLowShelf(
+											   mFrequency,
+											   mQ,
+											   mGain,
+											   mSampleRate
+											   )
+										   );
+							   }
+							   break;
+				case HighShelf: {
+									mFilter = std::move(
+											BiQuadFilter<float>::MakeHighShelf(
+												mFrequency,
+												mQ,
+												mGain,
+												mSampleRate
+												)
+											);
+								}
+								break;
+				case Bell: {
+							   mFilter = std::move(
+									   BiQuadFilter<float>::MakeBell(
+										   mFrequency,
+										   mQ,
+										   mGain,
+										   mSampleRate
+										   )
+									   );
+						   }
+						   break;
+				case AnalogBell: {
+									 mFilter = std::move(
+											 BiQuadFilter<float>::MakeAnalogBell(
+												 mFrequency,
+												 mQ,
+												 mGain,
+												 mSampleRate
+												 )
+											 );
+								 }
+								 break;
+			}
+		}
+
+		/// @brief Creates an `EQBand` with the given parameters
+		///
+		/// @param frequency - The frequency to use, in Hertz
+		/// @param q - The Q to use
+		/// @param gainDB - The gain to use, in Decibels
+		/// @param sampleRate - The sample rate to use, in Hertz
+		/// @param type - The type of band
+		EQBand<double>::EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type)
+			: Processor<double>(),
+			mType(type),
+			mFrequency(frequency),
+			mQ(q),
+			mGain(gainDB),
+			mSampleRate(sampleRate),
+			mFilter(std::move(BiQuadFilter<double>::MakeAllpass()))
+		{
+			if(mType < BandType::Allpass) {
+				if(mType % 4 == 0) mOrder = 1;
+				if(mType % 4 == 1) mOrder = 2;
+				if(mType % 4 == 2) mOrder = 4;
+				if(mType % 4 == 3) mOrder = 8;
+			}
+
+			mFilters.resize(mOrder);
+			createFilters();
+		}
+
+		EQBand<double>::~EQBand() {
+
+		}
+
+		/// @brief Sets the frequency of this `EQBand` to the given value
+		///
+		/// @param frequency - The new frequency, in Hertz
+		void EQBand<double>::setFrequency(double frequency) {
+			mFrequency = frequency;
+			mFilter.setFrequency(mFrequency);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setFrequency(mFrequency);
+				}
+			}
+		}
+
+		/// @brief Returns the frequency of this `EQBand`
+		///
+		/// @return - The current frequency, in Hertz
+		double EQBand<double>::getFrequency() const {
+			return mFrequency;
+		}
+
+		/// @brief Sets the Q of this `EQBand` to the given value
+		///
+		/// @param q - The new Q
+		void EQBand<double>::setQ(double q) {
+			mQ = q;
+			mFilter.setQ(mQ);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setQ(mQ);
+				}
+			}
+		}
+
+		/// @brief Returns the Q of this `EQBand`
+		///
+		/// @return - The current Q
+		double EQBand<double>::getQ() const {
+			return mQ;
+		}
+
+		/// @brief Sets the gain of this `EQBand`
+		///
+		/// @param gainDB - The new gain, in Decibels
+		void EQBand<double>::setGainDB(double gainDB) {
+			mGain = gainDB;
+			mFilter.setGainDB(mGain);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setGainDB(mGain);
+				}
+			}
+		}
+
+		/// @brief Returns the gain of this `EQBand`
+		///
+		/// @return - The current gain, in Decibels
+		double EQBand<double>::getGainDB() const {
+			return mGain;
+		}
+
+		/// @brief Sets the sample rate of this `EQBand` to the given value
+		///
+		/// @param sampleRate - The new sample rate, in Hertz
+		void EQBand<double>::setSampleRate(size_t sampleRate) {
+			mSampleRate = sampleRate;
+			mFilter.setSampleRate(mSampleRate);
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].setSampleRate(mSampleRate);
+				}
+			}
+		}
+
+		/// @brief Returns the sample rate of this `EQBand`
+		///
+		/// @return - The current sample rate, in Hertz
+		size_t EQBand<double>::getSampleRate() const {
+			return mSampleRate;
+		}
+
+		/// @brief Sets the type of this `EQBand` to the given value
+		///
+		/// @param type - The new type
+		void EQBand<double>::setBandType(BandType type) {
+			mType = type;
+			if(mType < BandType::Allpass) {
+				if(mType % 4 == 0) mOrder = 1;
+				if(mType % 4 == 1) mOrder = 2;
+				if(mType % 4 == 2) mOrder = 4;
+				if(mType % 4 == 3) mOrder = 8;
+				mFilters.resize(mOrder);
+			}
+			createFilters();
+		}
+
+		/// @brief Returns the type of this `EQBand`
+		///
+		/// @return - The current type
+		EQBand<double>::BandType EQBand<double>::getBandType() const {
+			return mType;
+		}
+
+		/// @brief Applies this `EQBand` to the given input value
+		///
+		/// @param input - The input to apply EQ to
+		///
+		/// @return - The processed value
+		double EQBand<double>::process(double input) {
+			double x = 0.0;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x = mFilters[ord].process(input);
+				}
+			}
+			else {
+				x = mFilter.process(input);
+			}
+			return x;
+		}
+
+		/// @brief Applies this `EQBand` to the given array of input values, in place
+		///
+		/// @param input - The input values to apply EQ to
+		/// @param numSamples - The number of input samples
+		void EQBand<double>::process(double* input, size_t numSamples) {
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].process(input, numSamples);
+				}
+			}
+			else {
+				mFilter.process(input, numSamples);
+			}
+		}
+
+		/// @brief Resets this `EQBand` to an initial state
+		void EQBand<double>::reset() {
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					mFilters[ord].reset();
+				}
+			}
+			else {
+				mFilter.reset();
+			}
+		}
+
+		/// @brief Returns the shifted frequency for the Nth filter stage in
+		/// a multi-order filter
+		///
+		/// @param filterIndex - The filter stage to calculate the shift for
+		///
+		/// @return - The shifted frequency
+		double EQBand<double>::frequencyShift(size_t filterIndex) const {
+			double shiftMultiplier = 0.25 * filterIndex;
+			if(mType < BandType::Highpass12DB) {
+				double nextOctFreq = mFrequency * 2.0;
+				return mFrequency + (shiftMultiplier * (nextOctFreq - mFrequency));
+			}
+			else {
+				double nextOctFreq = mFrequency / 2.0;
+				return mFrequency - (shiftMultiplier * (nextOctFreq - mFrequency));
+			}
+		}
+
+		/// @brief Creates the necessary filter(s) for this `EQBand`
+		void EQBand<double>::createFilters() {
+
+			switch(mType) {
+				case Lowpass12DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<double>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<double>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass24DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<double>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<double>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass48DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<double>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<double>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Lowpass96DB: {
+									  mFilter = std::move(
+											  BiQuadFilter<double>::MakeLowpass(
+												  mFrequency,
+												  mQ,
+												  mSampleRate
+												  )
+											  );
+									  for(size_t ord = 0; ord < mOrder; ++ord) {
+										  mFilters[ord] = std::move(
+												  BiQuadFilter<double>::MakeLowpass(
+													  frequencyShift(ord),
+													  mQ,
+													  mSampleRate
+													  )
+												  );
+									  }
+								  }
+								  break;
+				case Highpass12DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass24DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass48DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Highpass96DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeHighpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeHighpass(
+													   frequencyShift(ord),
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass12DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass24DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass48DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Bandpass96DB: {
+									   mFilter = std::move(
+											   BiQuadFilter<double>::MakeBandpass(
+												   mFrequency,
+												   mQ,
+												   mSampleRate
+												   )
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = std::move(
+												   BiQuadFilter<double>::MakeBandpass(
+													   mFrequency,
+													   mQ,
+													   mSampleRate
+													   )
+												   );
+									   }
+								   }
+								   break;
+				case Allpass: {
+								  mFilter = std::move(
+										  BiQuadFilter<double>::MakeAllpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
+											  )
+										  );
+							  }
+							  break;
+				case Notch: {
+								mFilter = std::move(
+										BiQuadFilter<double>::MakeNotch(
+											mFrequency,
+											mQ,
+											mSampleRate
+											)
+										);
+							}
+							break;
+				case LowShelf: {
+								   mFilter = std::move(
+										   BiQuadFilter<double>::MakeLowShelf(
+											   mFrequency,
+											   mQ,
+											   mGain,
+											   mSampleRate
+											   )
+										   );
+							   }
+							   break;
+				case HighShelf: {
+									mFilter = std::move(
+											BiQuadFilter<double>::MakeHighShelf(
+												mFrequency,
+												mQ,
+												mGain,
+												mSampleRate
+												)
+											);
+								}
+								break;
+				case Bell: {
+							   mFilter = std::move(
+									   BiQuadFilter<double>::MakeBell(
+										   mFrequency,
+										   mQ,
+										   mGain,
+										   mSampleRate
+										   )
+									   );
+						   }
+						   break;
+				case AnalogBell: {
+									 mFilter = std::move(
+											 BiQuadFilter<double>::MakeAnalogBell(
+												 mFrequency,
+												 mQ,
+												 mGain,
+												 mSampleRate
+												 )
+											 );
+								 }
+								 break;
+			}
+		}
+	}
+}

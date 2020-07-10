@@ -26,6 +26,7 @@
 #include "src/dsp/compressors/CompressorVCA.cpp"
 #include "src/dsp/expanders/Expander.cpp"
 #include "src/dsp/expanders/ExpanderVCA.cpp"
+#include "src/dsp/processors/EQBand.cpp"
 
 #include "src/math/Decibels.cpp"
 #include "src/math/General.cpp"

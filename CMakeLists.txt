@@ -126,6 +126,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionOpto.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/MultiChannelProcessor.h"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors/EQBand.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 

@@ -1,3 +1,8 @@
+#pragma once
+
+#include <type_traits>
+#include <utility>
+
 #include "../../base/StandardIncludes.h"
 
 namespace apex {
@@ -21,6 +26,8 @@ namespace apex {
 		template<>
 			class BiQuadFilter<float> {
 				public:
+					BiQuadFilter();
+					BiQuadFilter(const BiQuadFilter<float>&& filt);
 					~BiQuadFilter();
 
 					/// @brief The different possible BiQuad Filter types
@@ -373,6 +380,8 @@ namespace apex {
 					/// @brief Resets this filter to an initial state
 					void reset();
 
+					BiQuadFilter<float> operator=(const BiQuadFilter<float>&& filt);
+
 				private:
 					float mB0 = 0.0f;
 					float mB1 = 0.0f;
@@ -387,12 +396,11 @@ namespace apex {
 					float mX2 = 0.0f;
 
 					FilterType mType = FilterType::Bell;
-					float mFrequency = 0.0f;
+					float mFrequency = 1000.0f;
 					float mQ = 0.7f;
 					float mGain = 0.0f;
 					size_t mSampleRate = 44100;
 
-					BiQuadFilter() = delete;
 					BiQuadFilter(float frequency, float q, float gain,
 							size_t sampleRate, FilterType type);
 
@@ -408,6 +416,8 @@ namespace apex {
 		template<>
 			class BiQuadFilter<double> {
 				public:
+					BiQuadFilter();
+					BiQuadFilter(const BiQuadFilter<double>&& filt);
 					~BiQuadFilter();
 
 					/// @brief The different possible BiQuad Filter types
@@ -760,6 +770,8 @@ namespace apex {
 					/// @brief Resets this filter to an initial state
 					void reset();
 
+					BiQuadFilter<double> operator=(const BiQuadFilter<double>&& filt);
+
 				private:
 					double mB0 = 0.0;
 					double mB1 = 0.0;
@@ -774,12 +786,11 @@ namespace apex {
 					double mX2 = 0.0;
 
 					FilterType mType = FilterType::Bell;
-					double mFrequency = 0.0;
+					double mFrequency = 1000.0;
 					double mQ = 0.7;
 					double mGain = 0.0;
 					size_t mSampleRate = 44100;
 
-					BiQuadFilter() = delete;
 					BiQuadFilter(double frequency, double q, double gain,
 							size_t sampleRate, FilterType type);
 

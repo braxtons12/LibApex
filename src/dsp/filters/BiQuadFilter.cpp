@@ -3,6 +3,30 @@
 namespace apex {
 	namespace dsp {
 
+		BiQuadFilter<float>::BiQuadFilter() {
+			updateCoefficients();
+		}
+
+		BiQuadFilter<float>::BiQuadFilter(const BiQuadFilter<float>&& filt) {
+			mB0 = filt.mB0;
+			mB1 = filt.mB1;
+			mB2 = filt.mB2;
+			mA0 = filt.mA0;
+			mA1 = filt.mA1;
+			mA2 = filt.mA2;
+
+			mY1 = filt.mY1;
+			mY2 = filt.mY2;
+			mX1 = filt.mX1;
+			mX2 = filt.mX2;
+
+			mType = filt.mType;
+			mFrequency = filt.mFrequency;
+			mQ = filt.mQ;
+			mGain = filt.mGain;
+			mSampleRate = filt.mSampleRate;
+		}
+
 		BiQuadFilter<float>::~BiQuadFilter() {
 
 		}
@@ -475,6 +499,10 @@ namespace apex {
 			mX2 = 0.0f;
 		}
 
+		BiQuadFilter<float> BiQuadFilter<float>::operator=(const BiQuadFilter<float>&& filt) {
+			return BiQuadFilter<float>(std::move(filt));
+		}
+
 		BiQuadFilter<float>::BiQuadFilter(float frequency, float q, float gain,
 				size_t sampleRate, FilterType type)
 			: mType(type),
@@ -587,6 +615,30 @@ namespace apex {
 											 break;
 			}
 
+		}
+
+		BiQuadFilter<double>::BiQuadFilter() {
+			updateCoefficients();
+		}
+
+		BiQuadFilter<double>::BiQuadFilter(const BiQuadFilter<double>&& filt) {
+			mB0 = filt.mB0;
+			mB1 = filt.mB1;
+			mB2 = filt.mB2;
+			mA0 = filt.mA0;
+			mA1 = filt.mA1;
+			mA2 = filt.mA2;
+
+			mY1 = filt.mY1;
+			mY2 = filt.mY2;
+			mX1 = filt.mX1;
+			mX2 = filt.mX2;
+
+			mType = filt.mType;
+			mFrequency = filt.mFrequency;
+			mQ = filt.mQ;
+			mGain = filt.mGain;
+			mSampleRate = filt.mSampleRate;
 		}
 
 		BiQuadFilter<double>::~BiQuadFilter() {
@@ -1059,6 +1111,10 @@ namespace apex {
 			mY2 = 0.0;
 			mX1 = 0.0;
 			mX2 = 0.0;
+		}
+
+		BiQuadFilter<double> BiQuadFilter<double>::operator=(const BiQuadFilter<double>&& filt) {
+			return BiQuadFilter<double>(std::move(filt));
 		}
 
 		BiQuadFilter<double>::BiQuadFilter(double frequency, double q, double gain,

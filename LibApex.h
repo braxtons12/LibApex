@@ -51,3 +51,4 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/expanders/ExpanderVCA.h"
 #include "src/dsp/processors/Processor.h"
 #include "src/dsp/processors/MultiChannelProcessor.h"
+#include "src/dsp/processors/EQBand.h"
