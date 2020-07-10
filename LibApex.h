@@ -34,6 +34,7 @@ END_JUCE_MODULE_DECLARATION
 
 #include "src/dsp/EQ.h"
 #include "src/dsp/Gain.h"
+#include "src/dsp/filters/BiQuadFilter.h"
 #include "src/dsp/gainstages/GainStage.h"
 #include "src/dsp/gainstages/GainStageFET.h"
 #include "src/dsp/gainstages/GainStageVCA.h"
@@ -48,3 +49,5 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/compressors/CompressorVCA.h"
 #include "src/dsp/expanders/Expander.h"
 #include "src/dsp/expanders/ExpanderVCA.h"
+#include "src/dsp/processors/Processor.h"
+#include "src/dsp/processors/MultiChannelProcessor.h"

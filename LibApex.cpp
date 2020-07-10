@@ -11,6 +11,7 @@
 
 #include "src/dsp/EQ.cpp"
 #include "src/dsp/Gain.cpp"
+#include "src/dsp/filters/BiQuadFilter.cpp"
 #include "src/dsp/gainstages/GainStage.cpp"
 #include "src/dsp/gainstages/GainStageFET.cpp"
 #include "src/dsp/gainstages/GainStageVCA.cpp"

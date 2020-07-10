@@ -54,7 +54,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 		-Wno-disabled-macro-expansion
 		)
 else()
-	target_compile_options(Apex-Q PRIVATE
+	target_compile_options(Apex PRIVATE
 		-std=c++17
 		-Wall
 		-Wextra
@@ -83,10 +83,12 @@ target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/base"
 	"${CMAKE_SOURCE_DIR}/src/ui"
 	"${CMAKE_SOURCE_DIR}/src/dsp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/filters"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors"
 	"${CMAKE_SOURCE_DIR}/src/math"
 	"${CMAKE_SOURCE_DIR}/src/utils"
 	)
@@ -114,6 +116,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors/CompressorVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/Expander.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/ExpanderVCA.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/Gain.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStage.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.cpp"
@@ -122,6 +125,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionOpto.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionVCA.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors/MultiChannelProcessor.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 
