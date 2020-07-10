@@ -9,8 +9,6 @@
 #include "src/ui/ApexThumbSlider.cpp"
 #include "src/ui/ApexToggleButton.cpp"
 
-#include "src/dsp/EQ.cpp"
-#include "src/dsp/Gain.cpp"
 #include "src/dsp/filters/BiQuadFilter.cpp"
 #include "src/dsp/gainstages/GainStage.cpp"
 #include "src/dsp/gainstages/GainStageFET.cpp"
@@ -27,6 +25,8 @@
 #include "src/dsp/expanders/Expander.cpp"
 #include "src/dsp/expanders/ExpanderVCA.cpp"
 #include "src/dsp/processors/EQBand.cpp"
+#include "src/dsp/processors/ParallelEQBand.cpp"
+#include "src/dsp/processors/Gain.cpp"
 
 #include "src/math/Decibels.cpp"
 #include "src/math/General.cpp"

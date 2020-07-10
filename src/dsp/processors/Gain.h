@@ -3,7 +3,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "../base/StandardIncludes.h"
+#include "../../base/StandardIncludes.h"
+#include "Processor.h"
 
 namespace apex {
 	namespace dsp {
@@ -12,14 +13,14 @@ namespace apex {
 		///
 		/// @tparam T - The floating point type to operate with, either `float` or `double`
 		template<typename T>
-			class Gain {
+			class Gain : public Processor<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "Gain must be instantiated with a floating point template parameter (float or double)");
 			};
 
 		/// @brief Class used for managing, storing, and applying a specifc gain; operating with `float`s
 		template<>
-			class Gain<float> {
+			class Gain<float> : Processor<float> {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0
@@ -30,7 +31,8 @@ namespace apex {
 					/// @param gain - The gain value to use
 					/// @param gainIsDecibels - Whether the gain value is in Decibels
 					Gain(float gain, bool gainIsDecibels = false);
-					~Gain();
+					Gain(const Gain<float>&& gain);
+					~Gain() override;
 
 					/// @brief Sets the gain of this `Gain` to be the given linear value
 					///
@@ -57,12 +59,7 @@ namespace apex {
 					/// @param input - The input to apply the gain to
 					///
 					/// @return The resulting value after applying the gain
-					float process(float input) const;
-
-					/// @brief Applies this `Gain` to the input, in place
-					///
-					/// @param input - The input to apply the gain to
-					void process(float& input) const;
+					float process(float input) override;
 
 					/// @brief Applies this `Gain` to the pair of input values
 					///
@@ -72,29 +69,30 @@ namespace apex {
 					/// @return - The resulting pair of values after applying the gain
 					std::tuple<float, float> process(float inputL, float inputR) const;
 
-					/// @brief Applies this `Gain` to the pair of input values, in place
+					/// @brief Applies this `Gain` to the array of input values, in place
 					///
-					/// @param inputL - The left input to apply the gain to
-					/// @param inputR - The right input to apply the gain to
-					void process(float& inputL, float& inputR) const;
+					/// @param input - The array of input values to apply gain to
+					/// @param numSamples - The number of samples
+					void process(float* input, size_t numSamples) override;
 
-					/// @brief Applies this `Gain` to the block of input values, in place
-					///
-					/// @param input - The block of input values to apply the gain to
-					/// @param numChannels - The number of channels in the input block
-					/// @param numSamples - The number of samples in the input block
-					void processBlock(float** input, size_t numChannels, size_t numSamples) const;
+					void reset() override {
+
+					}
+
+					Gain<float> operator=(const Gain<float>&& gain);
 
 				private:
 					///The linear gain value
 					float mGainLinear = 1.0f;
 					///The gain value, in Decibels
 					float mGainDecibels = 0.0f;
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Gain)
 			};
 
 		/// @brief Class used for managing, storing, and applying a specifc gain; operating with `double`s
 		template<>
-			class Gain<double> {
+			class Gain<double> : Processor<double> {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0
@@ -105,7 +103,8 @@ namespace apex {
 					/// @param gain - The gain value to use
 					/// @param gainIsDecibels - Whether the gain value is in Decibels
 					Gain(double gain, bool gainIsDecibels = false);
-					~Gain();
+					Gain(const Gain<double>&& gain);
+					~Gain() override;
 
 					/// @brief Sets the gain of this `Gain` to be the given linear value
 					///
@@ -132,12 +131,7 @@ namespace apex {
 					/// @param input - The input to apply the gain to
 					///
 					/// @return The resulting value after applying the gain
-					double process(double input) const;
-
-					/// @brief Applies this `Gain` to the input, in place
-					///
-					/// @param input - The input to apply the gain to
-					void process(double& input) const;
+					double process(double input) override;
 
 					/// @brief Applies this `Gain` to the pair of input values
 					///
@@ -147,24 +141,25 @@ namespace apex {
 					/// @return - The resulting pair of values after applying the gain
 					std::tuple<double, double> process(double inputL, double inputR) const;
 
-					/// @brief Applies this `Gain` to the pair of input values, in place
+					/// @brief Applies this `Gain` to the array of input values, in place
 					///
-					/// @param inputL - The left input to apply the gain to
-					/// @param inputR - The right input to apply the gain to
-					void process(double& inputL, double& inputR) const;
+					/// @param input - The array of input values to apply gain to
+					/// @param numSamples - The number of samples
+					void process(double* input, size_t numSamples) override;
 
-					/// @brief Applies this `Gain` to the block of input values, in place
-					///
-					/// @param input - The block of input values to apply the gain to
-					/// @param numChannels - The number of channels in the input block
-					/// @param numSamples - The number of samples in the input block
-					void processBlock(double** input, size_t numChannels, size_t numSamples) const;
+					void reset() override {
+
+					}
+
+					Gain<double> operator=(const Gain<double>&& gain);
 
 				private:
 					///The linear gain value
 					double mGainLinear = 1.0;
 					///The gain value, in Decibels
 					double mGainDecibels = 0.0;
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Gain)
 			};
 	}
 }

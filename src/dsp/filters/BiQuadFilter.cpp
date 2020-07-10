@@ -3,10 +3,14 @@
 namespace apex {
 	namespace dsp {
 
+		/// @brief Constructs a default `BiQuadFilter`
 		BiQuadFilter<float>::BiQuadFilter() {
 			updateCoefficients();
 		}
 
+		/// @brief Move contructs a `BiQuadFilter` from the given one
+		///
+		/// @param filt - The `BiQuadFilter` to move
 		BiQuadFilter<float>::BiQuadFilter(const BiQuadFilter<float>&& filt) {
 			mB0 = filt.mB0;
 			mB1 = filt.mB1;
@@ -617,10 +621,14 @@ namespace apex {
 
 		}
 
+		/// @brief Constructs a default `BiQuadFilter`
 		BiQuadFilter<double>::BiQuadFilter() {
 			updateCoefficients();
 		}
 
+		/// @brief Move contructs a `BiQuadFilter` from the given one
+		///
+		/// @param filt - The `BiQuadFilter` to move
 		BiQuadFilter<double>::BiQuadFilter(const BiQuadFilter<double>&& filt) {
 			mB0 = filt.mB0;
 			mB1 = filt.mB1;

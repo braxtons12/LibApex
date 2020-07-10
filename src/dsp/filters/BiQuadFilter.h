@@ -18,6 +18,8 @@ namespace apex {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
 
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiQuadFilter)
 			};
 
 		/// @brief Basic BiQuad Filter implementation
@@ -26,7 +28,13 @@ namespace apex {
 		template<>
 			class BiQuadFilter<float> {
 				public:
+
+					/// @brief Constructs a default `BiQuadFilter`
 					BiQuadFilter();
+
+					/// @brief Move contructs a `BiQuadFilter` from the given one
+					///
+					/// @param filt - The `BiQuadFilter<float>` to move
 					BiQuadFilter(const BiQuadFilter<float>&& filt);
 					~BiQuadFilter();
 
@@ -407,7 +415,7 @@ namespace apex {
 					/// @brief Updates the coefficients of this filter
 					void updateCoefficients();
 
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiQuadFilter<float>)
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiQuadFilter)
 			};
 
 		/// @brief Basic BiQuad Filter implementation
@@ -416,7 +424,13 @@ namespace apex {
 		template<>
 			class BiQuadFilter<double> {
 				public:
+
+					/// @brief Constructs a default `BiQuadFilter`
 					BiQuadFilter();
+
+					/// @brief Move contructs a `BiQuadFilter` from the given one
+					///
+					/// @param filt - The `BiQuadFilter` to move
 					BiQuadFilter(const BiQuadFilter<double>&& filt);
 					~BiQuadFilter();
 
@@ -797,7 +811,7 @@ namespace apex {
 					/// @brief Updates the coefficients of this filter
 					void updateCoefficients();
 
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiQuadFilter<double>)
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BiQuadFilter)
 			};
 	}
 }

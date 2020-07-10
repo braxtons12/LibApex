@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include "Gain.h"
 #include "Processor.h"
 #include "../filters/BiQuadFilter.h"
 #include "../../base/StandardIncludes.h"
@@ -49,6 +50,9 @@ namespace apex {
 						AnalogBell = 17
 					};
 
+					/// @brief Creates a default `EQBand`
+					EQBand();
+
 					/// @brief Creates an `EQBand` with the given parameters
 					///
 					/// @param frequency - The frequency to use, in Hertz
@@ -57,6 +61,11 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use, in Hertz
 					/// @param type - The type of band
 					EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type);
+
+					/// @brief Move constructs an `EQBand` from the given one
+					///
+					/// @param band - The `EQBand` to move
+					EQBand(const EQBand<float>&& band);
 					~EQBand() override;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
@@ -82,12 +91,12 @@ namespace apex {
 					/// @brief Sets the gain of this `EQBand`
 					///
 					/// @param gainDB - The new gain, in Decibels
-					void setGainDB(float gainDB);
+					virtual void setGainDB(float gainDB);
 
 					/// @brief Returns the gain of this `EQBand`
 					///
 					/// @return - The current gain, in Decibels
-					float getGainDB() const;
+					virtual float getGainDB() const;
 
 					/// @brief Sets the sample rate of this `EQBand` to the given value
 					///
@@ -114,22 +123,26 @@ namespace apex {
 					/// @param input - The input to apply EQ to
 					///
 					/// @return - The processed value
-					float process(float input) override;
+					virtual float process(float input) override;
 
 					/// @brief Applies this `EQBand` to the given array of input values, in place
 					///
 					/// @param input - The input values to apply EQ to
 					/// @param numSamples - The number of input samples
-					void process(float* input, size_t numSamples) override;
+					virtual void process(float* input, size_t numSamples) override;
 
 					/// @brief Resets this `EQBand` to an initial state
-					void reset() override;
+					virtual void reset() override;
 
-				private:
+					EQBand<float> operator=(const EQBand<float>&& band);
+
+				protected:
 					BandType mType = BandType::Bell;
 					float mFrequency = 1000.0f;
 					float mQ = 1.0f;
 					float mGain = 0.0f;
+					///Only used for "____pass" type filters
+					Gain<float> mGainProcessor;
 					size_t mSampleRate = 44100;
 					size_t mOrder = 1;
 					BiQuadFilter<float> mFilter;
@@ -144,7 +157,7 @@ namespace apex {
 					float frequencyShift(size_t filterIndex) const;
 
 					/// @brief Creates the necessary filter(s) for this `EQBand`
-					void createFilters();
+					virtual void createFilters();
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EQBand)
 			};
@@ -175,6 +188,9 @@ namespace apex {
 						AnalogBell = 17
 					};
 
+					/// @brief Creates a default `EQBand`
+					EQBand();
+
 					/// @brief Creates an `EQBand` with the given parameters
 					///
 					/// @param frequency - The frequency to use, in Hertz
@@ -183,6 +199,7 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use, in Hertz
 					/// @param type - The type of band
 					EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type);
+					EQBand(const EQBand<double>&& band);
 					~EQBand() override;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
@@ -208,12 +225,12 @@ namespace apex {
 					/// @brief Sets the gain of this `EQBand`
 					///
 					/// @param gainDB - The new gain, in Decibels
-					void setGainDB(double gainDB);
+					virtual void setGainDB(double gainDB);
 
 					/// @brief Returns the gain of this `EQBand`
 					///
 					/// @return - The current gain, in Decibels
-					double getGainDB() const;
+					virtual double getGainDB() const;
 
 					/// @brief Sets the sample rate of this `EQBand` to the given value
 					///
@@ -240,22 +257,26 @@ namespace apex {
 					/// @param input - The input to apply EQ to
 					///
 					/// @return - The processed value
-					double process(double input) override;
+					virtual double process(double input) override;
 
 					/// @brief Applies this `EQBand` to the given array of input values, in place
 					///
 					/// @param input - The input values to apply EQ to
 					/// @param numSamples - The number of input samples
-					void process(double* input, size_t numSamples) override;
+					virtual void process(double* input, size_t numSamples) override;
 
 					/// @brief Resets this `EQBand` to an initial state
-					void reset() override;
+					virtual void reset() override;
 
-				private:
+					EQBand<double> operator=(const EQBand<double>&& band);
+
+				protected:
 					BandType mType = BandType::Bell;
 					double mFrequency = 1000.0f;
 					double mQ = 1.0f;
 					double mGain = 0.0f;
+					///Only used for "____pass" type filters
+					Gain<double> mGainProcessor;
 					size_t mSampleRate = 44100;
 					size_t mOrder = 1;
 					BiQuadFilter<double> mFilter;
@@ -270,7 +291,7 @@ namespace apex {
 					double frequencyShift(size_t filterIndex) const;
 
 					/// @brief Creates the necessary filter(s) for this `EQBand`
-					void createFilters();
+					virtual void createFilters();
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EQBand)
 			};

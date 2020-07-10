@@ -3,6 +3,13 @@
 namespace apex {
 	namespace dsp {
 
+		/// @brief Creates a default `EQBand`
+		EQBand<float>::EQBand() {
+			mFilter = std::move(BiQuadFilter<float>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
+			mFilters.resize(0);
+			mGainProcessor = std::move(Gain<float>(mGain, true));
+		}
+
 		/// @brief Creates an `EQBand` with the given parameters
 		///
 		/// @param frequency - The frequency to use, in Hertz
@@ -24,10 +31,29 @@ namespace apex {
 				if(mType % 4 == 1) mOrder = 2;
 				if(mType % 4 == 2) mOrder = 4;
 				if(mType % 4 == 3) mOrder = 8;
+				mGainProcessor = std::move(Gain<float>(mGain, true));
 			}
 
 			mFilters.resize(mOrder);
 			createFilters();
+		}
+
+		/// @brief Move constructs an `EQBand` from the given one
+		///
+		/// @param band - The `EQBand` to move
+		EQBand<float>::EQBand(const EQBand<float>&& band) {
+			mType = band.mType;
+			mFrequency = band.mFrequency;
+			mQ = band.mQ;
+			mGain = band.mGain;
+			mSampleRate = band.mSampleRate;
+			mFilter = std::move(band.mFilter);
+			mOrder = band.mOrder;
+			mGainProcessor = std::move(band.mGainProcessor);
+			mFilters.resize(band.mFilters.size());
+			for(size_t i = 0; i < mFilters.size(); ++i) {
+				mFilters[i] = std::move(band.mFilters[i]);
+			}
 		}
 
 		EQBand<float>::~EQBand() {
@@ -147,9 +173,12 @@ namespace apex {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					x = mFilters[ord].process(input);
 				}
+				x = mGainProcessor.process(x);
 			}
 			else {
 				x = mFilter.process(input);
+				if(mType == BandType::Allpass || mType == BandType::Notch)
+					x = mGainProcessor.process(x);
 			}
 			return x;
 		}
@@ -163,6 +192,7 @@ namespace apex {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
 				}
+				mGainProcessor.process(input, numSamples);
 			}
 			else {
 				mFilter.process(input, numSamples);
@@ -179,6 +209,10 @@ namespace apex {
 			else {
 				mFilter.reset();
 			}
+		}
+
+		EQBand<float> EQBand<float>::operator=(const EQBand<float>&& band) {
+			return EQBand<float>(std::move(band));
 		}
 
 		/// @brief Returns the shifted frequency for the Nth filter stage in
@@ -498,6 +532,13 @@ namespace apex {
 			}
 		}
 
+		/// @brief Creates a default `EQBand`
+		EQBand<double>::EQBand() {
+			mFilter = std::move(BiQuadFilter<double>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
+			mFilters.resize(0);
+			mGainProcessor = std::move(Gain<double>(mGain, true));
+		}
+
 		/// @brief Creates an `EQBand` with the given parameters
 		///
 		/// @param frequency - The frequency to use, in Hertz
@@ -519,10 +560,29 @@ namespace apex {
 				if(mType % 4 == 1) mOrder = 2;
 				if(mType % 4 == 2) mOrder = 4;
 				if(mType % 4 == 3) mOrder = 8;
+				mGainProcessor = std::move(Gain<double>(mGain, true));
 			}
 
 			mFilters.resize(mOrder);
 			createFilters();
+		}
+
+		/// @brief Move constructs an `EQBand` from the given one
+		///
+		/// @param band - The `EQBand` to move
+		EQBand<double>::EQBand(const EQBand<double>&& band) {
+			mType = band.mType;
+			mFrequency = band.mFrequency;
+			mQ = band.mQ;
+			mGain = band.mGain;
+			mSampleRate = band.mSampleRate;
+			mFilter = std::move(band.mFilter);
+			mOrder = band.mOrder;
+			mGainProcessor = std::move(band.mGainProcessor);
+			mFilters.resize(band.mFilters.size());
+			for(size_t i = 0; i < mFilters.size(); ++i) {
+				mFilters[i] = std::move(band.mFilters[i]);
+			}
 		}
 
 		EQBand<double>::~EQBand() {
@@ -574,6 +634,7 @@ namespace apex {
 		/// @param gainDB - The new gain, in Decibels
 		void EQBand<double>::setGainDB(double gainDB) {
 			mGain = gainDB;
+			mGainProcessor.setGainDecibels(mGain);
 			mFilter.setGainDB(mGain);
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
@@ -642,9 +703,12 @@ namespace apex {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					x = mFilters[ord].process(input);
 				}
+				x = mGainProcessor.process(x);
 			}
 			else {
 				x = mFilter.process(input);
+				if(mType == BandType::Allpass || mType == BandType::Notch)
+					x = mGainProcessor.process(x);
 			}
 			return x;
 		}
@@ -658,6 +722,7 @@ namespace apex {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
 				}
+				mGainProcessor.process(input, numSamples);
 			}
 			else {
 				mFilter.process(input, numSamples);
@@ -674,6 +739,10 @@ namespace apex {
 			else {
 				mFilter.reset();
 			}
+		}
+
+		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) {
+			return EQBand<double>(std::move(band));
 		}
 
 		/// @brief Returns the shifted frequency for the Nth filter stage in

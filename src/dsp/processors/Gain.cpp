@@ -25,6 +25,11 @@ namespace apex {
 			}
 		}
 
+		Gain<float>::Gain(const Gain<float>&& gain) {
+			mGainLinear = gain.mGainLinear;
+			mGainDecibels = gain.mGainDecibels;
+		}
+
 		Gain<float>::~Gain() {
 
 		}
@@ -64,15 +69,8 @@ namespace apex {
 		/// @param input - The input to apply the gain to
 		///
 		/// @return The resulting value after applying the gain
-		float Gain<float>::process(float input) const {
+		float Gain<float>::process(float input) {
 			return input * mGainLinear;
-		}
-
-		/// @brief Applies this `Gain` to the input, in place
-		///
-		/// @param input - The input to apply the gain to
-		void Gain<float>::process(float& input) const {
-			input *= mGainLinear;
 		}
 
 		/// @brief Applies this `Gain` to the pair of input values
@@ -85,42 +83,29 @@ namespace apex {
 			return std::tuple<float, float>(inputL * mGainLinear, inputR * mGainLinear);
 		}
 
-		/// @brief Applies this `Gain` to the pair of input values, in place
+		/// @brief Applies this `Gain` to the array of input values, in place
 		///
-		/// @param inputL - The left input to apply the gain to
-		/// @param inputR - The right input to apply the gain to
-		void Gain<float>::process(float& inputL, float& inputR) const {
-			inputL *= mGainLinear;
-			inputR *= mGainLinear;
-		}
-
-		/// @brief Applies this `Gain` to the block of input values, in place
-		///
-		/// @param input - The block of input values to apply the gain to
-		/// @param numChannels - The number of channels in the input block
-		/// @param numSamples - The number of samples in the input block
-		void Gain<float>::processBlock(float** input, size_t numChannels, size_t numSamples) const {
-			///TODO: test if this optimizatino is good?
+		/// @param input - The array of input values to apply gain to
+		/// @param numSamples - The number of samples
+		void Gain<float>::process(float* input, size_t numSamples) {
 #if JUCE_USE_SIMD
 			using juce::dsp::SIMDRegister;
-			std::vector<SIMDRegister<float>> channelRegs =
-				std::vector<SIMDRegister<float>>(numChannels);
+			SIMDRegister<float> reg;
 			size_t size = SIMDRegister<float>::size();
 			for(size_t sample = 0; sample < numSamples; sample += size) {
-				for(size_t channel = 0; channel < numChannels; ++channel) {
-					channelRegs[channel] =
-						SIMDRegister<float>::fromRawArray(&input[channel][sample]);
-					channelRegs[channel] *= mGainLinear;
-					channelRegs[channel].copyToRawArray(&input[channel][sample]);
-				}
+				reg = SIMDRegister<float>::fromRawArray(&input[sample]);
+				reg *= mGainLinear;
+				reg.copyToRawArray(&input[sample]);
 			}
-#else
-			for(size_t channel = 0; channel < numChannels; ++channel) {
-				for(size_t sample = 0; sample < numSamples; ++sample) {
-					input[channel][sample] *= mGainLinear;
-				}
+#else //JUCE_USE_SIMD
+			for(size_t sample = 0; sample < numSamples; ++sample) {
+				input[sample] *= mGainLinear;
 			}
 #endif //JUCE_USE_SIMD
+		}
+
+		Gain<float> Gain<float>::operator=(const Gain<float>&& gain) {
+			return Gain<float>(std::move(gain));
 		}
 
 		/// @brief Constructs a default `Gain` with an initial linear value of 1.0
@@ -141,6 +126,11 @@ namespace apex {
 				mGainLinear = gain;
 				mGainDecibels = math::Decibels::linearToDecibels(gain);
 			}
+		}
+
+		Gain<double>::Gain(const Gain<double>&& gain) {
+			mGainLinear = gain.mGainLinear;
+			mGainDecibels = gain.mGainDecibels;
 		}
 
 		Gain<double>::~Gain() {
@@ -182,15 +172,8 @@ namespace apex {
 		/// @param input - The input to apply the gain to
 		///
 		/// @return The resulting value after applying the gain
-		double Gain<double>::process(double input) const {
+		double Gain<double>::process(double input) {
 			return input * mGainLinear;
-		}
-
-		/// @brief Applies this `Gain` to the input, in place
-		///
-		/// @param input - The input to apply the gain to
-		void Gain<double>::process(double& input) const {
-			input *= mGainLinear;
 		}
 
 		/// @brief Applies this `Gain` to the pair of input values
@@ -203,42 +186,29 @@ namespace apex {
 			return std::tuple<double, double>(inputL * mGainLinear, inputR * mGainLinear);
 		}
 
-		/// @brief Applies this `Gain` to the pair of input values, in place
+		/// @brief Applies this `Gain` to the array of input values, in place
 		///
-		/// @param inputL - The left input to apply the gain to
-		/// @param inputR - The right input to apply the gain to
-		void Gain<double>::process(double& inputL, double& inputR) const {
-			inputL *= mGainLinear;
-			inputR *= mGainLinear;
-		}
-
-		/// @brief Applies this `Gain` to the block of input values, in place
-		///
-		/// @param input - The block of input values to apply the gain to
-		/// @param numChannels - The number of channels in the input block
-		/// @param numSamples - The number of samples in the input block
-		void Gain<double>::processBlock(double** input, size_t numChannels, size_t numSamples) const {
-			///TODO: test if this optimization is good?
+		/// @param input - The array of input values to apply gain to
+		/// @param numSamples - The number of samples
+		void Gain<double>::process(double* input, size_t numSamples) {
 #if JUCE_USE_SIMD
 			using juce::dsp::SIMDRegister;
-			std::vector<SIMDRegister<double>> channelRegs =
-				std::vector<SIMDRegister<double>>(numChannels);
+			SIMDRegister<double> reg;
 			size_t size = SIMDRegister<double>::size();
 			for(size_t sample = 0; sample < numSamples; sample += size) {
-				for(size_t channel = 0; channel < numChannels; ++channel) {
-					channelRegs[channel] =
-						SIMDRegister<double>::fromRawArray(&input[channel][sample]);
-					channelRegs[channel] *= mGainLinear;
-					channelRegs[channel].copyToRawArray(&input[channel][sample]);
-				}
+				reg = SIMDRegister<double>::fromRawArray(&input[sample]);
+				reg *= mGainLinear;
+				reg.copyToRawArray(&input[sample]);
 			}
-#else
-			for(size_t channel = 0; channel < numChannels; ++channel) {
-				for(size_t sample = 0; sample < numSamples; ++sample) {
-					input[channel][sample] *= mGainLinear;
-				}
+#else //JUCE_USE_SIMD
+			for(size_t sample = 0; sample < numSamples; ++sample) {
+				input[sample] *= mGainLinear;
 			}
 #endif //JUCE_USE_SIMD
+		}
+
+		Gain<double> Gain<double>::operator=(const Gain<double>&& gain) {
+			return Gain<double>(std::move(gain));
 		}
 	}
 }

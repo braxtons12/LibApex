@@ -32,8 +32,6 @@ END_JUCE_MODULE_DECLARATION
 #include "src/ui/ApexThumbSlider.h"
 #include "src/ui/ApexToggleButton.h"
 
-#include "src/dsp/EQ.h"
-#include "src/dsp/Gain.h"
 #include "src/dsp/filters/BiQuadFilter.h"
 #include "src/dsp/gainstages/GainStage.h"
 #include "src/dsp/gainstages/GainStageFET.h"
@@ -52,3 +50,6 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/processors/Processor.h"
 #include "src/dsp/processors/MultiChannelProcessor.h"
 #include "src/dsp/processors/EQBand.h"
+#include "src/dsp/processors/ParallelEQBand.h"
+#include "src/dsp/processors/Gain.h"
+

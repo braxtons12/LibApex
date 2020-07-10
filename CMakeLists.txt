@@ -109,7 +109,6 @@ set(UI
 	)
 
 set(DSP
-	"${CMAKE_SOURCE_DIR}/src/dsp/EQ.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors/Compressor.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors/CompressorFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/compressors/CompressorOpto.cpp"
@@ -117,7 +116,6 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/Expander.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/expanders/ExpanderVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/Gain.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStage.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageVCA.cpp"
@@ -127,6 +125,8 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainreductions/GainReductionVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/MultiChannelProcessor.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/EQBand.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors/ParallelEQBand.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors/Gain.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
 	)
 
