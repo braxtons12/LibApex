@@ -283,6 +283,15 @@ namespace apex {
 
 		}
 
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in degrees, at the given frequency
+		inline float EQBand<float>::getDegreesPhaseForFrequency(float frequency) const noexcept {
+			return getPhaseForFrequency(frequency) * 180.0f / math::pif;
+		}
+
 		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
@@ -293,6 +302,19 @@ namespace apex {
 		{
 			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
 				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in degrees) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<float>::getDegreesPhasesForFrequencies(float* frequencies,
+				float* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getDegreesPhaseForFrequency(frequencies[frequency]);
 			}
 		}
 
@@ -898,6 +920,15 @@ namespace apex {
 
 		}
 
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in degrees, at the given frequency
+		inline double EQBand<double>::getDegreesPhaseForFrequency(double frequency) const noexcept {
+			return getPhaseForFrequency(frequency) * 180.0 / math::pi;
+		}
+
 		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
@@ -910,6 +941,20 @@ namespace apex {
 				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
 			}
 		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in degrees) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<double>::getDegreesPhasesForFrequencies(double* frequencies,
+				double* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getDegreesPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
 		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) noexcept {
 			return EQBand<double>(std::move(band));
 		}

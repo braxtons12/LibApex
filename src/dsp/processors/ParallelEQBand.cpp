@@ -142,6 +142,140 @@ namespace apex {
 			}
 		}
 
+		/// @brief Calculates the linear magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline float ParallelEQBand<float>::getMagnitudeForFrequency(float frequency) const noexcept {
+			float x = 1.0f;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x*= mFilters[ord].getMagnitudeForFrequency(frequency);
+				}
+			}
+			else if(mType < BandType::LowShelf) {
+				x = mFilter.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::LowShelf) {
+				BiQuadFilter<float> filt = BiQuadFilter<float>::MakeLowShelf(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::HighShelf) {
+				BiQuadFilter<float> filt = BiQuadFilter<float>::MakeHighShelf(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::Bell) {
+				BiQuadFilter<float> filt = BiQuadFilter<float>::MakeBell(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else {
+				BiQuadFilter<float> filt = BiQuadFilter<float>::MakeAnalogBell(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			return x;
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline float ParallelEQBand<float>::getDecibelMagnitudeForFrequency(float frequency) const noexcept {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
+
+		/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<float>::getMagnitudesForFrequencies(float* frequencies,
+				float* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<float>::getDecibelMagnitudesForFrequencies(float* frequencies,
+				float* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getDecibelMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in radians, at the given frequency
+		inline float ParallelEQBand<float>::getPhaseForFrequency(float frequency) const noexcept {
+			float x = 0.0f;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x += mFilters[ord].getPhaseForFrequency(frequency);
+				}
+			}
+			else if(mType < BandType::LowShelf) {
+				x = mFilter.getPhaseForFrequency(frequency);
+			}
+			else {
+				///TODO: This might not be the accurate way to do this,
+				///but for now it's what we have
+
+				//Parallel bands should have phase-shift as the average between
+				//the shift caused by the filter and the original, right?
+				x = mFilter.getPhaseForFrequency(frequency) / 2.0f;
+			}
+			return x;
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in degrees, at the given frequency
+		inline float ParallelEQBand<float>::getDegreesPhaseForFrequency(float frequency) const noexcept {
+			return getPhaseForFrequency(frequency) * 180.0f / math::pif;
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in radians) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<float>::getPhasesForFrequencies(float* frequencies,
+				float* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in degrees) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<float>::getDegreesPhasesForFrequencies(float* frequencies,
+				float* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getDegreesPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
 		ParallelEQBand<float> ParallelEQBand<float>::operator=(const ParallelEQBand<float>&& band) noexcept {
 			return ParallelEQBand<float>(std::move(band));
 		}
@@ -323,6 +457,140 @@ namespace apex {
 					}
 				}
 				delete[] x;
+			}
+		}
+
+		/// @brief Calculates the linear magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline double ParallelEQBand<double>::getMagnitudeForFrequency(double frequency) const noexcept {
+			double x = 1.0;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x*= mFilters[ord].getMagnitudeForFrequency(frequency);
+				}
+			}
+			else if(mType < BandType::LowShelf) {
+				x = mFilter.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::LowShelf) {
+				BiQuadFilter<double> filt = BiQuadFilter<double>::MakeLowShelf(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::HighShelf) {
+				BiQuadFilter<double> filt = BiQuadFilter<double>::MakeHighShelf(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else if(mType == BandType::Bell) {
+				BiQuadFilter<double> filt = BiQuadFilter<double>::MakeBell(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			else {
+				BiQuadFilter<double> filt = BiQuadFilter<double>::MakeAnalogBell(
+						mFrequency, mQ, mGain, mSampleRate);
+				x = filt.getMagnitudeForFrequency(frequency);
+			}
+			return x;
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline double ParallelEQBand<double>::getDecibelMagnitudeForFrequency(double frequency) const noexcept {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
+
+		/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<double>::getMagnitudesForFrequencies(double* frequencies,
+				double* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<double>::getDecibelMagnitudesForFrequencies(double* frequencies,
+				double* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getDecibelMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in radians, at the given frequency
+		inline double ParallelEQBand<double>::getPhaseForFrequency(double frequency) const noexcept {
+			double x = 0.0;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x += mFilters[ord].getPhaseForFrequency(frequency);
+				}
+			}
+			else if(mType < BandType::LowShelf) {
+				x = mFilter.getPhaseForFrequency(frequency);
+			}
+			else {
+				///TODO: This might not be the accurate way to do this,
+				///but for now it's what we have
+
+				//Parallel bands should have phase-shift as the average between
+				//the shift caused by the filter and the original, right?
+				x = mFilter.getPhaseForFrequency(frequency) / 2.0;
+			}
+			return x;
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in degrees, at the given frequency
+		inline double ParallelEQBand<double>::getDegreesPhaseForFrequency(double frequency) const noexcept {
+			return getPhaseForFrequency(frequency) * 180.0 / math::pi;
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in radians) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<double>::getPhasesForFrequencies(double* frequencies,
+				double* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in degrees) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void ParallelEQBand<double>::getDegreesPhasesForFrequencies(double* frequencies,
+				double* phases, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getDegreesPhaseForFrequency(frequencies[frequency]);
 			}
 		}
 
