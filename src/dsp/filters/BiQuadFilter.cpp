@@ -550,6 +550,51 @@ namespace apex {
 			}
 		}
 
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response at the given frequency
+		float BiQuadFilter<float>::getPhaseForFrequency(float frequency) const noexcept {
+			constexpr std::complex<float> j(0.0f, 1.0f);
+			const size_t order = 2;
+			const float coefficients[5] = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+
+			jassert(frequency >= 0 && frequency <= mSampleRate * 0.5f);
+
+			std::complex<float> numerator = 0.0f;
+			std::complex<float> denominator = 1.0f;
+			std::complex<float> factor = 1.0f;
+			std::complex<float> jw = std::exp(-math::twoPif * frequency * j / static_cast<float>(mSampleRate));
+
+			for(size_t n = 0; n <= order; ++n) {
+				numerator += coefficients[n] * factor;
+				factor *= jw;
+			}
+
+			factor = jw;
+
+			for(size_t n = order + 1; n <= 2 * order; ++n) {
+				denominator += coefficients[n] * factor;
+				factor *= jw;
+			}
+
+			return std::arg(numerator / denominator);
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		void BiQuadFilter<float>::getPhasesForFrequencies(float* frequencies, float* phases,
+				size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
 		BiQuadFilter<float> BiQuadFilter<float>::operator=(const BiQuadFilter<float>&& filt) noexcept {
 			return BiQuadFilter<float>(std::move(filt));
 		}
@@ -1183,7 +1228,7 @@ namespace apex {
 			std::complex<double> numerator = 0.0;
 			std::complex<double> denominator = 1.0;
 			std::complex<double> factor = 1.0;
-			std::complex<double> jw = std::exp(-math::twoPif * frequency *
+			std::complex<double> jw = std::exp(-math::twoPi * frequency *
 					j / static_cast<double>(mSampleRate));
 
 			for(size_t n = 0; n <= order; ++n) {
@@ -1214,6 +1259,50 @@ namespace apex {
 			}
 		}
 
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response at the given frequency
+		double BiQuadFilter<double>::getPhaseForFrequency(double frequency) const noexcept {
+			constexpr std::complex<double> j(0.0, 1.0);
+			const size_t order = 2;
+			const double coefficients[5] = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+
+			jassert(frequency >= 0 && frequency <= mSampleRate * 0.5f);
+
+			std::complex<double> numerator = 0.0;
+			std::complex<double> denominator = 1.0;
+			std::complex<double> factor = 1.0;
+			std::complex<double> jw = std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
+
+			for(size_t n = 0; n <= order; ++n) {
+				numerator += coefficients[n] * factor;
+				factor *= jw;
+			}
+
+			factor = jw;
+
+			for(size_t n = order + 1; n <= 2 * order; ++n) {
+				denominator += coefficients[n] * factor;
+				factor *= jw;
+			}
+
+			return std::arg(numerator / denominator);
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		void BiQuadFilter<double>::getPhasesForFrequencies(double* frequencies, double* phases,
+				size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
 		BiQuadFilter<double> BiQuadFilter<double>::operator=(const BiQuadFilter<double>&& filt) noexcept {
 			return BiQuadFilter<double>(std::move(filt));
 		}

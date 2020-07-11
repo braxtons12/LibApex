@@ -397,10 +397,24 @@ namespace apex {
 
 					/// @brief Calculates the magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
 					///
-					/// @param frequencies - The frequencies to calcualte the magnitude respones for
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 					/// @param magnitudes - The array to store the magnitudes in
 					/// @param numFrequencies - The number of frequencies in the `frequencies` array
 					void getMagnitudesForFrequencies(float* frequencies, float* magnitudes, size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the phase response for, in Hertz
+					///
+					/// @return - The phase response at the given frequency
+					float getPhaseForFrequency(float frequency) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+					///
+					/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+					/// @param phases - The array to store the phases in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					void getPhasesForFrequencies(float* frequencies, float* phases, size_t numFrequencies) const noexcept;
 
 					BiQuadFilter<float> operator=(const BiQuadFilter<float>&& filt) noexcept;
 
@@ -805,12 +819,26 @@ namespace apex {
 					/// @return - The magnitude response at the given frequency
 					double getMagnitudeForFrequency(double frequency) const noexcept;
 
-					/// @brief Calculates the magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+					/// @brief Calculates the magnitude response of this filter for the given array of frequencies and stores it in `magnitudes`
 					///
-					/// @param frequencies - The frequencies to calcualte the magnitude respones for
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 					/// @param magnitudes - The array to store the magnitudes in
 					/// @param numFrequencies - The number of frequencies in the `frequencies` array
 					void getMagnitudesForFrequencies(double* frequencies, double* magnitudes, size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the phase response for, in Hertz
+					///
+					/// @return - The phase response at the given frequency
+					double getPhaseForFrequency(double frequency) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+					///
+					/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+					/// @param phases - The array to store the phases in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					void getPhasesForFrequencies(double* frequencies, double* phases, size_t numFrequencies) const noexcept;
 
 					BiQuadFilter<double> operator=(const BiQuadFilter<double>&& filt) noexcept;
 
