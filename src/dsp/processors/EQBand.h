@@ -134,6 +134,51 @@ namespace apex {
 					/// @brief Resets this `EQBand` to an initial state
 					virtual void reset() noexcept override;
 
+					/// @brief Calculates the linear magnitude response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+					///
+					/// @return - The magnitude response at the given frequency
+					virtual float getMagnitudeForFrequency(float frequency) const noexcept;
+
+					/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+					///
+					/// @return - The magnitude response at the given frequency
+					float getDecibelMagnitudeForFrequency(float frequency) const noexcept;
+
+					/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+					///
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+					/// @param magnitudes - The array to store the magnitudes in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					virtual void getMagnitudesForFrequencies(float* frequencies, float* magnitudes,
+							size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+					///
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+					/// @param magnitudes - The array to store the magnitudes in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					void getDecibelMagnitudesForFrequencies(float* frequencies, float* magnitudes,
+							size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the phase response for, in Hertz
+					///
+					/// @return - The phase response, in radians, at the given frequency
+					virtual float getPhaseForFrequency(float frequency) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+					///
+					/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+					/// @param phases - The array to store the phases (in radians) in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					virtual void getPhasesForFrequencies(float* frequencies, float* phases,
+							size_t numFrequencies) const noexcept;
+
 					EQBand<float> operator=(const EQBand<float>&& band) noexcept;
 
 				protected:
@@ -267,6 +312,51 @@ namespace apex {
 
 					/// @brief Resets this `EQBand` to an initial state
 					virtual void reset() noexcept override;
+
+					/// @brief Calculates the linear magnitude response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+					///
+					/// @return - The magnitude response at the given frequency
+					virtual double getMagnitudeForFrequency(double frequency) const noexcept;
+
+					/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+					///
+					/// @return - The magnitude response at the given frequency
+					double getDecibelMagnitudeForFrequency(double frequency) const noexcept;
+
+					/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+					///
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+					/// @param magnitudes - The array to store the magnitudes in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					virtual void getMagnitudesForFrequencies(double* frequencies, double* magnitudes,
+							size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+					///
+					/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+					/// @param magnitudes - The array to store the magnitudes in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					void getDecibelMagnitudesForFrequencies(double* frequencies, double* magnitudes,
+							size_t numFrequencies) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given frequency
+					///
+					/// @param frequency - The frequency to calculate the phase response for, in Hertz
+					///
+					/// @return - The phase response, in radians, at the given frequency
+					virtual double getPhaseForFrequency(double frequency) const noexcept;
+
+					/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+					///
+					/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+					/// @param phases - The array to store the phases (in radians) in
+					/// @param numFrequencies - The number of frequencies in the `frequencies` array
+					virtual void getPhasesForFrequencies(double* frequencies, double* phases,
+							size_t numFrequencies) const noexcept;
 
 					EQBand<double> operator=(const EQBand<double>&& band) noexcept;
 

@@ -211,6 +211,91 @@ namespace apex {
 			}
 		}
 
+		/// @brief Calculates the linear magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline float EQBand<float>::getMagnitudeForFrequency(float frequency) const noexcept {
+			float x = 1.0f;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x *= mFilters[ord].getMagnitudeForFrequency(frequency);
+				}
+			}
+			else {
+				x = mFilter.getMagnitudeForFrequency(frequency);
+			}
+			return x;
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline float EQBand<float>::getDecibelMagnitudeForFrequency(float frequency) const noexcept {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
+
+		/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<float>::getMagnitudesForFrequencies(float* frequencies, float* magnitudes,
+				size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<float>::getDecibelMagnitudesForFrequencies(float* frequencies,
+				float* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getDecibelMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in radians, at the given frequency
+		inline float EQBand<float>::getPhaseForFrequency(float frequency) const noexcept {
+			float x = 0.0f;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x += mFilters[ord].getPhaseForFrequency(frequency);
+				}
+			}
+			else {
+				x = mFilter.getPhaseForFrequency(frequency);
+			}
+			return x;
+
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in radians) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<float>::getPhasesForFrequencies(float* frequencies, float* phases,
+				size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
+
 		EQBand<float> EQBand<float>::operator=(const EQBand<float>&& band) noexcept {
 			return EQBand<float>(std::move(band));
 		}
@@ -741,6 +826,90 @@ namespace apex {
 			}
 		}
 
+		/// @brief Calculates the linear magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline double EQBand<double>::getMagnitudeForFrequency(double frequency) const noexcept {
+			double x = 1.0;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x *= mFilters[ord].getMagnitudeForFrequency(frequency);
+				}
+			}
+			else {
+				x = mFilter.getMagnitudeForFrequency(frequency);
+			}
+			return x;
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
+		///
+		/// @return - The magnitude response at the given frequency
+		inline double EQBand<double>::getDecibelMagnitudeForFrequency(double frequency) const noexcept {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
+
+		/// @brief Calculates the linear magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<double>::getMagnitudesForFrequencies(double* frequencies,
+				double* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the decibel magnitude response of this filter for the given array of frequencies and stores them in `magnitudes`
+		///
+		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
+		/// @param magnitudes - The array to store the magnitudes in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<double>::getDecibelMagnitudesForFrequencies(double* frequencies,
+				double* magnitudes, size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				magnitudes[frequency] = getDecibelMagnitudeForFrequency(frequencies[frequency]);
+			}
+		}
+
+		/// @brief Calculates the phase response of this filter for the given frequency
+		///
+		/// @param frequency - The frequency to calculate the phase response for, in Hertz
+		///
+		/// @return - The phase response, in radians, at the given frequency
+		inline double EQBand<double>::getPhaseForFrequency(double frequency) const noexcept {
+			double x = 0.0;
+			if(mType < BandType::Allpass) {
+				for(size_t ord = 0; ord < mOrder; ++ord) {
+					x += mFilters[ord].getPhaseForFrequency(frequency);
+				}
+			}
+			else {
+				x = mFilter.getPhaseForFrequency(frequency);
+			}
+			return x;
+
+		}
+
+		/// @brief Calculates the phase response of this filter for the given array of frequencies and stores it in `phases`
+		///
+		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
+		/// @param phases - The array to store the phases (in radians) in
+		/// @param numFrequencies - The number of frequencies in the `frequencies` array
+		inline void EQBand<double>::getPhasesForFrequencies(double* frequencies, double* phases,
+				size_t numFrequencies) const noexcept
+		{
+			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
+			}
+		}
 		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) noexcept {
 			return EQBand<double>(std::move(band));
 		}
