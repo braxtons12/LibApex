@@ -27,6 +27,9 @@
 #include "src/dsp/processors/EQBand.cpp"
 #include "src/dsp/processors/ParallelEQBand.cpp"
 #include "src/dsp/processors/Gain.cpp"
+#include "src/dsp/envelopes/Envelope.h"
+#include "src/dsp/envelopes/AttackEnvelope.h"
+#include "src/dsp/envelopes/ReleaseEnvelope.h"
 
 #include "src/math/Decibels.cpp"
 #include "src/math/General.cpp"

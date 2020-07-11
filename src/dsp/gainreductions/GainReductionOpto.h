@@ -17,6 +17,9 @@ namespace apex {
 			class GainReductionOptical : public GainReduction<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
+
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionOptical)
 			};
 
 		/// @brief Class for calculating gain reduction values adjusted to roughly model Optical topology behavior
@@ -24,18 +27,18 @@ namespace apex {
 			class GainReductionOptical<float> : public GainReduction<float> {
 				public:
 					/// @brief Constructs a default `GainReductionOptical` (sampleRate = 44100)
-					GainReductionOptical();
+					GainReductionOptical() noexcept;
 
 					/// @brief Constructs a `GainReductionOptical` with he given sample rate
 					///
 					/// @param sampleRate
-					GainReductionOptical(size_t sampleRate);
-					virtual ~GainReductionOptical() override;
+					GainReductionOptical(size_t sampleRate) noexcept;
+					virtual ~GainReductionOptical() noexcept override;
 
 					/// @brief Resets this `GainReductionOptical` to an initial state
 					///
 					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(float currentGainReduction = 0.0f) override;
+					void reset(float currentGainReduction = 0.0f) noexcept override;
 
 					/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s parameters
 					///
@@ -43,12 +46,12 @@ namespace apex {
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return - The adjusted gain reduction
-					float adjustedGainReduction(float actualGainReduction, float idealGainReduction) override;
+					float adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept override;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
 					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) override;
+					void setSampleRate(size_t sampleRate) noexcept override;
 
 				private:
 					///The number of steps in decibels to store coefficients for
@@ -65,6 +68,8 @@ namespace apex {
 					std::vector<float> mAttackCoefficients = std::vector<float>(mNUM_COEFFICIENTS);
 					///The release response coefficients
 					std::vector<float> mReleaseCoefficients = std::vector<float>(mNUM_COEFFICIENTS);
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionOptical)
 			};
 
 		/// @brief Class for calculating gain reduction values adjusted to roughly model Optical topology behavior
@@ -72,18 +77,18 @@ namespace apex {
 			class GainReductionOptical<double> : public GainReduction<double> {
 				public:
 					/// @brief Constructs a default `GainReductionOptical` (sampleRate = 44100)
-					GainReductionOptical();
+					GainReductionOptical() noexcept;
 
 					/// @brief Constructs a `GainReductionOptical` with he given sample rate
 					///
 					/// @param sampleRate
-					GainReductionOptical(size_t sampleRate);
-					virtual ~GainReductionOptical() override;
+					GainReductionOptical(size_t sampleRate) noexcept;
+					virtual ~GainReductionOptical() noexcept override;
 
 					/// @brief Resets this `GainReductionOptical` to an initial state
 					///
 					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(double currentGainReduction = 0.0) override;
+					void reset(double currentGainReduction = 0.0) noexcept override;
 
 					/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s parameters
 					///
@@ -91,12 +96,12 @@ namespace apex {
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return - The adjusted gain reduction
-					double adjustedGainReduction(double actualGainReduction, double idealGainReduction) override;
+					double adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept override;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
 					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) override;
+					void setSampleRate(size_t sampleRate) noexcept override;
 
 				private:
 					///The number of steps in decibels to store coefficients for
@@ -113,6 +118,8 @@ namespace apex {
 					std::vector<double> mAttackCoefficients = std::vector<double>(mNUM_COEFFICIENTS);
 					///The release response coefficients
 					std::vector<double> mReleaseCoefficients = std::vector<double>(mNUM_COEFFICIENTS);
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionOptical)
 			};
 	}
 }

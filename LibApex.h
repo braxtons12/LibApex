@@ -52,4 +52,7 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/processors/EQBand.h"
 #include "src/dsp/processors/ParallelEQBand.h"
 #include "src/dsp/processors/Gain.h"
+#include "src/dsp/envelopes/Envelope.h"
+#include "src/dsp/envelopes/AttackEnvelope.h"
+#include "src/dsp/envelopes/ReleaseEnvelope.h"
 

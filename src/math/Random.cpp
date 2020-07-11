@@ -6,7 +6,7 @@ namespace apex {
 		/// @brief Seeds this random number generator with the given value
 		///
 		/// @param seed - The seed to use
-		inline void Random::srand(size_t seed) {
+		inline void Random::srand(size_t seed) noexcept {
 			seed1 = seed + 1;
 			seed2 = seed + 7;
 			seed3 = seed + 15;
@@ -16,7 +16,7 @@ namespace apex {
 		/// @brief Generates a random number
 		///
 		/// @return - The random number
-		inline size_t Random::rand() {
+		inline size_t Random::rand() noexcept {
 			size_t b;
 			b = ((seed1 << 6) ^ seed1) >> 13;
 			seed1 = ((seed1 & 4294967294U) << 18) ^ b;

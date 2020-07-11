@@ -4,7 +4,7 @@ namespace apex {
 	namespace dsp {
 
 		/// @brief Creates a default `EQBand`
-		EQBand<float>::EQBand() {
+		EQBand<float>::EQBand() noexcept {
 			mFilter = std::move(BiQuadFilter<float>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
 			mFilters.resize(0);
 			mGainProcessor = std::move(Gain<float>(mGain, true));
@@ -17,7 +17,7 @@ namespace apex {
 		/// @param gainDB - The gain to use, in Decibels
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The type of band
-		EQBand<float>::EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type)
+		EQBand<float>::EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type) noexcept
 			: Processor<float>(),
 			mType(type),
 			mFrequency(frequency),
@@ -25,23 +25,23 @@ namespace apex {
 			mGain(gainDB),
 			mSampleRate(sampleRate),
 			mFilter(std::move(BiQuadFilter<float>::MakeAllpass()))
-		{
-			if(mType < BandType::Allpass) {
-				if(mType % 4 == 0) mOrder = 1;
-				if(mType % 4 == 1) mOrder = 2;
-				if(mType % 4 == 2) mOrder = 4;
-				if(mType % 4 == 3) mOrder = 8;
-				mGainProcessor = std::move(Gain<float>(mGain, true));
-			}
+			{
+				if(mType < BandType::Allpass) {
+					if(mType % 4 == 0) mOrder = 1;
+					if(mType % 4 == 1) mOrder = 2;
+					if(mType % 4 == 2) mOrder = 4;
+					if(mType % 4 == 3) mOrder = 8;
+					mGainProcessor = std::move(Gain<float>(mGain, true));
+				}
 
-			mFilters.resize(mOrder);
-			createFilters();
-		}
+				mFilters.resize(mOrder);
+				createFilters();
+			}
 
 		/// @brief Move constructs an `EQBand` from the given one
 		///
 		/// @param band - The `EQBand` to move
-		EQBand<float>::EQBand(const EQBand<float>&& band) {
+		EQBand<float>::EQBand(const EQBand<float>&& band) noexcept {
 			mType = band.mType;
 			mFrequency = band.mFrequency;
 			mQ = band.mQ;
@@ -56,14 +56,14 @@ namespace apex {
 			}
 		}
 
-		EQBand<float>::~EQBand() {
+		EQBand<float>::~EQBand() noexcept {
 
 		}
 
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
 		/// @param frequency - The new frequency, in Hertz
-		void EQBand<float>::setFrequency(float frequency) {
+		void EQBand<float>::setFrequency(float frequency) noexcept {
 			mFrequency = frequency;
 			mFilter.setFrequency(mFrequency);
 			if(mType < BandType::Allpass) {
@@ -76,14 +76,14 @@ namespace apex {
 		/// @brief Returns the frequency of this `EQBand`
 		///
 		/// @return - The current frequency, in Hertz
-		float EQBand<float>::getFrequency() const {
+		float EQBand<float>::getFrequency() const noexcept {
 			return mFrequency;
 		}
 
 		/// @brief Sets the Q of this `EQBand` to the given value
 		///
 		/// @param q - The new Q
-		void EQBand<float>::setQ(float q) {
+		void EQBand<float>::setQ(float q) noexcept {
 			mQ = q;
 			mFilter.setQ(mQ);
 			if(mType < BandType::Allpass) {
@@ -96,14 +96,14 @@ namespace apex {
 		/// @brief Returns the Q of this `EQBand`
 		///
 		/// @return - The current Q
-		float EQBand<float>::getQ() const {
+		float EQBand<float>::getQ() const noexcept {
 			return mQ;
 		}
 
 		/// @brief Sets the gain of this `EQBand`
 		///
 		/// @param gainDB - The new gain, in Decibels
-		void EQBand<float>::setGainDB(float gainDB) {
+		void EQBand<float>::setGainDB(float gainDB) noexcept {
 			mGain = gainDB;
 			mFilter.setGainDB(mGain);
 			if(mType < BandType::Allpass) {
@@ -116,14 +116,14 @@ namespace apex {
 		/// @brief Returns the gain of this `EQBand`
 		///
 		/// @return - The current gain, in Decibels
-		float EQBand<float>::getGainDB() const {
+		float EQBand<float>::getGainDB() const noexcept {
 			return mGain;
 		}
 
 		/// @brief Sets the sample rate of this `EQBand` to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		void EQBand<float>::setSampleRate(size_t sampleRate) {
+		void EQBand<float>::setSampleRate(size_t sampleRate) noexcept {
 			mSampleRate = sampleRate;
 			mFilter.setSampleRate(mSampleRate);
 			if(mType < BandType::Allpass) {
@@ -136,14 +136,14 @@ namespace apex {
 		/// @brief Returns the sample rate of this `EQBand`
 		///
 		/// @return - The current sample rate, in Hertz
-		size_t EQBand<float>::getSampleRate() const {
+		size_t EQBand<float>::getSampleRate() const noexcept {
 			return mSampleRate;
 		}
 
 		/// @brief Sets the type of this `EQBand` to the given value
 		///
 		/// @param type - The new type
-		void EQBand<float>::setBandType(BandType type) {
+		void EQBand<float>::setBandType(BandType type) noexcept {
 			mType = type;
 			if(mType < BandType::Allpass) {
 				if(mType % 4 == 0) mOrder = 1;
@@ -158,7 +158,7 @@ namespace apex {
 		/// @brief Returns the type of this `EQBand`
 		///
 		/// @return - The current type
-		EQBand<float>::BandType EQBand<float>::getBandType() const {
+		EQBand<float>::BandType EQBand<float>::getBandType() const noexcept {
 			return mType;
 		}
 
@@ -167,7 +167,7 @@ namespace apex {
 		/// @param input - The input to apply EQ to
 		///
 		/// @return - The processed value
-		float EQBand<float>::process(float input) {
+		float EQBand<float>::process(float input) noexcept {
 			float x = 0.0f;
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
@@ -187,7 +187,7 @@ namespace apex {
 		///
 		/// @param input - The input values to apply EQ to
 		/// @param numSamples - The number of input samples
-		void EQBand<float>::process(float* input, size_t numSamples) {
+		void EQBand<float>::process(float* input, size_t numSamples) noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
@@ -200,7 +200,7 @@ namespace apex {
 		}
 
 		/// @brief Resets this `EQBand` to an initial state
-		void EQBand<float>::reset() {
+		void EQBand<float>::reset() noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].reset();
@@ -211,7 +211,7 @@ namespace apex {
 			}
 		}
 
-		EQBand<float> EQBand<float>::operator=(const EQBand<float>&& band) {
+		EQBand<float> EQBand<float>::operator=(const EQBand<float>&& band) noexcept {
 			return EQBand<float>(std::move(band));
 		}
 
@@ -221,7 +221,7 @@ namespace apex {
 		/// @param filterIndex - The filter stage to calculate the shift for
 		///
 		/// @return - The shifted frequency
-		float EQBand<float>::frequencyShift(size_t filterIndex) const {
+		float EQBand<float>::frequencyShift(size_t filterIndex) const noexcept {
 			float shiftMultiplier = 0.25f * filterIndex;
 			if(mType < BandType::Highpass12DB) {
 				float nextOctFreq = mFrequency * 2.0f;
@@ -234,7 +234,7 @@ namespace apex {
 		}
 
 		/// @brief Creates the necessary filter(s) for this `EQBand`
-		void EQBand<float>::createFilters() {
+		void EQBand<float>::createFilters() noexcept {
 
 			switch(mType) {
 				case Lowpass12DB: {
@@ -533,7 +533,7 @@ namespace apex {
 		}
 
 		/// @brief Creates a default `EQBand`
-		EQBand<double>::EQBand() {
+		EQBand<double>::EQBand() noexcept {
 			mFilter = std::move(BiQuadFilter<double>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
 			mFilters.resize(0);
 			mGainProcessor = std::move(Gain<double>(mGain, true));
@@ -546,7 +546,7 @@ namespace apex {
 		/// @param gainDB - The gain to use, in Decibels
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The type of band
-		EQBand<double>::EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type)
+		EQBand<double>::EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type) noexcept
 			: Processor<double>(),
 			mType(type),
 			mFrequency(frequency),
@@ -554,23 +554,23 @@ namespace apex {
 			mGain(gainDB),
 			mSampleRate(sampleRate),
 			mFilter(std::move(BiQuadFilter<double>::MakeAllpass()))
-		{
-			if(mType < BandType::Allpass) {
-				if(mType % 4 == 0) mOrder = 1;
-				if(mType % 4 == 1) mOrder = 2;
-				if(mType % 4 == 2) mOrder = 4;
-				if(mType % 4 == 3) mOrder = 8;
-				mGainProcessor = std::move(Gain<double>(mGain, true));
-			}
+			{
+				if(mType < BandType::Allpass) {
+					if(mType % 4 == 0) mOrder = 1;
+					if(mType % 4 == 1) mOrder = 2;
+					if(mType % 4 == 2) mOrder = 4;
+					if(mType % 4 == 3) mOrder = 8;
+					mGainProcessor = std::move(Gain<double>(mGain, true));
+				}
 
-			mFilters.resize(mOrder);
-			createFilters();
-		}
+				mFilters.resize(mOrder);
+				createFilters();
+			}
 
 		/// @brief Move constructs an `EQBand` from the given one
 		///
 		/// @param band - The `EQBand` to move
-		EQBand<double>::EQBand(const EQBand<double>&& band) {
+		EQBand<double>::EQBand(const EQBand<double>&& band) noexcept {
 			mType = band.mType;
 			mFrequency = band.mFrequency;
 			mQ = band.mQ;
@@ -585,14 +585,14 @@ namespace apex {
 			}
 		}
 
-		EQBand<double>::~EQBand() {
+		EQBand<double>::~EQBand() noexcept {
 
 		}
 
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
 		/// @param frequency - The new frequency, in Hertz
-		void EQBand<double>::setFrequency(double frequency) {
+		void EQBand<double>::setFrequency(double frequency) noexcept {
 			mFrequency = frequency;
 			mFilter.setFrequency(mFrequency);
 			if(mType < BandType::Allpass) {
@@ -605,14 +605,14 @@ namespace apex {
 		/// @brief Returns the frequency of this `EQBand`
 		///
 		/// @return - The current frequency, in Hertz
-		double EQBand<double>::getFrequency() const {
+		double EQBand<double>::getFrequency() const noexcept {
 			return mFrequency;
 		}
 
 		/// @brief Sets the Q of this `EQBand` to the given value
 		///
 		/// @param q - The new Q
-		void EQBand<double>::setQ(double q) {
+		void EQBand<double>::setQ(double q) noexcept {
 			mQ = q;
 			mFilter.setQ(mQ);
 			if(mType < BandType::Allpass) {
@@ -625,14 +625,14 @@ namespace apex {
 		/// @brief Returns the Q of this `EQBand`
 		///
 		/// @return - The current Q
-		double EQBand<double>::getQ() const {
+		double EQBand<double>::getQ() const noexcept {
 			return mQ;
 		}
 
 		/// @brief Sets the gain of this `EQBand`
 		///
 		/// @param gainDB - The new gain, in Decibels
-		void EQBand<double>::setGainDB(double gainDB) {
+		void EQBand<double>::setGainDB(double gainDB) noexcept {
 			mGain = gainDB;
 			mGainProcessor.setGainDecibels(mGain);
 			mFilter.setGainDB(mGain);
@@ -646,14 +646,14 @@ namespace apex {
 		/// @brief Returns the gain of this `EQBand`
 		///
 		/// @return - The current gain, in Decibels
-		double EQBand<double>::getGainDB() const {
+		double EQBand<double>::getGainDB() const noexcept {
 			return mGain;
 		}
 
 		/// @brief Sets the sample rate of this `EQBand` to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		void EQBand<double>::setSampleRate(size_t sampleRate) {
+		void EQBand<double>::setSampleRate(size_t sampleRate) noexcept {
 			mSampleRate = sampleRate;
 			mFilter.setSampleRate(mSampleRate);
 			if(mType < BandType::Allpass) {
@@ -666,14 +666,14 @@ namespace apex {
 		/// @brief Returns the sample rate of this `EQBand`
 		///
 		/// @return - The current sample rate, in Hertz
-		size_t EQBand<double>::getSampleRate() const {
+		size_t EQBand<double>::getSampleRate() const noexcept {
 			return mSampleRate;
 		}
 
 		/// @brief Sets the type of this `EQBand` to the given value
 		///
 		/// @param type - The new type
-		void EQBand<double>::setBandType(BandType type) {
+		void EQBand<double>::setBandType(BandType type) noexcept {
 			mType = type;
 			if(mType < BandType::Allpass) {
 				if(mType % 4 == 0) mOrder = 1;
@@ -688,7 +688,7 @@ namespace apex {
 		/// @brief Returns the type of this `EQBand`
 		///
 		/// @return - The current type
-		EQBand<double>::BandType EQBand<double>::getBandType() const {
+		EQBand<double>::BandType EQBand<double>::getBandType() const noexcept {
 			return mType;
 		}
 
@@ -697,7 +697,7 @@ namespace apex {
 		/// @param input - The input to apply EQ to
 		///
 		/// @return - The processed value
-		double EQBand<double>::process(double input) {
+		double EQBand<double>::process(double input) noexcept {
 			double x = 0.0;
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
@@ -717,7 +717,7 @@ namespace apex {
 		///
 		/// @param input - The input values to apply EQ to
 		/// @param numSamples - The number of input samples
-		void EQBand<double>::process(double* input, size_t numSamples) {
+		void EQBand<double>::process(double* input, size_t numSamples) noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
@@ -730,7 +730,7 @@ namespace apex {
 		}
 
 		/// @brief Resets this `EQBand` to an initial state
-		void EQBand<double>::reset() {
+		void EQBand<double>::reset() noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].reset();
@@ -741,7 +741,7 @@ namespace apex {
 			}
 		}
 
-		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) {
+		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) noexcept {
 			return EQBand<double>(std::move(band));
 		}
 
@@ -751,7 +751,7 @@ namespace apex {
 		/// @param filterIndex - The filter stage to calculate the shift for
 		///
 		/// @return - The shifted frequency
-		double EQBand<double>::frequencyShift(size_t filterIndex) const {
+		double EQBand<double>::frequencyShift(size_t filterIndex) const noexcept {
 			double shiftMultiplier = 0.25 * filterIndex;
 			if(mType < BandType::Highpass12DB) {
 				double nextOctFreq = mFrequency * 2.0;
@@ -764,7 +764,7 @@ namespace apex {
 		}
 
 		/// @brief Creates the necessary filter(s) for this `EQBand`
-		void EQBand<double>::createFilters() {
+		void EQBand<double>::createFilters() noexcept {
 
 			switch(mType) {
 				case Lowpass12DB: {

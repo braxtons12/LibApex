@@ -4,7 +4,7 @@
 namespace apex {
 	namespace utils {
 
-		Error::~Error() {
+		Error::~Error() noexcept {
 
 		}
 
@@ -12,7 +12,7 @@ namespace apex {
 		/// if applicable, or `None` otherwise
 		///
 		/// @return `Some(sourceError)` if applicable, or `None`
-		Option<Error*> Error::source() const {
+		Option<Error*> Error::source() const noexcept {
 			if(mHasSource) {
 				return Option<Error*>::Some(mSource.get());
 			}
@@ -22,7 +22,7 @@ namespace apex {
 		/// @brief Returns the error message for this `Error`
 		///
 		/// @return The error message
-		juce::String Error::message() const {
+		juce::String Error::message() const noexcept {
 			return mMessage;
 		}
 
@@ -31,7 +31,7 @@ namespace apex {
 		/// this `Error`'s `message`
 		///
 		/// @return this `Error` formatted as a `juce::String`
-		juce::String Error::toString() const {
+		juce::String Error::toString() const noexcept {
 			return juce::String(TRANS("Source: ")) + mSource->toString() + juce::String("\n")
 				+ juce::String(TRANS("Message: ")) + mMessage;
 		}

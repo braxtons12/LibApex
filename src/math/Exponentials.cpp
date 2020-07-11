@@ -13,7 +13,7 @@
 namespace apex {
 	namespace math {
 
-		inline float frexpf(float x, int* e) {
+		inline float frexpf(float x, int* e) noexcept {
 			union { float f; uint32_t i; } y = { x };
 			int ee = y.i>>23 & 0xff;
 
@@ -33,18 +33,18 @@ namespace apex {
 			return y.f;
 		}
 
-		inline float exp_helperf(float x) {
+		inline float exp_helperf(float x) noexcept {
 			return (5040.0f + x * (5040.0f + x * (2520.0f + x * (840.0f + x *
 								(210.0f + x * (42.0f + x * (7.0f + x))))))) * 0.00019841269f;
 		}
 
-		inline float expf(float x) {
+		inline float expf(float x) noexcept {
 			if(x < 2.5f) return 2.7182818f * exp_helperf(x - 1.0f);
 			else if (x < 5.0f) return 33.115452f * exp_helperf(x - 3.5f);
 			else return 483.42879f * exp_helperf(x - 6.0f);
 		}
 
-		inline float log2f(float x) {
+		inline float log2f(float x) noexcept {
 			float y, f;
 			int e = 0;
 			f = frexpf(fabsf(x), &e);
@@ -59,27 +59,27 @@ namespace apex {
 			return(y);
 		}
 
-		inline float log10f(float x) {
+		inline float log10f(float x) noexcept {
 			return log2f(x) * 0.3010299956639812f;
 		}
 
-		inline float logf(float x) {
+		inline float logf(float x) noexcept {
 			return log2f(x) * 0.69314718055995f;
 		}
 
-		inline float pow2f(float x) {
+		inline float pow2f(float x) noexcept {
 			return expf(x * 0.69314718055995f);
 		}
 
-		inline float pow10f(float x) {
+		inline float pow10f(float x) noexcept {
 			return expf(2.302585092994046f * x);
 		}
 
-		inline float powf(float base, float exponent) {
+		inline float powf(float base, float exponent) noexcept {
 			return pow2f(exponent * log2f(base));
 		}
 
-		inline double frexp(double x, int *e) {
+		inline double frexp(double x, int *e) noexcept {
 			union { double d; uint64_t i; } y = { x };
 			int ee = y.i>>52 & 0x7ff;
 
@@ -99,18 +99,18 @@ namespace apex {
 			return y.d;
 		}
 
-		inline double exp_helper(double x) {
+		inline double exp_helper(double x) noexcept {
 			return (5040.0 + x * (5040.0 + x * (2520.0 + x * (840.0 + x *
 								(210.0 + x * (42.0 + x * (7.0 + x))))))) * 0.00019841269;
 		}
 
-		inline double exp(double x) {
+		inline double exp(double x) noexcept {
 			if(x < 2.5) return 2.7182818 * exp_helper(x - 1.0);
 			else if (x < 5.0) return 33.115452 * exp_helper(x - 3.5);
 			else return 483.42879 * exp_helper(x - 6.0);
 		}
 
-		inline double log2(double x) {
+		inline double log2(double x) noexcept {
 			double y, f;
 			int e = 0;
 			f = frexp(fabs(x), &e);
@@ -125,24 +125,24 @@ namespace apex {
 			return(y);
 		}
 
-		inline double log10(double x) {
+		inline double log10(double x) noexcept {
 			return log2(x) * 0.3010299956639812;
 
 		}
 
-		inline double log(double x) {
+		inline double log(double x) noexcept {
 			return log2(x) * 0.69314718055995;
 		}
 
-		inline double pow2(double x) {
+		inline double pow2(double x) noexcept {
 			return exp(x * 0.69314718055995);
 		}
 
-		inline double pow10(double x) {
+		inline double pow10(double x) noexcept {
 			return exp(2.302585092994046 * x);
 		}
 
-		inline double pow(double base, double exponent) {
+		inline double pow(double base, double exponent) noexcept {
 			return pow2(exponent * log2(base));
 		}
 	}

@@ -2,16 +2,16 @@
 
 namespace apex {
 	namespace math {
-		float cosf(float angle);
-		float sinf(float angle);
-		float tanf(float angle);
-		float atanf(float angle);
-		float tanhf(float angle);
+		float cosf(float angle) noexcept;
+		float sinf(float angle) noexcept;
+		float tanf(float angle) noexcept;
+		float atanf(float angle) noexcept;
+		float tanhf(float angle) noexcept;
 
-		double cos(double angle);
-		double sin(double angle);
-		double tan(double angle);
-		double atan(double angle);
-		double tanh(double angle);
+		double cos(double angle) noexcept;
+		double sin(double angle) noexcept;
+		double tan(double angle) noexcept;
+		double atan(double angle) noexcept;
+		double tanh(double angle) noexcept;
 	}
 }

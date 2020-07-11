@@ -2,7 +2,7 @@
 
 namespace apex {
 	namespace math {
-		inline float sqrtf(float x) {
+		inline float sqrtf(float x) noexcept {
 			float n = x > 10.0f ? x / 10.0f : x / 2.0f;
 			float y = 1;
 			double e = 0.0000000001;
@@ -13,19 +13,19 @@ namespace apex {
 			return n;
 		}
 
-		inline float fabsf(float x) {
+		inline float fabsf(float x) noexcept {
 			return sqrtf(x * x);
 		}
 
-		inline float truncf(float x) {
+		inline float truncf(float x) noexcept {
 			return static_cast<float>(static_cast<int>(x));
 		}
 
-		inline float fmodf(float x, float y) {
+		inline float fmodf(float x, float y) noexcept {
 			return x - truncf(x / y) * y;
 		}
 
-		inline double sqrt(double x) {
+		inline double sqrt(double x) noexcept {
 			double n = x > 10.0 ? x / 10.0 : x / 2.0;
 			double y = 1;
 			double e = 0.0000000001;
@@ -36,15 +36,15 @@ namespace apex {
 			return n;
 		}
 
-		inline double fabs(double x) {
+		inline double fabs(double x) noexcept {
 			return sqrt(x * x);
 		}
 
-		inline double trunc(double x) {
+		inline double trunc(double x) noexcept {
 			return int(x);
 		}
 
-		inline double fmod(double x, double y) {
+		inline double fmod(double x, double y) noexcept {
 			return x - trunc(x / y) * y;
 		}
 	}

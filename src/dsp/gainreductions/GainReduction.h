@@ -16,6 +16,9 @@ namespace apex {
 			class GainReduction {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
+
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)
 			};
 
 		/// @brief Base class for calculating gain reduction values adjusted to match different topology behaviors.
@@ -24,29 +27,29 @@ namespace apex {
 			class GainReduction<float> {
 				public:
 					/// @brief Constructs a default `GainReduction` (sample rate = 44100, slew rate = 0)
-					GainReduction();
+					GainReduction() noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given sample rate and a slew rate of 0
 					///
 					/// @param sampleRate - The sample rate to use
-					GainReduction(size_t sampleRate);
+					GainReduction(size_t sampleRate) noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given slew rate and a sample rate of 44100
 					///
 					/// @param riseTimeSeconds - The slew rate to use
-					GainReduction(float riseTimeSeconds);
+					GainReduction(float riseTimeSeconds) noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given sample rate and slew rate
 					///
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
-					GainReduction(size_t sampleRate, float riseTimeSeconds);
-					virtual ~GainReduction();
+					GainReduction(size_t sampleRate, float riseTimeSeconds) noexcept;
+					virtual ~GainReduction() noexcept;
 
 					/// @brief Resets this `GainReduction` to an initial state.
 					///
 					/// @param currentGainReduction - The gain reduction to use as the initial value
-					virtual void reset(float currentGainReduction = 0.0f);
+					virtual void reset(float currentGainReduction = 0.0f) noexcept;
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
@@ -54,17 +57,17 @@ namespace apex {
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return The adjusted gain reduction
-					virtual float adjustedGainReduction(float actualGainReduction, float idealGainReduction);
+					virtual float adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
 					/// @param sampleRate - The new sample rate to use
-					virtual void setSampleRate(size_t sampleRate);
+					virtual void setSampleRate(size_t sampleRate) noexcept;
 
 					/// @brief Sets the slew rate to use for calculations to the given value
 					///
 					/// @param seconds - The new slew rate
-					virtual void setRiseTimeSeconds(float seconds);
+					virtual void setRiseTimeSeconds(float seconds) noexcept;
 
 				protected:
 					///The sample rate
@@ -77,6 +80,8 @@ namespace apex {
 					float mCurrentGainReduction = 0.0f;
 					///The slew rate
 					float mRiseTimeSeconds = 0.0f;
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)
 			};
 
 		/// @brief Base class for calculating gain reduction values adjusted to match different topology behaviors.
@@ -85,29 +90,29 @@ namespace apex {
 			class GainReduction<double> {
 				public:
 					/// @brief Constructs a default `GainReduction` (sample rate = 44100, slew rate = 0)
-					GainReduction();
+					GainReduction() noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given sample rate and a slew rate of 0
 					///
 					/// @param sampleRate - The sample rate to use
-					GainReduction(size_t sampleRate);
+					GainReduction(size_t sampleRate) noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given slew rate and a sample rate of 44100
 					///
 					/// @param riseTimeSeconds - The slew rate to use
-					GainReduction(double riseTimeSeconds);
+					GainReduction(double riseTimeSeconds) noexcept;
 
 					/// @brief Constructs a `GainReduction` with the given sample rate and slew rate
 					///
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
-					GainReduction(size_t sampleRate, double riseTimeSeconds);
-					virtual ~GainReduction();
+					GainReduction(size_t sampleRate, double riseTimeSeconds) noexcept;
+					virtual ~GainReduction() noexcept;
 
 					/// @brief Resets this `GainReduction` to an initial state.
 					///
 					/// @param currentGainReduction - The gain reduction to use as the initial value
-					virtual void reset(double currentGainReduction = 0.0);
+					virtual void reset(double currentGainReduction = 0.0) noexcept;
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
@@ -115,17 +120,17 @@ namespace apex {
 					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
 					///
 					/// @return The adjusted gain reduction
-					virtual double adjustedGainReduction(double actualGainReduction, double idealGainReduction);
+					virtual double adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
 					/// @param sampleRate - The new sample rate to use
-					virtual void setSampleRate(size_t sampleRate);
+					virtual void setSampleRate(size_t sampleRate) noexcept;
 
 					/// @brief Sets the slew rate to use for calculations to the given value
 					///
 					/// @param seconds - The new slew rate
-					virtual void setRiseTimeSeconds(double seconds);
+					virtual void setRiseTimeSeconds(double seconds) noexcept;
 
 				protected:
 					///The sample rate
@@ -138,6 +143,8 @@ namespace apex {
 					double mCurrentGainReduction = 0.0;
 					///The slew rate
 					double mRiseTimeSeconds = 0.0;
+
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)
 			};
 	}
 }

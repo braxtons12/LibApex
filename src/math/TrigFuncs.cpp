@@ -12,7 +12,7 @@
 namespace apex {
 	namespace math {
 
-		inline float cos_helperf(float x) {
+		inline float cos_helperf(float x) noexcept {
 			const float c1 = 0.99999999999925182f;
 			const float c2 = -0.49999999997024012f;
 			const float c3 = 0.041666666473384543f;
@@ -26,7 +26,7 @@ namespace apex {
 			return (c1 + x2 * (c2 + x2 * (c3 + x2 * (c4 + x2 * (c5 + x2 * (c6 + c7 * x2))))));
 		}
 
-		inline float cosf(float angle) {
+		inline float cosf(float angle) noexcept {
 			angle = fmodf(angle, twoPif);				// Get rid of values > 2* pi
 			if(angle < 0) angle = -angle;					// cos(-x) = cos(x)
 			int quad = int(angle * twoOverPif);			// Get quadrant # (0 to 3) we're in
@@ -39,11 +39,11 @@ namespace apex {
 			}
 		}
 
-		inline float sinf(float angle) {
+		inline float sinf(float angle) noexcept {
 			return cosf(piOver2f - angle);
 		}
 
-		inline float tan_helperf(float x) {
+		inline float tan_helperf(float x) noexcept {
 			const float c1 = -34287.4662577359568109624f;
 			const float c2 =  2566.7175462315050423295f;
 			const float c3 = -26.5366371951731325438f;
@@ -56,7 +56,7 @@ namespace apex {
 			return (x * (c1 + x2 * (c2 + x2 * c3)) / (c4 + x2 * (c5 + x2 * (c6 + x2))));
 		}
 
-		inline float tanf(float angle) {
+		inline float tanf(float angle) noexcept {
 			angle = fmodf(angle, twoPif);				// Get rid of values >2 *pi
 			int octant = int(angle / fourOverPif);			// Get octant # (0 to 7)
 			switch(octant) {
@@ -75,7 +75,7 @@ namespace apex {
 		const float tanPiOver6f = tanf(piOver6f);
 		const float tanPiOver12f = tanf(piOver12f);
 
-		inline float atan_helperf(float x) {
+		inline float atan_helperf(float x) noexcept {
 			const float c1 = 48.70107004404898384f;
 			const float c2 = 49.5326263772254345f;
 			const float c3 =  9.40604244231624f;
@@ -88,7 +88,7 @@ namespace apex {
 			return (x * (c1 + x2 * (c2 + x2 * c3)) / (c4 + x2 * (c5 + x2 * (c6 + x2))));
 		}
 
-		inline float atanf(float angle) {
+		inline float atanf(float angle) noexcept {
 			bool complement = false;				// true if arg was >1
 			bool region = false;					// true depending on region arg is in
 			bool sign = false;					// true if arg was < 0
@@ -114,12 +114,12 @@ namespace apex {
 
 		}
 
-		inline float tanhf(float angle) {
+		inline float tanhf(float angle) noexcept {
 			float angle2 = angle * angle;
 			return angle * ( 27.0f + angle2) / (27.0f + 9.0f * angle2);
 		}
 
-		inline double cos_helper(double x) {
+		inline double cos_helper(double x) noexcept {
 			const double c1 = 0.99999999999925182;
 			const double c2 = -0.49999999997024012;
 			const double c3 = 0.041666666473384543;
@@ -133,7 +133,7 @@ namespace apex {
 			return (c1 + x2 * (c2 + x2 * (c3 + x2 * (c4 + x2 * (c5 + x2 * (c6 + c7 * x2))))));
 		}
 
-		inline double cos(double angle) {
+		inline double cos(double angle) noexcept {
 			angle = fmod(angle, twoPi);				// Get rid of values > 2* pi
 			if(angle < 0) angle = -angle;					// cos(-x) = cos(x)
 			int quad = int(angle * twoOverPi);			// Get quadrant # (0 to 3) we're in
@@ -146,11 +146,11 @@ namespace apex {
 			}
 		}
 
-		inline double sin(double angle) {
+		inline double sin(double angle) noexcept {
 			return cos(piOver2 - angle);
 		}
 
-		inline double tan_helper(double x) {
+		inline double tan_helper(double x) noexcept {
 			const double c1 = -34287.4662577359568109624;
 			const double c2 =  2566.7175462315050423295;
 			const double c3 = -26.5366371951731325438;
@@ -163,7 +163,7 @@ namespace apex {
 			return (x * (c1 + x2 * (c2 + x2 * c3)) / (c4 + x2 * (c5 + x2 * (c6 + x2))));
 		}
 
-		inline double tan(double angle) {
+		inline double tan(double angle) noexcept {
 			angle = fmod(angle, twoPi);				// Get rid of values >2 *pi
 			int octant = int(angle / fourOverPi);			// Get octant # (0 to 7)
 			switch(octant) {
@@ -182,7 +182,7 @@ namespace apex {
 		const double tanPiOver6 = tan(piOver6);
 		const double tanPiOver12 = tan(piOver12);
 
-		inline double atan_helper(double x) {
+		inline double atan_helper(double x) noexcept {
 			const double c1 = 48.70107004404898384;
 			const double c2 = 49.5326263772254345;
 			const double c3 =  9.40604244231624;
@@ -195,7 +195,7 @@ namespace apex {
 			return (x * (c1 + x2 * (c2 + x2 * c3)) / (c4 + x2 * (c5 + x2 * (c6 + x2))));
 		}
 
-		inline double atan(double angle) {
+		inline double atan(double angle) noexcept {
 			bool complement = false;				// true if arg was >1
 			bool region = false;					// true depending on region arg is in
 			bool sign = false;					// true if arg was < 0
@@ -221,7 +221,7 @@ namespace apex {
 
 		}
 
-		inline double tanh(double angle) {
+		inline double tanh(double angle) noexcept {
 			double angle2 = angle * angle;
 			return angle * ( 27.0 + angle2) / (27.0 + 9.0 * angle2);
 		}

@@ -4,11 +4,11 @@ namespace apex {
 	namespace dsp {
 
 		/// @brief Creates a default `ParallelEQBand`
-		ParallelEQBand<float>::ParallelEQBand()
+		ParallelEQBand<float>::ParallelEQBand() noexcept
 			: EQBand<float>()
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
 		/// @brief Creates a `ParallelEQBand` with the given parameters
 		///
@@ -18,29 +18,29 @@ namespace apex {
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The band type to use
 		ParallelEQBand<float>::ParallelEQBand(float frequency, float q, float gainDB,
-				size_t sampleRate, BandType type)
+				size_t sampleRate, BandType type) noexcept
 			: EQBand<float>(frequency, q, gainDB, sampleRate, type)
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
 		/// @brief Move constructs a `ParallelEQBand` from the given one
 		///
 		/// @param band - The `ParallelEQBand` to move
-		ParallelEQBand<float>::ParallelEQBand(const ParallelEQBand<float>&& band)
+		ParallelEQBand<float>::ParallelEQBand(const ParallelEQBand<float>&& band) noexcept
 			: EQBand<float>(std::move(band))
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
-		ParallelEQBand<float>::~ParallelEQBand() {
+		ParallelEQBand<float>::~ParallelEQBand() noexcept {
 
 		}
 
 		/// @brief Sets the gain of this `ParallelEQBand` to the given value
 		///
 		/// @param gainDB - The new gain, in Decibels
-		void ParallelEQBand<float>::setGainDB(float gainDB) {
+		void ParallelEQBand<float>::setGainDB(float gainDB) noexcept {
 			if(mType < BandType::Allpass) {
 				mGain = gainDB;
 				mGainActual = mGain;
@@ -78,7 +78,7 @@ namespace apex {
 		/// @brief Returns the gain of this `ParallelEQBand`
 		///
 		/// @return - The current gain, in Decibels
-		float ParallelEQBand<float>::getGainDB() const {
+		float ParallelEQBand<float>::getGainDB() const noexcept {
 			return mGainActual;
 		}
 
@@ -87,7 +87,7 @@ namespace apex {
 		/// @param input - The input value to apply EQ to
 		///
 		/// @return - The processed value
-		float ParallelEQBand<float>::process(float input) {
+		float ParallelEQBand<float>::process(float input) noexcept {
 			float x = 0.0f;
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
@@ -112,7 +112,7 @@ namespace apex {
 		///
 		/// @param input - The array of input values to apply EQ to
 		/// @param numSamples - The number of samples in the array
-		void ParallelEQBand<float>::process(float* input, size_t numSamples) {
+		void ParallelEQBand<float>::process(float* input, size_t numSamples) noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
@@ -142,12 +142,12 @@ namespace apex {
 			}
 		}
 
-		ParallelEQBand<float> ParallelEQBand<float>::operator=(const ParallelEQBand<float>&& band) {
+		ParallelEQBand<float> ParallelEQBand<float>::operator=(const ParallelEQBand<float>&& band) noexcept {
 			return ParallelEQBand<float>(std::move(band));
 		}
 
 		/// @brief Creates necessary filter(s) for this EQ band
-		void ParallelEQBand<float>::createFilters() {
+		void ParallelEQBand<float>::createFilters() noexcept {
 			EQBand<float>::createFilters();
 			if(mType == BandType::LowShelf) {
 				mFilter = std::move(
@@ -188,11 +188,11 @@ namespace apex {
 		}
 
 		/// @brief Creates a default `ParallelEQBand`
-		ParallelEQBand<double>::ParallelEQBand()
+		ParallelEQBand<double>::ParallelEQBand() noexcept
 			: EQBand<double>()
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
 		/// @brief Creates a `ParallelEQBand` with the given parameters
 		///
@@ -202,29 +202,29 @@ namespace apex {
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The band type to use
 		ParallelEQBand<double>::ParallelEQBand(double frequency, double q, double gainDB,
-				size_t sampleRate, BandType type)
+				size_t sampleRate, BandType type) noexcept
 			: EQBand<double>(frequency, q, gainDB, sampleRate, type)
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
 		/// @brief Move constructs a `ParallelEQBand` from the given one
 		///
 		/// @param band - The `ParallelEQBand` to move
-		ParallelEQBand<double>::ParallelEQBand(const ParallelEQBand<double>&& band)
+		ParallelEQBand<double>::ParallelEQBand(const ParallelEQBand<double>&& band) noexcept
 			: EQBand<double>(std::move(band))
-		{
-			setGainDB(mGain);
-		}
+			{
+				setGainDB(mGain);
+			}
 
-		ParallelEQBand<double>::~ParallelEQBand() {
+		ParallelEQBand<double>::~ParallelEQBand() noexcept {
 
 		}
 
 		/// @brief Sets the gain of this `ParallelEQBand` to the given value
 		///
 		/// @param gainDB - The new gain, in Decibels
-		void ParallelEQBand<double>::setGainDB(double gainDB) {
+		void ParallelEQBand<double>::setGainDB(double gainDB) noexcept {
 			if(mType < BandType::Allpass) {
 				mGain = gainDB;
 				mGainActual = mGain;
@@ -262,7 +262,7 @@ namespace apex {
 		/// @brief Returns the gain of this `ParallelEQBand`
 		///
 		/// @return - The current gain, in Decibels
-		double ParallelEQBand<double>::getGainDB() const {
+		double ParallelEQBand<double>::getGainDB() const noexcept {
 			return mGainActual;
 		}
 
@@ -271,7 +271,7 @@ namespace apex {
 		/// @param input - The input value to apply EQ to
 		///
 		/// @return - The processed value
-		double ParallelEQBand<double>::process(double input) {
+		double ParallelEQBand<double>::process(double input) noexcept {
 			double x = 0.0;
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
@@ -296,7 +296,7 @@ namespace apex {
 		///
 		/// @param input - The array of input values to apply EQ to
 		/// @param numSamples - The number of samples in the array
-		void ParallelEQBand<double>::process(double* input, size_t numSamples) {
+		void ParallelEQBand<double>::process(double* input, size_t numSamples) noexcept {
 			if(mType < BandType::Allpass) {
 				for(size_t ord = 0; ord < mOrder; ++ord) {
 					mFilters[ord].process(input, numSamples);
@@ -326,12 +326,12 @@ namespace apex {
 			}
 		}
 
-		ParallelEQBand<double> ParallelEQBand<double>::operator=(const ParallelEQBand<double>&& band) {
+		ParallelEQBand<double> ParallelEQBand<double>::operator=(const ParallelEQBand<double>&& band) noexcept {
 			return ParallelEQBand<double>(std::move(band));
 		}
 
 		/// @brief Creates necessary filter(s) for this EQ band
-		void ParallelEQBand<double>::createFilters() {
+		void ParallelEQBand<double>::createFilters() noexcept {
 			EQBand<double>::createFilters();
 			if(mType == BandType::LowShelf) {
 				mFilter = std::move(

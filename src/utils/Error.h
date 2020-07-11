@@ -18,25 +18,25 @@ namespace apex {
 
 			public:
 				Error() = delete;
-				virtual ~Error();
+				virtual ~Error() noexcept;
 
 				/// @brief Returns the source/cause `Error` of this error aka `Some(sourceError)`,
 				/// if applicable, or `None` otherwise
 				///
 				/// @return `Some(sourceError)` if applicable, or `None`
-				virtual Option<Error*> source() const;
+				virtual Option<Error*> source() const noexcept;
 
 				/// @brief Returns the error message for this `Error`
 				///
 				/// @return The error message
-				virtual juce::String message() const;
+				virtual juce::String message() const noexcept;
 
 				/// @brief Converts this `Error` to a `juce::String`.
 				/// Generally implemented by combining the `source`'s `toString` and
 				/// this `Error`'s `message`
 				///
 				/// @return this `Error` formatted as a `juce::String`
-				virtual juce::String toString() const;
+				virtual juce::String toString() const noexcept;
 			protected:
 				///whether this `Error` has a source `Error`
 				bool mHasSource = false;

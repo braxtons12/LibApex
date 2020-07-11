@@ -51,7 +51,7 @@ namespace apex {
 					};
 
 					/// @brief Creates a default `EQBand`
-					EQBand();
+					EQBand() noexcept;
 
 					/// @brief Creates an `EQBand` with the given parameters
 					///
@@ -60,81 +60,81 @@ namespace apex {
 					/// @param gainDB - The gain to use, in Decibels
 					/// @param sampleRate - The sample rate to use, in Hertz
 					/// @param type - The type of band
-					EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type);
+					EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type) noexcept;
 
 					/// @brief Move constructs an `EQBand` from the given one
 					///
 					/// @param band - The `EQBand` to move
-					EQBand(const EQBand<float>&& band);
-					~EQBand() override;
+					EQBand(const EQBand<float>&& band) noexcept;
+					~EQBand() noexcept override;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
 					///
 					/// @param frequency - The new frequency, in Hertz
-					void setFrequency(float frequency);
+					void setFrequency(float frequency) noexcept;
 
 					/// @brief Returns the frequency of this `EQBand`
 					///
 					/// @return - The current frequency, in Hertz
-					float getFrequency() const;
+					float getFrequency() const noexcept;
 
 					/// @brief Sets the Q of this `EQBand` to the given value
 					///
 					/// @param q - The new Q
-					void setQ(float q);
+					void setQ(float q) noexcept;
 
 					/// @brief Returns the Q of this `EQBand`
 					///
 					/// @return - The current Q
-					float getQ() const;
+					float getQ() const noexcept;
 
 					/// @brief Sets the gain of this `EQBand`
 					///
 					/// @param gainDB - The new gain, in Decibels
-					virtual void setGainDB(float gainDB);
+					virtual void setGainDB(float gainDB) noexcept;
 
 					/// @brief Returns the gain of this `EQBand`
 					///
 					/// @return - The current gain, in Decibels
-					virtual float getGainDB() const;
+					virtual float getGainDB() const noexcept;
 
 					/// @brief Sets the sample rate of this `EQBand` to the given value
 					///
 					/// @param sampleRate - The new sample rate, in Hertz
-					void setSampleRate(size_t sampleRate);
+					void setSampleRate(size_t sampleRate) noexcept;
 
 					/// @brief Returns the sample rate of this `EQBand`
 					///
 					/// @return - The current sample rate, in Hertz
-					size_t getSampleRate() const;
+					size_t getSampleRate() const noexcept;
 
 					/// @brief Sets the type of this `EQBand` to the given value
 					///
 					/// @param type - The new type
-					void setBandType(BandType type);
+					void setBandType(BandType type) noexcept;
 
 					/// @brief Returns the type of this `EQBand`
 					///
 					/// @return - The current type
-					BandType getBandType() const;
+					BandType getBandType() const noexcept;
 
 					/// @brief Applies this `EQBand` to the given input value
 					///
 					/// @param input - The input to apply EQ to
 					///
 					/// @return - The processed value
-					virtual float process(float input) override;
+					virtual float process(float input) noexcept override;
 
 					/// @brief Applies this `EQBand` to the given array of input values, in place
 					///
 					/// @param input - The input values to apply EQ to
 					/// @param numSamples - The number of input samples
-					virtual void process(float* input, size_t numSamples) override;
+					virtual void process(float* input, size_t numSamples) noexcept override;
 
 					/// @brief Resets this `EQBand` to an initial state
-					virtual void reset() override;
+					virtual void reset() noexcept override;
 
-					EQBand<float> operator=(const EQBand<float>&& band);
+					EQBand<float> operator=(const EQBand<float>&& band) noexcept;
 
 				protected:
 					BandType mType = BandType::Bell;
@@ -154,10 +154,10 @@ namespace apex {
 					/// @param filterIndex - The filter stage to calculate the shift for
 					///
 					/// @return - The shifted frequency
-					float frequencyShift(size_t filterIndex) const;
+					float frequencyShift(size_t filterIndex) const noexcept;
 
 					/// @brief Creates the necessary filter(s) for this `EQBand`
-					virtual void createFilters();
+					virtual void createFilters() noexcept;
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EQBand)
 			};
@@ -189,7 +189,7 @@ namespace apex {
 					};
 
 					/// @brief Creates a default `EQBand`
-					EQBand();
+					EQBand() noexcept;
 
 					/// @brief Creates an `EQBand` with the given parameters
 					///
@@ -198,77 +198,77 @@ namespace apex {
 					/// @param gainDB - The gain to use, in Decibels
 					/// @param sampleRate - The sample rate to use, in Hertz
 					/// @param type - The type of band
-					EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type);
-					EQBand(const EQBand<double>&& band);
-					~EQBand() override;
+					EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type) noexcept;
+					EQBand(const EQBand<double>&& band) noexcept;
+					~EQBand() noexcept override;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
 					///
 					/// @param frequency - The new frequency, in Hertz
-					void setFrequency(double frequency);
+					void setFrequency(double frequency) noexcept;
 
 					/// @brief Returns the frequency of this `EQBand`
 					///
 					/// @return - The current frequency, in Hertz
-					double getFrequency() const;
+					double getFrequency() const noexcept;
 
 					/// @brief Sets the Q of this `EQBand` to the given value
 					///
 					/// @param q - The new Q
-					void setQ(double q);
+					void setQ(double q) noexcept;
 
 					/// @brief Returns the Q of this `EQBand`
 					///
 					/// @return - The current Q
-					double getQ() const;
+					double getQ() const noexcept;
 
 					/// @brief Sets the gain of this `EQBand`
 					///
 					/// @param gainDB - The new gain, in Decibels
-					virtual void setGainDB(double gainDB);
+					virtual void setGainDB(double gainDB) noexcept;
 
 					/// @brief Returns the gain of this `EQBand`
 					///
 					/// @return - The current gain, in Decibels
-					virtual double getGainDB() const;
+					virtual double getGainDB() const noexcept;
 
 					/// @brief Sets the sample rate of this `EQBand` to the given value
 					///
 					/// @param sampleRate - The new sample rate, in Hertz
-					void setSampleRate(size_t sampleRate);
+					void setSampleRate(size_t sampleRate) noexcept;
 
 					/// @brief Returns the sample rate of this `EQBand`
 					///
 					/// @return - The current sample rate, in Hertz
-					size_t getSampleRate() const;
+					size_t getSampleRate() const noexcept;
 
 					/// @brief Sets the type of this `EQBand` to the given value
 					///
 					/// @param type - The new type
-					void setBandType(BandType type);
+					void setBandType(BandType type) noexcept;
 
 					/// @brief Returns the type of this `EQBand`
 					///
 					/// @return - The current type
-					BandType getBandType() const;
+					BandType getBandType() const noexcept;
 
 					/// @brief Applies this `EQBand` to the given input value
 					///
 					/// @param input - The input to apply EQ to
 					///
 					/// @return - The processed value
-					virtual double process(double input) override;
+					virtual double process(double input) noexcept override;
 
 					/// @brief Applies this `EQBand` to the given array of input values, in place
 					///
 					/// @param input - The input values to apply EQ to
 					/// @param numSamples - The number of input samples
-					virtual void process(double* input, size_t numSamples) override;
+					virtual void process(double* input, size_t numSamples) noexcept override;
 
 					/// @brief Resets this `EQBand` to an initial state
-					virtual void reset() override;
+					virtual void reset() noexcept override;
 
-					EQBand<double> operator=(const EQBand<double>&& band);
+					EQBand<double> operator=(const EQBand<double>&& band) noexcept;
 
 				protected:
 					BandType mType = BandType::Bell;
@@ -288,10 +288,10 @@ namespace apex {
 					/// @param filterIndex - The filter stage to calculate the shift for
 					///
 					/// @return - The shifted frequency
-					double frequencyShift(size_t filterIndex) const;
+					double frequencyShift(size_t filterIndex) const noexcept;
 
 					/// @brief Creates the necessary filter(s) for this `EQBand`
-					virtual void createFilters();
+					virtual void createFilters() noexcept;
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EQBand)
 			};
