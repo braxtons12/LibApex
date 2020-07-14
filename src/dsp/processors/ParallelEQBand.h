@@ -41,8 +41,8 @@ namespace apex {
 					/// @brief Move constructs a `ParallelEQBand` from the given one
 					///
 					/// @param band - The `ParallelEQBand` to move
-					ParallelEQBand(const ParallelEQBand<float>&& band) noexcept;
-					~ParallelEQBand() noexcept override;
+					ParallelEQBand(ParallelEQBand<float>&& band) noexcept = default;
+					~ParallelEQBand() noexcept override = default;
 
 					/// @brief Sets the gain of this `ParallelEQBand` to the given value
 					///
@@ -127,7 +127,7 @@ namespace apex {
 					virtual void getDegreesPhasesForFrequencies(float* frequencies, float* phases,
 							size_t numFrequencies) const noexcept override;
 
-					ParallelEQBand<float> operator=(const ParallelEQBand<float>&& band) noexcept;
+					ParallelEQBand<float>& operator=(ParallelEQBand<float>&& band) noexcept = default;
 
 				protected:
 					///the actual gain, before acounting for changes necessary for EQing in parallel
@@ -157,8 +157,8 @@ namespace apex {
 					/// @brief Move constructs a `ParallelEQBand` from the given one
 					///
 					/// @param band - The `ParallelEQBand` to move
-					ParallelEQBand(const ParallelEQBand<double>&& band) noexcept;
-					~ParallelEQBand() noexcept override;
+					ParallelEQBand(ParallelEQBand<double>&& band) noexcept = default;
+					~ParallelEQBand() noexcept override = default;
 
 					/// @brief Sets the gain of this `ParallelEQBand` to the given value
 					///
@@ -243,7 +243,7 @@ namespace apex {
 					virtual void getDegreesPhasesForFrequencies(double* frequencies, double* phases,
 							size_t numFrequencies) const noexcept override;
 
-					ParallelEQBand<double> operator=(const ParallelEQBand<double>&& band) noexcept;
+					ParallelEQBand<double>& operator=(ParallelEQBand<double>&& band) noexcept = default;
 
 				protected:
 					///the actual gain, before acounting for changes necessary for EQing in parallel

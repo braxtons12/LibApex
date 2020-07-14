@@ -10,33 +10,6 @@ namespace apex {
 			updateCoefficients();
 		}
 
-		/// @brief Move contructs a `BiQuadFilter` from the given one
-		///
-		/// @param filt - The `BiQuadFilter` to move
-		BiQuadFilter<float>::BiQuadFilter(const BiQuadFilter<float>&& filt) noexcept {
-			mB0 = filt.mB0;
-			mB1 = filt.mB1;
-			mB2 = filt.mB2;
-			mA0 = filt.mA0;
-			mA1 = filt.mA1;
-			mA2 = filt.mA2;
-
-			mY1 = filt.mY1;
-			mY2 = filt.mY2;
-			mX1 = filt.mX1;
-			mX2 = filt.mX2;
-
-			mType = filt.mType;
-			mFrequency = filt.mFrequency;
-			mQ = filt.mQ;
-			mGain = filt.mGain;
-			mSampleRate = filt.mSampleRate;
-		}
-
-		BiQuadFilter<float>::~BiQuadFilter() noexcept {
-
-		}
-
 		/// @brief Creates a default lowpass BiQuad Filter
 		///
 		/// @return - A lowpass BiQuad Filter
@@ -595,10 +568,6 @@ namespace apex {
 			}
 		}
 
-		BiQuadFilter<float> BiQuadFilter<float>::operator=(const BiQuadFilter<float>&& filt) noexcept {
-			return BiQuadFilter<float>(std::move(filt));
-		}
-
 		BiQuadFilter<float>::BiQuadFilter(float frequency, float q, float gain,
 				size_t sampleRate, FilterType type) noexcept
 			: mType(type),
@@ -716,33 +685,6 @@ namespace apex {
 		/// @brief Constructs a default `BiQuadFilter`
 		BiQuadFilter<double>::BiQuadFilter() noexcept {
 			updateCoefficients();
-		}
-
-		/// @brief Move contructs a `BiQuadFilter` from the given one
-		///
-		/// @param filt - The `BiQuadFilter` to move
-		BiQuadFilter<double>::BiQuadFilter(const BiQuadFilter<double>&& filt) noexcept {
-			mB0 = filt.mB0;
-			mB1 = filt.mB1;
-			mB2 = filt.mB2;
-			mA0 = filt.mA0;
-			mA1 = filt.mA1;
-			mA2 = filt.mA2;
-
-			mY1 = filt.mY1;
-			mY2 = filt.mY2;
-			mX1 = filt.mX1;
-			mX2 = filt.mX2;
-
-			mType = filt.mType;
-			mFrequency = filt.mFrequency;
-			mQ = filt.mQ;
-			mGain = filt.mGain;
-			mSampleRate = filt.mSampleRate;
-		}
-
-		BiQuadFilter<double>::~BiQuadFilter() noexcept {
-
 		}
 
 		/// @brief Creates a default lowpass BiQuad Filter
@@ -1302,9 +1244,6 @@ namespace apex {
 			for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
 				phases[frequency] = getPhaseForFrequency(frequencies[frequency]);
 			}
-		}
-		BiQuadFilter<double> BiQuadFilter<double>::operator=(const BiQuadFilter<double>&& filt) noexcept {
-			return BiQuadFilter<double>(std::move(filt));
 		}
 
 		BiQuadFilter<double>::BiQuadFilter(double frequency, double q, double gain,

@@ -27,15 +27,15 @@ namespace apex {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0
-					Gain() noexcept;
+					Gain() noexcept = default;
 
 					/// @brief Constructs a `Gain` with the given gain value.
 					///
 					/// @param gain - The gain value to use
 					/// @param gainIsDecibels - Whether the gain value is in Decibels
 					Gain(float gain, bool gainIsDecibels = false) noexcept;
-					Gain(const Gain<float>&& gain) noexcept;
-					~Gain() noexcept override;
+					Gain(Gain<float>&& gain) noexcept = default;
+					~Gain() noexcept override = default;
 
 					/// @brief Sets the gain of this `Gain` to be the given linear value
 					///
@@ -82,7 +82,7 @@ namespace apex {
 
 					}
 
-					Gain<float> operator=(const Gain<float>&& gain) noexcept;
+					Gain<float>& operator=(Gain<float>&& gain) noexcept = default;
 
 				private:
 					///The linear gain value
@@ -99,15 +99,15 @@ namespace apex {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0
-					Gain() noexcept;
+					Gain() noexcept = default;
 
 					/// @brief Constructs a `Gain` with the given gain value.
 					///
 					/// @param gain - The gain value to use
 					/// @param gainIsDecibels - Whether the gain value is in Decibels
 					Gain(double gain, bool gainIsDecibels = false) noexcept;
-					Gain(const Gain<double>&& gain) noexcept;
-					~Gain() noexcept override;
+					Gain(Gain<double>&& gain) noexcept = default;
+					~Gain() noexcept override = default;
 
 					/// @brief Sets the gain of this `Gain` to be the given linear value
 					///
@@ -154,7 +154,7 @@ namespace apex {
 
 					}
 
-					Gain<double> operator=(const Gain<double>&& gain) noexcept;
+					Gain<double>& operator=(Gain<double>&& gain) noexcept = default;
 
 				private:
 					///The linear gain value

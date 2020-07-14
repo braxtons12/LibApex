@@ -35,8 +35,8 @@ namespace apex {
 					/// @brief Move contructs a `BiQuadFilter` from the given one
 					///
 					/// @param filt - The `BiQuadFilter<float>` to move
-					BiQuadFilter(const BiQuadFilter<float>&& filt) noexcept;
-					~BiQuadFilter() noexcept;
+					BiQuadFilter(BiQuadFilter<float>&& filt) noexcept = default;
+					~BiQuadFilter() noexcept = default;
 
 					/// @brief The different possible BiQuad Filter types
 					enum FilterType {
@@ -418,7 +418,7 @@ namespace apex {
 					void getPhasesForFrequencies(float* frequencies, float* phases,
 							size_t numFrequencies) const noexcept;
 
-					BiQuadFilter<float> operator=(const BiQuadFilter<float>&& filt) noexcept;
+					BiQuadFilter<float>& operator=(BiQuadFilter<float>&& filt) noexcept = default;
 
 				private:
 					float mB0 = 0.0f;
@@ -461,8 +461,8 @@ namespace apex {
 					/// @brief Move contructs a `BiQuadFilter` from the given one
 					///
 					/// @param filt - The `BiQuadFilter` to move
-					BiQuadFilter(const BiQuadFilter<double>&& filt) noexcept;
-					~BiQuadFilter() noexcept;
+					BiQuadFilter(BiQuadFilter<double>&& filt) noexcept = default;
+					~BiQuadFilter() noexcept = default;
 
 					/// @brief The different possible BiQuad Filter types
 					enum FilterType {
@@ -844,7 +844,7 @@ namespace apex {
 					void getPhasesForFrequencies(double* frequencies, double* phases,
 							size_t numFrequencies) const noexcept;
 
-					BiQuadFilter<double> operator=(const BiQuadFilter<double>&& filt) noexcept;
+					BiQuadFilter<double>& operator=(BiQuadFilter<double>&& filt) noexcept = default;
 
 				private:
 					double mB0 = 0.0;

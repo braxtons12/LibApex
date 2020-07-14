@@ -24,19 +24,6 @@ namespace apex {
 				setGainDB(mGain);
 			}
 
-		/// @brief Move constructs a `ParallelEQBand` from the given one
-		///
-		/// @param band - The `ParallelEQBand` to move
-		ParallelEQBand<float>::ParallelEQBand(const ParallelEQBand<float>&& band) noexcept
-			: EQBand<float>(std::move(band))
-			{
-				setGainDB(mGain);
-			}
-
-		ParallelEQBand<float>::~ParallelEQBand() noexcept {
-
-		}
-
 		/// @brief Sets the gain of this `ParallelEQBand` to the given value
 		///
 		/// @param gainDB - The new gain, in Decibels
@@ -276,47 +263,35 @@ namespace apex {
 			}
 		}
 
-		ParallelEQBand<float> ParallelEQBand<float>::operator=(const ParallelEQBand<float>&& band) noexcept {
-			return ParallelEQBand<float>(std::move(band));
-		}
-
 		/// @brief Creates necessary filter(s) for this EQ band
 		void ParallelEQBand<float>::createFilters() noexcept {
 			EQBand<float>::createFilters();
 			if(mType == BandType::LowShelf) {
-				mFilter = std::move(
-						BiQuadFilter<float>::MakeLowpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<float>::MakeLowpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::HighShelf) {
-				mFilter = std::move(
-						BiQuadFilter<float>::MakeHighpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<float>::MakeHighpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::Bell) {
-				mFilter = std::move(
-						BiQuadFilter<float>::MakeBandpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<float>::MakeBandpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::AnalogBell) {
-				mFilter = std::move(
-						BiQuadFilter<float>::MakeBandpass(
-							mFrequency,
-							mQ * math::pow10f(mGainActual / 40.0f),
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<float>::MakeBandpass(
+						mFrequency,
+						mQ * math::pow10f(mGainActual / 40.0f),
+						mSampleRate
 						);
 			}
 		}
@@ -341,19 +316,6 @@ namespace apex {
 			{
 				setGainDB(mGain);
 			}
-
-		/// @brief Move constructs a `ParallelEQBand` from the given one
-		///
-		/// @param band - The `ParallelEQBand` to move
-		ParallelEQBand<double>::ParallelEQBand(const ParallelEQBand<double>&& band) noexcept
-			: EQBand<double>(std::move(band))
-			{
-				setGainDB(mGain);
-			}
-
-		ParallelEQBand<double>::~ParallelEQBand() noexcept {
-
-		}
 
 		/// @brief Sets the gain of this `ParallelEQBand` to the given value
 		///
@@ -594,47 +556,35 @@ namespace apex {
 			}
 		}
 
-		ParallelEQBand<double> ParallelEQBand<double>::operator=(const ParallelEQBand<double>&& band) noexcept {
-			return ParallelEQBand<double>(std::move(band));
-		}
-
 		/// @brief Creates necessary filter(s) for this EQ band
 		void ParallelEQBand<double>::createFilters() noexcept {
 			EQBand<double>::createFilters();
 			if(mType == BandType::LowShelf) {
-				mFilter = std::move(
-						BiQuadFilter<double>::MakeLowpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<double>::MakeLowpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::HighShelf) {
-				mFilter = std::move(
-						BiQuadFilter<double>::MakeHighpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<double>::MakeHighpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::Bell) {
-				mFilter = std::move(
-						BiQuadFilter<double>::MakeBandpass(
-							mFrequency,
-							mQ,
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<double>::MakeBandpass(
+						mFrequency,
+						mQ,
+						mSampleRate
 						);
 			}
 			else if(mType == BandType::AnalogBell) {
-				mFilter = std::move(
-						BiQuadFilter<double>::MakeBandpass(
-							mFrequency,
-							mQ * math::pow10(mGainActual / 40.0),
-							mSampleRate
-							)
+				mFilter = BiQuadFilter<double>::MakeBandpass(
+						mFrequency,
+						mQ * math::pow10(mGainActual / 40.0),
+						mSampleRate
 						);
 			}
 		}

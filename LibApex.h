@@ -52,7 +52,9 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/processors/EQBand.h"
 #include "src/dsp/processors/ParallelEQBand.h"
 #include "src/dsp/processors/Gain.h"
-#include "src/dsp/envelopes/Envelope.h"
-#include "src/dsp/envelopes/AttackEnvelope.h"
-#include "src/dsp/envelopes/ReleaseEnvelope.h"
+#include "src/dsp/leveldetectors/LevelDetector.h"
+#include "src/dsp/leveldetectors/LevelDetectorRMS.h"
+#include "src/dsp/leveldetectors/LevelDetector1176.h"
+#include "src/dsp/leveldetectors/LevelDetectorSSL.h"
+#include "src/dsp/leveldetectors/LevelDetectorModernBus.h"
 

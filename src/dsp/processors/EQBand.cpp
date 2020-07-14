@@ -5,9 +5,9 @@ namespace apex {
 
 		/// @brief Creates a default `EQBand`
 		EQBand<float>::EQBand() noexcept {
-			mFilter = std::move(BiQuadFilter<float>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
+			mFilter = BiQuadFilter<float>::MakeBell(mFrequency, mQ, mGain, mSampleRate);
 			mFilters.resize(0);
-			mGainProcessor = std::move(Gain<float>(mGain, true));
+			mGainProcessor = Gain<float>(mGain, true);
 		}
 
 		/// @brief Creates an `EQBand` with the given parameters
@@ -24,41 +24,19 @@ namespace apex {
 			mQ(q),
 			mGain(gainDB),
 			mSampleRate(sampleRate),
-			mFilter(std::move(BiQuadFilter<float>::MakeAllpass()))
+			mFilter(BiQuadFilter<float>::MakeAllpass())
 			{
 				if(mType < BandType::Allpass) {
 					if(mType % 4 == 0) mOrder = 1;
 					if(mType % 4 == 1) mOrder = 2;
 					if(mType % 4 == 2) mOrder = 4;
 					if(mType % 4 == 3) mOrder = 8;
-					mGainProcessor = std::move(Gain<float>(mGain, true));
+					mGainProcessor = Gain<float>(mGain, true);
 				}
 
 				mFilters.resize(mOrder);
 				createFilters();
 			}
-
-		/// @brief Move constructs an `EQBand` from the given one
-		///
-		/// @param band - The `EQBand` to move
-		EQBand<float>::EQBand(const EQBand<float>&& band) noexcept {
-			mType = band.mType;
-			mFrequency = band.mFrequency;
-			mQ = band.mQ;
-			mGain = band.mGain;
-			mSampleRate = band.mSampleRate;
-			mFilter = std::move(band.mFilter);
-			mOrder = band.mOrder;
-			mGainProcessor = std::move(band.mGainProcessor);
-			mFilters.resize(band.mFilters.size());
-			for(size_t i = 0; i < mFilters.size(); ++i) {
-				mFilters[i] = std::move(band.mFilters[i]);
-			}
-		}
-
-		EQBand<float>::~EQBand() noexcept {
-
-		}
 
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
@@ -318,10 +296,6 @@ namespace apex {
 			}
 		}
 
-		EQBand<float> EQBand<float>::operator=(const EQBand<float>&& band) noexcept {
-			return EQBand<float>(std::move(band));
-		}
-
 		/// @brief Returns the shifted frequency for the Nth filter stage in
 		/// a multi-order filter
 		///
@@ -345,294 +319,234 @@ namespace apex {
 
 			switch(mType) {
 				case Lowpass12DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<float>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<float>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<float>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<float>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass24DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<float>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<float>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<float>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<float>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass48DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<float>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<float>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<float>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<float>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass96DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<float>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<float>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<float>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<float>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Highpass12DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<float>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<float>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass24DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<float>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<float>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass48DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<float>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<float>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass96DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<float>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<float>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass12DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeBandpass(
+									   mFilter = BiQuadFilter<float>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<float>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass24DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeBandpass(
+									   mFilter = BiQuadFilter<float>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<float>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass48DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeBandpass(
+									   mFilter = BiQuadFilter<float>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<float>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass96DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<float>::MakeBandpass(
+									   mFilter = BiQuadFilter<float>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<float>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<float>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Allpass: {
-								  mFilter = std::move(
-										  BiQuadFilter<float>::MakeAllpass(
-											  mFrequency,
-											  mQ,
-											  mSampleRate
-											  )
+								  mFilter = BiQuadFilter<float>::MakeAllpass(
+										  mFrequency,
+										  mQ,
+										  mSampleRate
 										  );
 							  }
 							  break;
 				case Notch: {
-								mFilter = std::move(
-										BiQuadFilter<float>::MakeNotch(
-											mFrequency,
-											mQ,
-											mSampleRate
-											)
+								mFilter = BiQuadFilter<float>::MakeNotch(
+										mFrequency,
+										mQ,
+										mSampleRate
 										);
 							}
 							break;
 				case LowShelf: {
-								   mFilter = std::move(
-										   BiQuadFilter<float>::MakeLowShelf(
-											   mFrequency,
-											   mQ,
-											   mGain,
-											   mSampleRate
-											   )
-										   );
-							   }
-							   break;
-				case HighShelf: {
-									mFilter = std::move(
-											BiQuadFilter<float>::MakeHighShelf(
-												mFrequency,
-												mQ,
-												mGain,
-												mSampleRate
-												)
-											);
-								}
-								break;
-				case Bell: {
-							   mFilter = std::move(
-									   BiQuadFilter<float>::MakeBell(
+								   mFilter = BiQuadFilter<float>::MakeLowShelf(
 										   mFrequency,
 										   mQ,
 										   mGain,
 										   mSampleRate
-										   )
+										   );
+							   }
+							   break;
+				case HighShelf: {
+									mFilter = BiQuadFilter<float>::MakeHighShelf(
+											mFrequency,
+											mQ,
+											mGain,
+											mSampleRate
+											);
+								}
+								break;
+				case Bell: {
+							   mFilter = BiQuadFilter<float>::MakeBell(
+									   mFrequency,
+									   mQ,
+									   mGain,
+									   mSampleRate
 									   );
 						   }
 						   break;
 				case AnalogBell: {
-									 mFilter = std::move(
-											 BiQuadFilter<float>::MakeAnalogBell(
-												 mFrequency,
-												 mQ,
-												 mGain,
-												 mSampleRate
-												 )
+									 mFilter = BiQuadFilter<float>::MakeAnalogBell(
+											 mFrequency,
+											 mQ,
+											 mGain,
+											 mSampleRate
 											 );
 								 }
 								 break;
@@ -641,9 +555,9 @@ namespace apex {
 
 		/// @brief Creates a default `EQBand`
 		EQBand<double>::EQBand() noexcept {
-			mFilter = std::move(BiQuadFilter<double>::MakeBell(mFrequency, mQ, mGain, mSampleRate));
+			mFilter = BiQuadFilter<double>::MakeBell(mFrequency, mQ, mGain, mSampleRate);
 			mFilters.resize(0);
-			mGainProcessor = std::move(Gain<double>(mGain, true));
+			mGainProcessor = Gain<double>(mGain, true);
 		}
 
 		/// @brief Creates an `EQBand` with the given parameters
@@ -660,41 +574,19 @@ namespace apex {
 			mQ(q),
 			mGain(gainDB),
 			mSampleRate(sampleRate),
-			mFilter(std::move(BiQuadFilter<double>::MakeAllpass()))
+			mFilter(BiQuadFilter<double>::MakeAllpass())
 			{
 				if(mType < BandType::Allpass) {
 					if(mType % 4 == 0) mOrder = 1;
 					if(mType % 4 == 1) mOrder = 2;
 					if(mType % 4 == 2) mOrder = 4;
 					if(mType % 4 == 3) mOrder = 8;
-					mGainProcessor = std::move(Gain<double>(mGain, true));
+					mGainProcessor = Gain<double>(mGain, true);
 				}
 
 				mFilters.resize(mOrder);
 				createFilters();
 			}
-
-		/// @brief Move constructs an `EQBand` from the given one
-		///
-		/// @param band - The `EQBand` to move
-		EQBand<double>::EQBand(const EQBand<double>&& band) noexcept {
-			mType = band.mType;
-			mFrequency = band.mFrequency;
-			mQ = band.mQ;
-			mGain = band.mGain;
-			mSampleRate = band.mSampleRate;
-			mFilter = std::move(band.mFilter);
-			mOrder = band.mOrder;
-			mGainProcessor = std::move(band.mGainProcessor);
-			mFilters.resize(band.mFilters.size());
-			for(size_t i = 0; i < mFilters.size(); ++i) {
-				mFilters[i] = std::move(band.mFilters[i]);
-			}
-		}
-
-		EQBand<double>::~EQBand() noexcept {
-
-		}
 
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
@@ -955,10 +847,6 @@ namespace apex {
 			}
 		}
 
-		EQBand<double> EQBand<double>::operator=(const EQBand<double>&& band) noexcept {
-			return EQBand<double>(std::move(band));
-		}
-
 		/// @brief Returns the shifted frequency for the Nth filter stage in
 		/// a multi-order filter
 		///
@@ -982,294 +870,234 @@ namespace apex {
 
 			switch(mType) {
 				case Lowpass12DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<double>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<double>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<double>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<double>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass24DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<double>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<double>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<double>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<double>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass48DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<double>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<double>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<double>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<double>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Lowpass96DB: {
-									  mFilter = std::move(
-											  BiQuadFilter<double>::MakeLowpass(
-												  mFrequency,
-												  mQ,
-												  mSampleRate
-												  )
+									  mFilter = BiQuadFilter<double>::MakeLowpass(
+											  mFrequency,
+											  mQ,
+											  mSampleRate
 											  );
 									  for(size_t ord = 0; ord < mOrder; ++ord) {
-										  mFilters[ord] = std::move(
-												  BiQuadFilter<double>::MakeLowpass(
-													  frequencyShift(ord),
-													  mQ,
-													  mSampleRate
-													  )
+										  mFilters[ord] = BiQuadFilter<double>::MakeLowpass(
+												  frequencyShift(ord),
+												  mQ,
+												  mSampleRate
 												  );
 									  }
 								  }
 								  break;
 				case Highpass12DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<double>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<double>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass24DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<double>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<double>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass48DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<double>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<double>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Highpass96DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeHighpass(
-												   mFrequency,
-												   mQ,
-												   mSampleRate
-												   )
+									   mFilter = BiQuadFilter<double>::MakeHighpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
 											   );
 									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeHighpass(
-													   frequencyShift(ord),
-													   mQ,
-													   mSampleRate
-													   )
+										   mFilters[ord] = BiQuadFilter<double>::MakeHighpass(
+												   frequencyShift(ord),
+												   mQ,
+												   mSampleRate
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass12DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeBandpass(
+									   mFilter = BiQuadFilter<double>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<double>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass24DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeBandpass(
+									   mFilter = BiQuadFilter<double>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<double>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass48DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeBandpass(
+									   mFilter = BiQuadFilter<double>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<double>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Bandpass96DB: {
-									   mFilter = std::move(
-											   BiQuadFilter<double>::MakeBandpass(
+									   mFilter = BiQuadFilter<double>::MakeBandpass(
+											   mFrequency,
+											   mQ,
+											   mSampleRate
+											   );
+									   for(size_t ord = 0; ord < mOrder; ++ord) {
+										   mFilters[ord] = BiQuadFilter<double>::MakeBandpass(
 												   mFrequency,
 												   mQ,
 												   mSampleRate
-												   )
-											   );
-									   for(size_t ord = 0; ord < mOrder; ++ord) {
-										   mFilters[ord] = std::move(
-												   BiQuadFilter<double>::MakeBandpass(
-													   mFrequency,
-													   mQ,
-													   mSampleRate
-													   )
 												   );
 									   }
 								   }
 								   break;
 				case Allpass: {
-								  mFilter = std::move(
-										  BiQuadFilter<double>::MakeAllpass(
-											  mFrequency,
-											  mQ,
-											  mSampleRate
-											  )
+								  mFilter = BiQuadFilter<double>::MakeAllpass(
+										  mFrequency,
+										  mQ,
+										  mSampleRate
 										  );
 							  }
 							  break;
 				case Notch: {
-								mFilter = std::move(
-										BiQuadFilter<double>::MakeNotch(
-											mFrequency,
-											mQ,
-											mSampleRate
-											)
+								mFilter = BiQuadFilter<double>::MakeNotch(
+										mFrequency,
+										mQ,
+										mSampleRate
 										);
 							}
 							break;
 				case LowShelf: {
-								   mFilter = std::move(
-										   BiQuadFilter<double>::MakeLowShelf(
-											   mFrequency,
-											   mQ,
-											   mGain,
-											   mSampleRate
-											   )
-										   );
-							   }
-							   break;
-				case HighShelf: {
-									mFilter = std::move(
-											BiQuadFilter<double>::MakeHighShelf(
-												mFrequency,
-												mQ,
-												mGain,
-												mSampleRate
-												)
-											);
-								}
-								break;
-				case Bell: {
-							   mFilter = std::move(
-									   BiQuadFilter<double>::MakeBell(
+								   mFilter = BiQuadFilter<double>::MakeLowShelf(
 										   mFrequency,
 										   mQ,
 										   mGain,
 										   mSampleRate
-										   )
+										   );
+							   }
+							   break;
+				case HighShelf: {
+									mFilter = BiQuadFilter<double>::MakeHighShelf(
+											mFrequency,
+											mQ,
+											mGain,
+											mSampleRate
+											);
+								}
+								break;
+				case Bell: {
+							   mFilter = BiQuadFilter<double>::MakeBell(
+									   mFrequency,
+									   mQ,
+									   mGain,
+									   mSampleRate
 									   );
 						   }
 						   break;
 				case AnalogBell: {
-									 mFilter = std::move(
-											 BiQuadFilter<double>::MakeAnalogBell(
-												 mFrequency,
-												 mQ,
-												 mGain,
-												 mSampleRate
-												 )
+									 mFilter = BiQuadFilter<double>::MakeAnalogBell(
+											 mFrequency,
+											 mQ,
+											 mGain,
+											 mSampleRate
 											 );
 								 }
 								 break;

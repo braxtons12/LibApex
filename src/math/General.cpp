@@ -25,6 +25,11 @@ namespace apex {
 			return x - truncf(x / y) * y;
 		}
 
+		inline float max(float x, float y) noexcept {
+			if(x > y) return x;
+			else return y;
+		}
+
 		inline double sqrt(double x) noexcept {
 			double n = x > 10.0 ? x / 10.0 : x / 2.0;
 			double y = 1;
@@ -46,6 +51,21 @@ namespace apex {
 
 		inline double fmod(double x, double y) noexcept {
 			return x - trunc(x / y) * y;
+		}
+
+		inline double max(double x, double y) noexcept {
+			if(x > y) return x;
+			else return y;
+		}
+
+		inline int max(int x, int y) noexcept {
+			if(x > y) return x;
+			else return y;
+		}
+
+		inline size_t max(size_t x, size_t y) noexcept {
+			if(x > y) return x;
+			else return y;
 		}
 	}
 }

@@ -65,8 +65,8 @@ namespace apex {
 					/// @brief Move constructs an `EQBand` from the given one
 					///
 					/// @param band - The `EQBand` to move
-					EQBand(const EQBand<float>&& band) noexcept;
-					~EQBand() noexcept override;
+					EQBand(EQBand<float>&& band) noexcept = default;
+					~EQBand() noexcept override = default;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
 					///
@@ -194,7 +194,7 @@ namespace apex {
 					virtual void getDegreesPhasesForFrequencies(float* frequencies, float* phases,
 							size_t numFrequencies) const noexcept;
 
-					EQBand<float> operator=(const EQBand<float>&& band) noexcept;
+					EQBand<float>& operator=(EQBand<float>&& band) noexcept = default;
 
 				protected:
 					BandType mType = BandType::Bell;
@@ -259,8 +259,8 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use, in Hertz
 					/// @param type - The type of band
 					EQBand(double frequency, double q, double gainDB, size_t sampleRate, BandType type) noexcept;
-					EQBand(const EQBand<double>&& band) noexcept;
-					~EQBand() noexcept override;
+					EQBand(EQBand<double>&& band) noexcept = default;
+					~EQBand() noexcept override = default;
 
 					/// @brief Sets the frequency of this `EQBand` to the given value
 					///
@@ -388,7 +388,7 @@ namespace apex {
 					virtual void getDegreesPhasesForFrequencies(double* frequencies, double* phases,
 							size_t numFrequencies) const noexcept;
 
-					EQBand<double> operator=(const EQBand<double>&& band) noexcept;
+					EQBand<double>& operator=(EQBand<double>&& band) noexcept = default;
 
 				protected:
 					BandType mType = BandType::Bell;

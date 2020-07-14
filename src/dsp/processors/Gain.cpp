@@ -5,11 +5,6 @@
 namespace apex {
 	namespace dsp {
 
-		/// @brief Constructs a default `Gain` with an initial linear value of 1.0
-		Gain<float>::Gain() noexcept {
-
-		}
-
 		/// @brief Constructs a `Gain` with the given gain value.
 		///
 		/// @param gain - The gain value to use
@@ -23,15 +18,6 @@ namespace apex {
 				mGainLinear = gain;
 				mGainDecibels = math::Decibels::linearToDecibels(gain);
 			}
-		}
-
-		Gain<float>::Gain(const Gain<float>&& gain) noexcept {
-			mGainLinear = gain.mGainLinear;
-			mGainDecibels = gain.mGainDecibels;
-		}
-
-		Gain<float>::~Gain() noexcept {
-
 		}
 
 		/// @brief Sets the gain of this `Gain` to be the given linear value
@@ -104,15 +90,6 @@ namespace apex {
 #endif //JUCE_USE_SIMD
 		}
 
-		Gain<float> Gain<float>::operator=(const Gain<float>&& gain) noexcept {
-			return Gain<float>(std::move(gain));
-		}
-
-		/// @brief Constructs a default `Gain` with an initial linear value of 1.0
-		Gain<double>::Gain() noexcept {
-
-		}
-
 		/// @brief Constructs a `Gain` with the given gain value.
 		///
 		/// @param gain - The gain value to use
@@ -126,15 +103,6 @@ namespace apex {
 				mGainLinear = gain;
 				mGainDecibels = math::Decibels::linearToDecibels(gain);
 			}
-		}
-
-		Gain<double>::Gain(const Gain<double>&& gain) noexcept {
-			mGainLinear = gain.mGainLinear;
-			mGainDecibels = gain.mGainDecibels;
-		}
-
-		Gain<double>::~Gain() noexcept {
-
 		}
 
 		/// @brief Sets the gain of this `Gain` to be the given linear value
@@ -205,10 +173,6 @@ namespace apex {
 				input[sample] *= mGainLinear;
 			}
 #endif //JUCE_USE_SIMD
-		}
-
-		Gain<double> Gain<double>::operator=(const Gain<double>&& gain) noexcept {
-			return Gain<double>(std::move(gain));
 		}
 	}
 }

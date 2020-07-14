@@ -19,6 +19,8 @@ namespace apex {
 
 					}
 
+					Processor(Processor<T>&& proc) = default;
+
 					virtual ~Processor() {
 
 					}
@@ -38,6 +40,8 @@ namespace apex {
 
 					/// @brief Resets the processor to an initial state
 					virtual void reset() = 0;
+
+					Processor<T>& operator=(Processor<T>&& proc) = default;
 
 				private:
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Processor)
