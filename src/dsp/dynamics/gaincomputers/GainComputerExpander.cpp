@@ -31,7 +31,7 @@ namespace apex {
 			}
 			else {
 				return input + (1.0f - mRatio)
-					* math::pow2f(input -mThreshold - mKneeWidth / 2.0f) / (2.0f * mKneeWidth);
+					* math::pow2f(input - mThreshold - mKneeWidth / 2.0f) / (2.0f * mKneeWidth);
 			}
 		}
 
@@ -63,7 +63,7 @@ namespace apex {
 			}
 			else {
 				return input + (1.0 - mRatio)
-					* math::pow2(input -mThreshold - mKneeWidth / 2.0) / (2.0 * mKneeWidth);
+					* math::pow2(input - mThreshold - mKneeWidth / 2.0) / (2.0 * mKneeWidth);
 			}
 		}
 	}
