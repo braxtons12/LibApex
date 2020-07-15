@@ -18,7 +18,7 @@ namespace apex {
 		///
 		/// @tparam T - The floating point type to back operations, either float or double
 		template<typename T>
-			class LevelDetectorRMS : LevelDetector<T> {
+			class LevelDetectorRMS : public LevelDetector<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -29,7 +29,7 @@ namespace apex {
 		/// @brief Base RMS Level Detector used for the level detection portion of a
 		/// Dynamic Range Processor's Sidechain
 		template<>
-			class LevelDetectorRMS<float> : LevelDetector<float> {
+			class LevelDetectorRMS<float> : public LevelDetector<float> {
 				public:
 					LevelDetectorRMS() noexcept = default;
 
@@ -103,7 +103,7 @@ namespace apex {
 		/// @brief Base RMS Level Detector used for the level detection portion of a
 		/// Dynamic Range Processor's Sidechain
 		template<>
-			class LevelDetectorRMS<double> : LevelDetector<double> {
+			class LevelDetectorRMS<double> : public LevelDetector<double> {
 				public:
 					LevelDetectorRMS() noexcept = default;
 

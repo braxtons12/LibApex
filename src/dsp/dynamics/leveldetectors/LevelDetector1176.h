@@ -13,7 +13,7 @@ namespace apex {
 		///
 		/// @tparam T - The floating point type to back operations
 		template<typename T>
-			class LevelDetector1176 : LevelDetector<T> {
+			class LevelDetector1176 : public LevelDetector<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -23,7 +23,7 @@ namespace apex {
 
 		/// @brief 1176-style Level Detector for Dynamic Range Processors
 		template<>
-			class LevelDetector1176<float> : LevelDetector<float> {
+			class LevelDetector1176<float> : public LevelDetector<float> {
 				public:
 					/// @brief Constructs a `LevelDetector1176` with the following values:
 					/// * attack: 0.39mS,
@@ -56,7 +56,7 @@ namespace apex {
 
 		/// @brief 1176-style Level Detector for Dynamic Range Processors
 		template<>
-			class LevelDetector1176<double> : LevelDetector<double> {
+			class LevelDetector1176<double> : public LevelDetector<double> {
 				public:
 					/// @brief Constructs a `LevelDetector1176` with the following values:
 					/// * attack: 0.39mS,

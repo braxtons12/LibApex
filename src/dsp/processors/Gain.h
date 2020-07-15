@@ -23,7 +23,7 @@ namespace apex {
 
 		/// @brief Class used for managing, storing, and applying a specifc gain; operating with `float`s
 		template<>
-			class Gain<float> : Processor<float> {
+			class Gain<float> : public Processor<float> {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0
@@ -95,7 +95,7 @@ namespace apex {
 
 		/// @brief Class used for managing, storing, and applying a specifc gain; operating with `double`s
 		template<>
-			class Gain<double> : Processor<double> {
+			class Gain<double> : public Processor<double> {
 				public:
 
 					/// @brief Constructs a default `Gain` with an initial linear value of 1.0

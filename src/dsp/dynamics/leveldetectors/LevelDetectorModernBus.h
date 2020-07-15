@@ -12,7 +12,7 @@ namespace apex {
 		///
 		/// @tparam T - The floating point type to back operations
 		template<typename T>
-			class LevelDetectorModernBus : LevelDetector<T> {
+			class LevelDetectorModernBus : public LevelDetector<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -22,7 +22,7 @@ namespace apex {
 
 		/// @brief Modern-style Bus compressor Level Detector
 		template<>
-			class LevelDetectorModernBus<float> : LevelDetector<float> {
+			class LevelDetectorModernBus<float> : public LevelDetector<float> {
 				public:
 					/// @brief Constructs a `LevelDetectorModernBus` with the following defaults:
 					/// * attack: 30mS
@@ -96,7 +96,7 @@ namespace apex {
 
 		/// @brief Modern-style Bus compressor Level Detector
 		template<>
-			class LevelDetectorModernBus<double> : LevelDetector<double> {
+			class LevelDetectorModernBus<double> : public LevelDetector<double> {
 				public:
 					/// @brief Constructs a `LevelDetectorModernBus` with the following defaults:
 					/// * attack: 30mS

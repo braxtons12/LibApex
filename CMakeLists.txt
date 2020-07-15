@@ -130,7 +130,6 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerCompressor.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerExpander.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStage.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageVCA.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/MultiChannelProcessor.h"

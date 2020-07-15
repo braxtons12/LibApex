@@ -13,7 +13,7 @@ namespace apex {
 		///
 		/// @tparam T - The floating point type to back operations
 		template<typename T>
-			class LevelDetectorSSL : LevelDetector<T> {
+			class LevelDetectorSSL : public LevelDetector<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -23,7 +23,7 @@ namespace apex {
 
 		/// @brief SSL-style Bus Compressor Level Detector
 		template<>
-			class LevelDetectorSSL<float> : LevelDetector<float> {
+			class LevelDetectorSSL<float> : public LevelDetector<float> {
 				public:
 					enum AttackType {
 						PointOneMilliseconds = 0,
@@ -160,7 +160,7 @@ namespace apex {
 
 		/// @brief SSL-style Bus Compressor Level Detector
 		template<>
-			class LevelDetectorSSL<double> : LevelDetector<double> {
+			class LevelDetectorSSL<double> : public LevelDetector<double> {
 				public:
 					enum AttackType {
 						PointOneMilliseconds = 0,

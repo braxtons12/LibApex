@@ -12,7 +12,7 @@ namespace apex {
 		///
 		///@tparam T - The floating point type to back operations
 		template<typename T>
-			class GainComputerExpander : GainComputer<T> {
+			class GainComputerExpander : public GainComputer<T> {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -22,7 +22,7 @@ namespace apex {
 
 		///@brief Gain Computer for expanders
 		template<>
-			class GainComputerExpander<float> : GainComputer<float> {
+			class GainComputerExpander<float> : public GainComputer<float> {
 				public:
 					///@brief Constructs a `GainComputerExpander` with the following defaults:
 					/// * ratio: 1.1
@@ -58,7 +58,7 @@ namespace apex {
 
 		///@brief Gain Computer for expanders
 		template<>
-			class GainComputerExpander<double> : GainComputer<double> {
+			class GainComputerExpander<double> : public GainComputer<double> {
 				public:
 					///@brief Constructs a `GainComputerExpander` with the following defaults:
 					/// * ratio: 1.1
