@@ -51,6 +51,9 @@ namespace apex {
 					float process(float input) noexcept override;
 
 					GainComputerCompressor<float>& operator=(GainComputerCompressor<float>&& comptuer) noexcept = default;
+				
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
 			};
 
 		///@brief Gain Computer for compressors
@@ -84,6 +87,9 @@ namespace apex {
 					double process(double input) noexcept override;
 
 					GainComputerCompressor<double>& operator=(GainComputerCompressor<double>&& comptuer) noexcept = default;
+				
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
 			};
 	}
 

@@ -3,10 +3,11 @@
 namespace apex {
 	namespace dsp {
 
-		///@brief Constructs a `GainComputerCompressor` with the following defaults:
-		/// * ratio: 1.1
-		/// * threshold: -12dB
-		/// * knee width: 6dB
+		///@brief Construct a `GainComputerCompressor` with the given parameters
+		///
+		///@param ratio - The ratio
+		///@param threshold - The threshold, in Decibels
+		///@param kneeWidth - The knee width, in Decibels
 		GainComputerCompressor<float>::GainComputerCompressor(float ratio, float threshold, 
 			float kneeWidth) noexcept
 		{
@@ -34,10 +35,11 @@ namespace apex {
 			}
 		}
 
-		///@brief Constructs a `GainComputerCompressor` with the following defaults:
-		/// * ratio: 1.1
-		/// * threshold: -12dB
-		/// * knee width: 6dB
+		///@brief Construct a `GainComputerCompressor` with the given parameters
+		///
+		///@param ratio - The ratio
+		///@param threshold - The threshold, in Decibels
+		///@param kneeWidth - The knee width, in Decibels
 		GainComputerCompressor<double>::GainComputerCompressor(double ratio, double threshold, 
 			double kneeWidth) noexcept
 		{
