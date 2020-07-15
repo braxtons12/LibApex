@@ -28,6 +28,7 @@
 #include "src/dsp/dynamics/compressors/CompressorVCA.cpp"
 #include "src/dsp/dynamics/expanders/Expander.cpp"
 #include "src/dsp/dynamics/expanders/ExpanderVCA.cpp"
+#include "src/dsp/dynamics/gaincomputers/GainComputer.cpp"
 #include "src/dsp/dynamics/gaincomputers/GainComputerCompressor.cpp"
 #include "src/dsp/dynamics/gaincomputers/GainComputerExpander.cpp"
 #include "src/dsp/WaveShaper.cpp"

@@ -125,6 +125,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetector1176.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorSSL.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorModernBus.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputer.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerCompressor.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerExpander.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.cpp"
