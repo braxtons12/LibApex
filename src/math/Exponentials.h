@@ -16,7 +16,7 @@ namespace apex {
 		double log2(double x) noexcept;
 		double log10(double x) noexcept;
 		double log(double x) noexcept;
-		double pow2(float x) noexcept;
+		double pow2(double x) noexcept;
 		double pow10(double x) noexcept;
 		double pow(double base, double exponent) noexcept;
 
