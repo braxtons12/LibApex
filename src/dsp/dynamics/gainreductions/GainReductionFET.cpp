@@ -1,6 +1,6 @@
 #include "GainReductionFET.h"
 
-#include "../WaveShaper.h"
+#include "../../WaveShaper.h"
 
 namespace apex {
 	namespace dsp {

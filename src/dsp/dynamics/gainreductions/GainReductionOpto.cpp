@@ -1,7 +1,7 @@
 #include "GainReductionOpto.h"
 
-#include "../WaveShaper.h"
-#include "../../math/Exponentials.h"
+#include "../../WaveShaper.h"
+#include "../../../math/Exponentials.h"
 
 namespace apex {
 	namespace dsp {
