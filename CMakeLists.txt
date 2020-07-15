@@ -88,6 +88,7 @@ target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/expanders"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gainreductions"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors"
 	"${CMAKE_SOURCE_DIR}/src/math"

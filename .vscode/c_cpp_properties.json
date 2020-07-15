@@ -5,8 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src",
-				"${workspaceFolder}/src/**",
-				"/home/braxton/JUCE_CMAKE/include/JUCE-6.0.0/modules"
+                "${workspaceFolder}/src/**",
+                "/home/braxton/JUCE_CMAKE/include/JUCE-6.0.0/modules"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
@@ -28,7 +28,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/src/**",
-                "D:\\Program Files (x86)\\JUCE\\include\\JUCE-6.0.0\\modules"
+                "D:\\Program Files (x86)\\JUCE\\include\\JUCE-6.0.0\\modules",
+                "C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Tools/MSVC/14.24.28314/include"
             ],
             "intelliSenseMode": "msvc-x64",
             "compilerArgs": [
