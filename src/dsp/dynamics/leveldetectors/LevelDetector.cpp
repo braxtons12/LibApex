@@ -34,6 +34,7 @@ namespace apex {
 				case BranchingSmooth: return processBranchingSmooth(input);
 				case DecoupledSmooth: return processDecoupledSmooth(input);
 			}
+			return 0.0f;
 		}
 
 		/// @brief Resets this level detector to an initial state
@@ -170,6 +171,7 @@ namespace apex {
 				case BranchingSmooth: return processBranchingSmooth(input);
 				case DecoupledSmooth: return processDecoupledSmooth(input);
 			}
+			return 0.0;
 		}
 
 		/// @brief Resets this level detector to an initial state

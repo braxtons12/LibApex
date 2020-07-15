@@ -1,7 +1,9 @@
 #pragma once
 #include <cstdint>
 
-using std::size_t;
+#ifndef _MSC_VER
+	using std::size_t;
+#endif
 
 namespace apex {
 	namespace math {
