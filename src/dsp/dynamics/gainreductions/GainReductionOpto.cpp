@@ -57,27 +57,25 @@ namespace apex {
 
 		/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		float GainReductionOptical<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		float GainReductionOptical<float>::adjustedGainReduction(float gainReduction) noexcept {
 			float oldGainReduction = mCurrentGainReduction;
-			float coefficient = actualGainReduction;
+			float coefficient = gainReduction;
 			size_t coefficientIndex = static_cast<size_t>(coefficient * static_cast<float>(mNUM_COEFFICIENTS_PER_STEP));
 
 			if(coefficientIndex > (mNUM_COEFFICIENTS - 1)) {
 				coefficientIndex = mNUM_COEFFICIENTS - 1;
 			}
 
-			if(actualGainReduction > mCurrentGainReduction) {
+			if(gainReduction > mCurrentGainReduction) {
 				mCurrentGainReduction = (mAttackCoefficients[coefficientIndex] * oldGainReduction)
-					+ (1.0f - mAttackCoefficients[coefficientIndex]) * actualGainReduction;
+					+ (1.0f - mAttackCoefficients[coefficientIndex]) * gainReduction;
 			}
 			else {
 				mCurrentGainReduction = (mReleaseCoefficients[coefficientIndex] * oldGainReduction)
-					+ (1.0f - mReleaseCoefficients[coefficientIndex]) * actualGainReduction;
+					+ (1.0f - mReleaseCoefficients[coefficientIndex]) * gainReduction;
 			}
 
 			return waveshapers::softSaturation(
@@ -156,27 +154,25 @@ namespace apex {
 
 		/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The actual gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		double GainReductionOptical<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		double GainReductionOptical<double>::adjustedGainReduction(double gainReduction) noexcept {
 			double oldGainReduction = mCurrentGainReduction;
-			double coefficient = actualGainReduction;
+			double coefficient = gainReduction;
 			size_t coefficientIndex = static_cast<size_t>(coefficient * static_cast<double>(mNUM_COEFFICIENTS_PER_STEP));
 
 			if(coefficientIndex > (mNUM_COEFFICIENTS - 1)) {
 				coefficientIndex = mNUM_COEFFICIENTS - 1;
 			}
 
-			if(actualGainReduction > mCurrentGainReduction) {
+			if(gainReduction > mCurrentGainReduction) {
 				mCurrentGainReduction = (mAttackCoefficients[coefficientIndex] * oldGainReduction)
-					+ (1.0 - mAttackCoefficients[coefficientIndex]) * actualGainReduction;
+					+ (1.0 - mAttackCoefficients[coefficientIndex]) * gainReduction;
 			}
 			else {
 				mCurrentGainReduction = (mReleaseCoefficients[coefficientIndex] * oldGainReduction)
-					+ (1.0 - mReleaseCoefficients[coefficientIndex]) * actualGainReduction;
+					+ (1.0 - mReleaseCoefficients[coefficientIndex]) * gainReduction;
 			}
 
 			return waveshapers::softSaturation(

@@ -10,7 +10,6 @@
 #include "src/ui/ApexToggleButton.cpp"
 
 #include "src/dsp/filters/BiQuadFilter.cpp"
-#include "src/dsp/gainstages/GainStage.cpp"
 #include "src/dsp/gainstages/GainStageFET.cpp"
 #include "src/dsp/gainstages/GainStageVCA.cpp"
 #include "src/dsp/dynamics/gainreductions/GainReduction.cpp"
@@ -31,6 +30,10 @@
 #include "src/dsp/dynamics/gaincomputers/GainComputer.cpp"
 #include "src/dsp/dynamics/gaincomputers/GainComputerCompressor.cpp"
 #include "src/dsp/dynamics/gaincomputers/GainComputerExpander.cpp"
+#include "src/dsp/dynamics/sidechains/Sidechain.cpp"
+#include "src/dsp/dynamics/sidechains/Sidechain1176.cpp"
+#include "src/dsp/dynamics/sidechains/SidechainModernBus.cpp"
+#include "src/dsp/dynamics/sidechains/SidechainSSL.cpp"
 #include "src/dsp/WaveShaper.cpp"
 #include "src/dsp/processors/EQBand.cpp"
 #include "src/dsp/processors/ParallelEQBand.cpp"

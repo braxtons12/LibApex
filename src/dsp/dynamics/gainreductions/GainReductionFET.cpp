@@ -56,14 +56,12 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return  - The adjusted gain reduction
-		float GainReductionFET<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		float GainReductionFET<float>::adjustedGainReduction(float gainReduction) noexcept {
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
-			float gainReductionStep = (actualGainReduction - mCurrentGainReduction)
+			float gainReductionStep = (gainReduction - mCurrentGainReduction)
 				/ static_cast<float>(mNumSamplesToTransitionGain - mCurrentSample);
 			if(math::fabsf(gainReductionStep) - 0.001f > 0.0f) {
 				gainReductionStep = waveshapers::softSaturation(
@@ -147,14 +145,12 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return  - The adjusted gain reduction
-		double GainReductionFET<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		double GainReductionFET<double>::adjustedGainReduction(double gainReduction) noexcept {
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
-			double gainReductionStep = (actualGainReduction - mCurrentGainReduction)
+			double gainReductionStep = (gainReduction - mCurrentGainReduction)
 				/ static_cast<double>(mNumSamplesToTransitionGain - mCurrentSample);
 			if(math::fabs(gainReductionStep) - 0.001 > 0.0) {
 				gainReductionStep = waveshapers::softSaturation(

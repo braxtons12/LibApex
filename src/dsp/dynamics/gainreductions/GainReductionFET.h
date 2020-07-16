@@ -52,11 +52,10 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
 					///
-					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return  - The adjusted gain reduction
-					float adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept override;
+					float adjustedGainReduction(float gainReduction) noexcept override;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
@@ -114,11 +113,10 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
 					///
-					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return  - The adjusted gain reduction
-					double adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept override;
+					double adjustedGainReduction(double gainReduction) noexcept override;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///

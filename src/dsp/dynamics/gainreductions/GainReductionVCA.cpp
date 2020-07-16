@@ -37,22 +37,17 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReductionVCA`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		float GainReductionVCA<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept {
+		float GainReductionVCA<float>::adjustedGainReduction(float gainReduction) noexcept {
 			float samplesToTransition = static_cast<float>(mNumSamplesToTransitionGain);
-			if(actualGainReduction < mCurrentGainReduction) samplesToTransition *= 2.0f;
+			if(gainReduction < mCurrentGainReduction) samplesToTransition *= 2.0f;
 			if(mCurrentSample > samplesToTransition) mCurrentSample = 0;
-			float gainReductionStep = (actualGainReduction - mCurrentGainReduction)
+			float gainReductionStep = (gainReduction - mCurrentGainReduction)
 				/ static_cast<float>(samplesToTransition - mCurrentSample);
 			mCurrentGainReduction += gainReductionStep;
 			mCurrentSample++;
-			if(mCurrentGainReduction < idealGainReduction) {
-				mCurrentGainReduction += (idealGainReduction - mCurrentGainReduction)
-					/ static_cast<float>(samplesToTransition - mCurrentSample);
-			}
 			return waveshapers::softSaturation(
 					mCurrentGainReduction,
 					mWAVE_SHAPER_AMOUNT,
@@ -99,22 +94,17 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReductionVCA`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		double GainReductionVCA<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept {
+		double GainReductionVCA<double>::adjustedGainReduction(double gainReduction) noexcept {
 			double samplesToTransition = static_cast<double>(mNumSamplesToTransitionGain);
-			if(actualGainReduction < mCurrentGainReduction) samplesToTransition *= 2.0;
+			if(gainReduction < mCurrentGainReduction) samplesToTransition *= 2.0;
 			if(mCurrentSample > samplesToTransition) mCurrentSample = 0;
-			double gainReductionStep = (actualGainReduction - mCurrentGainReduction)
+			double gainReductionStep = (gainReduction - mCurrentGainReduction)
 				/ static_cast<double>(samplesToTransition - mCurrentSample);
 			mCurrentGainReduction += gainReductionStep;
 			mCurrentSample++;
-			if(mCurrentGainReduction < idealGainReduction) {
-				mCurrentGainReduction += (idealGainReduction - mCurrentGainReduction)
-					/ static_cast<double>(samplesToTransition - mCurrentSample);
-			}
 			return waveshapers::softSaturation(
 					mCurrentGainReduction,
 					mWAVE_SHAPER_AMOUNT,

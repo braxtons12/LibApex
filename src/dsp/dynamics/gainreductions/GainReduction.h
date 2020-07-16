@@ -44,6 +44,8 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReduction(size_t sampleRate, float riseTimeSeconds) noexcept;
+
+					GainReduction(GainReduction<float>&& reduction) noexcept = default;
 					virtual ~GainReduction() noexcept;
 
 					/// @brief Resets this `GainReduction` to an initial state.
@@ -53,11 +55,10 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
-					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return The adjusted gain reduction
-					virtual float adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept;
+					virtual float adjustedGainReduction(float gainReduction) noexcept;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
@@ -68,6 +69,8 @@ namespace apex {
 					///
 					/// @param seconds - The new slew rate
 					virtual void setRiseTimeSeconds(float seconds) noexcept;
+
+					GainReduction<float>& operator=(GainReduction<float>&& reduction) noexcept = default;
 
 				protected:
 					///The sample rate
@@ -107,6 +110,8 @@ namespace apex {
 					/// @param sampleRate - The sample rate to use
 					/// @param riseTimeSeconds - The slew rate to use
 					GainReduction(size_t sampleRate, double riseTimeSeconds) noexcept;
+
+					GainReduction(GainReduction<double>&& reduction) noexcept = default;
 					virtual ~GainReduction() noexcept;
 
 					/// @brief Resets this `GainReduction` to an initial state.
@@ -116,11 +121,10 @@ namespace apex {
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 					///
-					/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-					/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return The adjusted gain reduction
-					virtual double adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept;
+					virtual double adjustedGainReduction(double gainReduction) noexcept;
 
 					/// @brief Sets the sample rate to use for calculations to the given value
 					///
@@ -131,6 +135,8 @@ namespace apex {
 					///
 					/// @param seconds - The new slew rate
 					virtual void setRiseTimeSeconds(double seconds) noexcept;
+
+					GainReduction<double>& operator=(GainReduction<double>&& reduction) noexcept = default;
 
 				protected:
 					///The sample rate

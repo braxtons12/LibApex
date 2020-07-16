@@ -50,17 +50,18 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return The adjusted gain reduction
-		float GainReduction<float>::adjustedGainReduction(float actualGainReduction, float idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		float GainReduction<float>::adjustedGainReduction(float gainReduction) noexcept {
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
-			float gainReductionStep = (actualGainReduction - mCurrentGainReduction)
-				/ static_cast<float>(mNumSamplesToTransitionGain - mCurrentSample);
-			mCurrentGainReduction += gainReductionStep;
-			mCurrentSample++;
+			if(mNumSamplesToTransitionGain != 0) {
+				float gainReductionStep = (gainReduction - mCurrentGainReduction)
+					/ static_cast<float>(mNumSamplesToTransitionGain - mCurrentSample);
+				mCurrentGainReduction += gainReductionStep;
+				mCurrentSample++;
+			}
+			else mCurrentGainReduction = gainReduction;
 			return mCurrentGainReduction;
 		}
 
@@ -127,18 +128,19 @@ namespace apex {
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
 		///
-		/// @param actualGainReduction - The actual gain reduction determined by other adjustment processes in the signal chain
-		/// @param idealGainReduction - The ideal gain reduction determined from pure gain reduction calculations only
+		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return The adjusted gain reduction
-		double GainReduction<double>::adjustedGainReduction(double actualGainReduction, double idealGainReduction) noexcept {
-			juce::ignoreUnused(idealGainReduction);
+		double GainReduction<double>::adjustedGainReduction(double gainReduction) noexcept {
 			if(mCurrentSample > mNumSamplesToTransitionGain) mCurrentSample = 0;
-			double gainReductionStep = (actualGainReduction - mCurrentGainReduction)
-				/ static_cast<double>(mNumSamplesToTransitionGain - mCurrentSample);
-			mCurrentGainReduction += gainReductionStep;
-			mCurrentSample++;
-			return actualGainReduction;
+			if(mNumSamplesToTransitionGain != 0) {
+				double gainReductionStep = (gainReduction - mCurrentGainReduction)
+					/ static_cast<double>(mNumSamplesToTransitionGain - mCurrentSample);
+				mCurrentGainReduction += gainReductionStep;
+				mCurrentSample++;
+			}
+			else mCurrentGainReduction = gainReduction;
+			return gainReduction;
 		}
 
 		/// @brief Sets the sample rate to use for calculations to the given value
