@@ -36,6 +36,7 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/gainstages/GainStage.h"
 #include "src/dsp/gainstages/GainStageFET.h"
 #include "src/dsp/gainstages/GainStageVCA.h"
+#include "src/dsp/dynamics/DynamicsState.h"
 #include "src/dsp/dynamics/gainreductions/GainReduction.h"
 #include "src/dsp/dynamics/gainreductions/GainReductionFET.h"
 #include "src/dsp/dynamics/gainreductions/GainReductionOpto.h"

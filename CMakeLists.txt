@@ -84,6 +84,7 @@ target_include_directories(Apex INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/ui"
 	"${CMAKE_SOURCE_DIR}/src/dsp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/compressors"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/expanders"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gainreductions"
@@ -112,6 +113,7 @@ set(UI
 	)
 
 set(DSP
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/DynamicsState.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/compressors/Compressor.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/compressors/CompressorFET.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/compressors/CompressorOpto.cpp"
