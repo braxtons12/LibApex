@@ -5,96 +5,92 @@
 
 #include "GainReduction.h"
 #include "../../../base/StandardIncludes.h"
+#include "../../WaveShaper.h"
 
 namespace apex {
 	namespace dsp {
-
 		/// @brief Class for calculating gain reduction values adjusted to roughly model VCA topology behavior
 		///
-		/// @tparam T - The floating point type to back operations, either float or double
-		template<typename T>
-			class GainReductionVCA : public GainReduction<T> {
+		/// @tparam T - The floating point type to back operations
+		/// @tparam AttackKind - The attack type used by the shared `DynamicState`
+		/// @tparam ReleaseKind - The release type used by the shared `DynamicState`
+		template<typename T, typename AttackKind, typename ReleaseKind>
+			class GainReductionVCA : public GainReduction<T, AttackKind, ReleaseKind> {
+				protected:
+					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
+
 				public:
-					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
+					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+					static_assert(std::is_floating_point<AttackKind>::value ||
+							std::is_enum<AttackKind>::value,
+							"AttacKind must be a floating point type or an enum");
+					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be a floating point type or an enum");
 
-				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionVCA)
-			};
+					/// @brief Constructs a default `GainReductionVCA`
+					/// (zeroed shared state, rise time = 0.4ms)
+					GainReductionVCA() noexcept
+						: GainReduction<T, AttackKind, ReleaseKind>()
+						{
+							this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
+							this->mNumSamplesToTransitionGain = static_cast<size_t>(
+									this->mRiseTimeSeconds * this->mState->getSampleRate() + 0.5
+									);
+						}
 
-		/// @brief Class for calculating gain reduction values adjusted to roughly model VCA topology behavior
-		template<>
-			class GainReductionVCA<float> : public GainReduction<float> {
-				public:
-					/// @brief Constructs a default `GainReductionVCA` (sample rate = 44100)
-					GainReductionVCA() noexcept;
-
-					/// @brief Constructs a `GainReductionVCA` with the given sample rate
+					/// @brief Constructs a `GainReductionVCA` with the given shared state and rise time
 					///
-					/// @param sampleRate - The sample rate to use
-					GainReductionVCA(size_t sampleRate) noexcept;
-					virtual ~GainReductionVCA() noexcept override;
+					/// @param state - The shared state
+					/// @param riseTimeSeconds - The rise time, in seconds
+					GainReductionVCA(DynamicsState* state, T riseTimeSeconds = DEFAULT_RISE_TIME)
+						noexcept
+						: GainReduction<T, AttackKind, ReleaseKind>(state, riseTimeSeconds)
+						{
 
-					/// @brief Resets this `GainReductionVCA` to an initial state
+						}
+
+					/// @brief Move constructs the given `GainReductionVCA`
 					///
-					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(float currentGainReduction = 0.0f) noexcept override;
+					/// @param reduction - The `GainReductionVCA` to use
+					GainReductionVCA(GainReductionVCA<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
+					virtual ~GainReductionVCA() noexcept override = default;
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReductionVCA`'s parameters
 					///
 					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return - The adjusted gain reduction
-					float adjustedGainReduction(float gainReduction) noexcept override;
+					T adjustedGainReduction(T gainReduction) noexcept override {
+						T samplesToTransition =	static_cast<T>(this->mNumSamplesToTransitionGain);
 
-					/// @brief Sets the sample rate to use for calculations to the given value
-					///
-					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) noexcept override;
+						if(gainReduction < this->mCurrentGainReduction) samplesToTransition *= 2.0f;
 
-				private:
-					///The "amount" for the `softSaturation` wave shaper
-					static const constexpr float mWAVE_SHAPER_AMOUNT = 0.2f;
-					///The "slope" for the `softSaturation` wave shaper
-					static const constexpr float mWAVE_SHAPER_SLOPE = 0.4f;
+						if(this->mCurrentSample > samplesToTransition) this->mCurrentSample = 0;
 
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionVCA)
-			};
+						T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
+							/ static_cast<T>(samplesToTransition - this->mCurrentSample);
 
-		/// @brief Class for calculating gain reduction values adjusted to roughly model VCA topology behavior
-		template<>
-			class GainReductionVCA<double> : public GainReduction<double> {
-				public:
-					/// @brief Constructs a default `GainReductionVCA` (sample rate = 44100)
-					GainReductionVCA() noexcept;
+						this->mCurrentGainReduction += gainReductionStep;
+						this->mCurrentSample++;
 
-					/// @brief Constructs a `GainReductionVCA` with the given sample rate
-					///
-					/// @param sampleRate - The sample rate to use
-					GainReductionVCA(size_t sampleRate) noexcept;
-					virtual ~GainReductionVCA() noexcept override;
+						return waveshapers::softSaturation(
+								this->mCurrentGainReduction,
+								WAVE_SHAPER_AMOUNT,
+								WAVE_SHAPER_SLOPE);
+					}
 
-					/// @brief Resets this `GainReductionVCA` to an initial state
-					///
-					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(double currentGainReduction = 0.0) noexcept override;
-
-					/// @brief Calculates the adjusted gain reduction based on this `GainReductionVCA`'s parameters
-					///
-					/// @param gainReduction - The gain reduction determined by the gain computer
-					///
-					/// @return - The adjusted gain reduction
-					double adjustedGainReduction(double gainReduction) noexcept override;
-
-					/// @brief Sets the sample rate to use for calculations to the given value
-					///
-					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) noexcept override;
+					GainReductionVCA<T, AttackKind, ReleaseKind>& operator=(
+							GainReductionVCA<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
 
 				private:
 					///The "amount" for the `softSaturation` wave shaper
-					static const constexpr double mWAVE_SHAPER_AMOUNT = 0.2;
+					static const constexpr T WAVE_SHAPER_AMOUNT = 0.2;
 					///The "slope" for the `softSaturation` wave shaper
-					static const constexpr double mWAVE_SHAPER_SLOPE = 0.4;
+					static const constexpr T WAVE_SHAPER_SLOPE = 0.4;
+					///The default rise time
+					static const constexpr T DEFAULT_RISE_TIME = 0.0004;
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionVCA)
 			};

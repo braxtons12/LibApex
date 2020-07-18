@@ -5,140 +5,103 @@
 
 #include "GainReduction.h"
 #include "../../../base/StandardIncludes.h"
+#include "../../WaveShaper.h"
 
 namespace apex {
 	namespace dsp {
-
 		/// @brief Class for calculating gain reduction values adjusted to roughly model FET topology behavior
 		///
-		/// @tparam T - The floating point type to back operations, either float or double
-		template<typename T>
-			class GainReductionFET : public GainReduction<T> {
+		/// @tparam T - The floating point type to back operations
+		/// @tparam AttackKind - The attack type used by the shared `DynamicsState`
+		/// @tparam ReleaseKind - The release type used by the shared `DynamicsState`
+		template<typename T, typename AttackKind, typename ReleaseKind>
+			class GainReductionFET : public GainReduction<T, AttackKind, ReleaseKind> {
+				protected:
+					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
+
 				public:
-					static_assert(std::is_floating_point<T>::value, "T must be a floating point type (float or double)");
+					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+					static_assert(std::is_floating_point<AttackKind>::value ||
+							std::is_enum<AttackKind>::value,
+							"AttacKind must be a floating point type or an enum");
+					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be a floating point type or an enum");
 
-				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionFET)
-			};
+					/// @brief Constructs a default `GainReductionFET`
+					/// (zeroed shared state, rise time = 0.2ms
+					GainReductionFET() noexcept
+						: GainReduction<T, AttackKind, ReleaseKind>()
+						{
+							this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
+							this->mNumSamplesToTransitionGain = static_cast<size_t>(
+									this->mRiseTimeSeconds * this->mState->getSampleRate() + 0.5
+									);
+						}
 
-		/// @brief Class for calculating gain reduction values adjusted to roughly model FET topology behavior
-		template<>
-			class GainReductionFET<float> : public GainReduction<float> {
-				public:
-					/// @brief Constructs a default `GainReductionFET` (sample rate = 44100, slew rate = 0.2ms)
-					GainReductionFET() noexcept;
-
-					/// @brief Constructs a `GainReductionFET` with the given sample rate and a slew rate of 0.2ms
+					/// @brief Constructs a `GainReductonFET` with the given shared state and rise time
 					///
-					/// @param sampleRate - The sample rate to use
-					GainReductionFET(size_t sampleRate) noexcept;
+					/// @param state - The shared state
+					/// @param riseTimeSeconds - The rise time, in seconds
+					GainReductionFET(DynamicsState* state, T riseTimeSeconds = DEFAULT_RISE_TIME)
+						noexcept
+						: GainReduction<T, AttackKind, ReleaseKind>(state, riseTimeSeconds)
+						{
 
-					/// @brief Constructs a `GainReductionFET` with the given slew rate and a sample rate of 44100
-					///
-					/// @param riseTimeSeconds - The slew rate to use
-					GainReductionFET(float riseTimeSeconds) noexcept;
+						}
 
-					/// @brief Constructs a `GainReductionFET` with the given sample rate and slew rate
+					/// @brief Move constructs the given `GainReductionFET`
 					///
-					/// @param sampleRate - The sample rate to use
-					/// @param riseTimeSeconds - The slew rate to use
-					GainReductionFET(size_t sampleRate, float riseTimeSeconds) noexcept;
-					virtual ~GainReductionFET() noexcept override;
-
-					/// @brief Resets this `GainReductionFET` to an initial state
-					///
-					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(float currentGainReduction = 0.0f) noexcept override;
+					/// @param reduction - The `GainReductionFET` to move
+					GainReductionFET(GainReductionFET<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
+					virtual ~GainReductionFET() noexcept override = default;
 
 					/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
 					///
 					/// @param gainReduction - The gain reduction determined by the gain computer
 					///
 					/// @return  - The adjusted gain reduction
-					float adjustedGainReduction(float gainReduction) noexcept override;
+					T adjustedGainReduction(T gainReduction) noexcept override {
+						if(this->mCurrentSample > this->mNumSamplesToTransitionGain)
+							this->mCurrentSample = 0;
 
-					/// @brief Sets the sample rate to use for calculations to the given value
-					///
-					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) noexcept override;
+						T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
+							/ static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
 
-					/// @brief Sets the slew rate to use for calculations to the given value
-					///
-					/// @param seconds - The new slew rate
-					void setRiseTimeSeconds(float seconds) noexcept override;
+						if(math::fabs(gainReductionStep) - 0.001 > 0.0) {
+							gainReductionStep = waveshapers::softSaturation(
+									this->mCurrentGainReduction +
+									(gainReductionStep > 0.0 ? -SLEW_RATE_OFFSET : SLEW_RATE_OFFSET),
+									SLEW_RATE_AMOUNT,
+									SLEW_RATE_SLOPE);
+						}
 
-				private:
-					///The "amount" for the `softSaturation` WaveShaper
-					static const constexpr float mWAVE_SHAPER_AMOUNT = -0.2f;
-					///The "slope" for the `softSaturation` WaveShaper
-					static const constexpr float mWAVE_SHAPER_SLOPE = 0.25f;
-					///The "amount" for the slew rate WaveShaper
-					static const constexpr float mSLEW_RATE_AMOUNT = 0.4f;
-					///The "slope" for the slew rate WaveShaper
-					static const constexpr float mSLEW_RATE_SLOPE = 0.4f;
-					///The offset for the slew rate WaveShaper
-					static const constexpr float mSLEW_RATE_OFFSET = 0.1f;
+						this->mCurrentGainReduction += gainReductionStep;
+						this->mCurrentSample++;
 
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionFET)
-			};
+						return waveshapers::softSaturation(
+								this->mCurrentGainReduction,
+								WAVE_SHAPER_AMOUNT,
+								WAVE_SHAPER_SLOPE);
+					}
 
-		/// @brief Class for calculating gain reduction values adjusted to roughly model FET topology behavior
-		template<>
-			class GainReductionFET<double> : public GainReduction<double> {
-				public:
-					/// @brief Constructs a default `GainReductionFET` (sample rate = 44100, slew rate = 0.2ms)
-					GainReductionFET() noexcept;
-
-					/// @brief Constructs a `GainReductionFET` with the given sample rate and a slew rate of 0.2ms
-					///
-					/// @param sampleRate - The sample rate to use
-					GainReductionFET(size_t sampleRate) noexcept;
-
-					/// @brief Constructs a `GainReductionFET` with the given slew rate and a sample rate of 44100
-					///
-					/// @param riseTimeSeconds - The slew rate to use
-					GainReductionFET(double riseTimeSeconds) noexcept;
-
-					/// @brief Constructs a `GainReductionFET` with the given sample rate and slew rate
-					///
-					/// @param sampleRate - The sample rate to use
-					/// @param riseTimeSeconds - The slew rate to use
-					GainReductionFET(size_t sampleRate, double riseTimeSeconds) noexcept;
-					virtual ~GainReductionFET() noexcept override;
-
-					/// @brief Resets this `GainReductionFET` to an initial state
-					///
-					/// @param currentGainReduction - The gain reduction to use as the initial value
-					void reset(double currentGainReduction = 0.0) noexcept override;
-
-					/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s parameters
-					///
-					/// @param gainReduction - The gain reduction determined by the gain computer
-					///
-					/// @return  - The adjusted gain reduction
-					double adjustedGainReduction(double gainReduction) noexcept override;
-
-					/// @brief Sets the sample rate to use for calculations to the given value
-					///
-					/// @param sampleRate - The new sample rate to use
-					void setSampleRate(size_t sampleRate) noexcept override;
-
-					/// @brief Sets the slew rate to use for calculations to the given value
-					///
-					/// @param seconds - The new slew rate
-					void setRiseTimeSeconds(double seconds) noexcept override;
+					GainReductionFET<T, AttackKind, ReleaseKind>& operator=(
+							GainReductionFET<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
 
 				private:
 					///The "amount" for the `softSaturation` WaveShaper
-					static const constexpr double mWAVE_SHAPER_AMOUNT = -0.2;
+					static const constexpr T WAVE_SHAPER_AMOUNT = -0.2;
 					///The "slope" for the `softSaturation` WaveShaper
-					static const constexpr double mWAVE_SHAPER_SLOPE = 0.25;
+					static const constexpr T WAVE_SHAPER_SLOPE = 0.25;
 					///The "amount" for the slew rate WaveShaper
-					static const constexpr double mSLEW_RATE_AMOUNT = 0.4;
+					static const constexpr T SLEW_RATE_AMOUNT = 0.4;
 					///The "slope" for the slew rate WaveShaper
-					static const constexpr double mSLEW_RATE_SLOPE = 0.4;
+					static const constexpr T SLEW_RATE_SLOPE = 0.4;
 					///The offset for the slew rate WaveShaper
-					static const constexpr double mSLEW_RATE_OFFSET = 0.1;
+					static const constexpr T SLEW_RATE_OFFSET = 0.1;
+					///The default rise time
+					static const constexpr T DEFAULT_RISE_TIME = 0.0002;
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionFET)
 			};
