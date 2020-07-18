@@ -9,6 +9,7 @@
 
 #include "../../../base/StandardIncludes.h"
 #include "LevelDetector.h"
+#include "../DynamicsState.h"
 
 namespace apex {
 	namespace dsp {
@@ -30,17 +31,20 @@ namespace apex {
 		/// Dynamic Range Processor's Sidechain
 		template<>
 			class LevelDetectorRMS<float> : public LevelDetector<float> {
+				private:
+					typedef typename apex::dsp::DynamicsState<float, float, float>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, float, float> DynamicsState;
+
 				public:
 					LevelDetectorRMS() noexcept = default;
 
-					/// @brief Constructs an `RMSLevelDetector` with the given parameters
+					/// @brief Constructs a `LevelDetector` of the given type
+					/// with the given shared state
 					///
-					/// @param attackMS - The attack time, in milliseconds
-					/// @param releaseMS - The release time, in milliseconds
-					/// @param sampleRate - The sample rate, in Hertz
-					/// @param type - The detector topology to use
-					LevelDetectorRMS(float attackMS, float releaseMS, size_t sampleRate,
-							DetectorType type = NonCorrected) noexcept;
+					/// @param state - The shared state
+					/// @param type - The detector type
+					LevelDetectorRMS(DynamicsState* state,
+							DetectorType type = DetectorType::NonCorrected) noexcept;
 
 					/// @brief Move contructs an `RMSLevelDetector` from the given one
 					///
@@ -60,33 +64,18 @@ namespace apex {
 
 					/// @brief Sets the attack time to the given value
 					///
-					/// @param attackMS - The new attack time, in milliseconds
-					virtual void setAttackTime(float attackMS) noexcept override;
-
-					/// @brief Returns the current attack time
-					///
-					/// @return - The attack time, in milliseconds
-					virtual float getAttackTime() const noexcept override;
+					/// @param attackSeconds - The new attack time, in seconds
+					virtual void setAttackTime(float attackSeconds) noexcept override;
 
 					/// @brief Sets the release time to the given value
 					///
-					/// @param releaseMS - The new release time, in milliseconds
-					virtual void setReleaseTime(float relaseMS) noexcept override;
-
-					/// @brief Returns the current release time
-					///
-					/// @return - The release time, in milliseconds
-					virtual float getReleaseTime() const noexcept override;
+					/// @param releaseSeconds - The new release time, in seconds
+					virtual void setReleaseTime(float releaseSeconds) noexcept override;
 
 					/// @brief Sets the sample rate to the given value
 					///
 					/// @param sampleRate - The new sample rate, in Hertz
 					virtual void setSampleRate(size_t sampleRate) noexcept override;
-
-					/// @brief Returns the current sample rate
-					///
-					/// @return - The sample rate, in Hertz
-					virtual size_t getSampleRate() const noexcept override;
 
 					LevelDetectorRMS<float>& operator=(LevelDetectorRMS<float>&& detector) noexcept = default;
 
@@ -97,6 +86,8 @@ namespace apex {
 					float mRMSCoeff = 0.9997732683f;
 
 				private:
+					DynamicsState DEFAULT_STATE = DynamicsState();
+					DynamicsState* mState = &DEFAULT_STATE;
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetectorRMS)
 			};
 
@@ -104,17 +95,20 @@ namespace apex {
 		/// Dynamic Range Processor's Sidechain
 		template<>
 			class LevelDetectorRMS<double> : public LevelDetector<double> {
+				private:
+					typedef typename apex::dsp::DynamicsState<double, double, double>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, double, double> DynamicsState;
+
 				public:
 					LevelDetectorRMS() noexcept = default;
 
-					/// @brief Constructs an `RMSLevelDetector` with the given parameters
+					/// @brief Constructs a `LevelDetector` of the given type
+					/// with the given shared state
 					///
-					/// @param attackMS - The attack time, in milliseconds
-					/// @param releaseMS - The release time, in milliseconds
-					/// @param sampleRate - The sample rate, in Hertz
-					/// @param type - The detector topology to use
-					LevelDetectorRMS(double attackMS, double releaseMS, size_t sampleRate,
-							DetectorType type = NonCorrected) noexcept;
+					/// @param state - The shared state
+					/// @param type - The detector type
+					LevelDetectorRMS(DynamicsState* state,
+							DetectorType type = DetectorType::NonCorrected) noexcept;
 
 					/// @brief Move contructs an `RMSLevelDetector` from the given one
 					///
@@ -134,33 +128,18 @@ namespace apex {
 
 					/// @brief Sets the attack time to the given value
 					///
-					/// @param attackMS - The new attack time, in milliseconds
-					virtual void setAttackTime(double attackMS) noexcept override;
-
-					/// @brief Returns the current attack time
-					///
-					/// @return - The attack time, in milliseconds
-					virtual double getAttackTime() const noexcept override;
+					/// @param attackSeconds - The new attack time, in seconds
+					virtual void setAttackTime(double attackSeconds) noexcept override;
 
 					/// @brief Sets the release time to the given value
 					///
-					/// @param releaseMS - The new release time, in milliseconds
-					virtual void setReleaseTime(double relaseMS) noexcept override;
-
-					/// @brief Returns the current release time
-					///
-					/// @return - The release time, in milliseconds
-					virtual double getReleaseTime() const noexcept override;
+					/// @param releaseSeconds - The new release time, in seconds
+					virtual void setReleaseTime(double releaseSeconds) noexcept override;
 
 					/// @brief Sets the sample rate to the given value
 					///
 					/// @param sampleRate - The new sample rate, in Hertz
 					virtual void setSampleRate(size_t sampleRate) noexcept override;
-
-					/// @brief Returns the current sample rate
-					///
-					/// @return - The sample rate, in Hertz
-					virtual size_t getSampleRate() const noexcept override;
 
 					LevelDetectorRMS<double>& operator=(LevelDetectorRMS<double>&& detector) noexcept = default;
 
@@ -171,6 +150,8 @@ namespace apex {
 					double mRMSCoeff = 0.9997732683;
 
 				private:
+					DynamicsState DEFAULT_STATE = DynamicsState();
+					DynamicsState* mState = &DEFAULT_STATE;
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetectorRMS)
 			};
 	}

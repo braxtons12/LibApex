@@ -5,6 +5,7 @@
 
 #include "../../../base/StandardIncludes.h"
 #include "LevelDetector.h"
+#include "../DynamicsState.h"
 
 namespace apex {
 	namespace dsp {
@@ -24,19 +25,18 @@ namespace apex {
 		/// @brief 1176-style Level Detector for Dynamic Range Processors
 		template<>
 			class LevelDetector1176<float> : public LevelDetector<float> {
+				private:
+					typedef typename apex::dsp::DynamicsState<float, float, float>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, float, float> DynamicsState;
+
 				public:
-					/// @brief Constructs a `LevelDetector1176` with the following values:
-					/// * attack: 0.39mS,
-					/// * release: 525mS,
-					/// * sampleRate: 44100Hz
+					/// @brief Constructs a `LevelDetector1176` with zereod shared state
 					LevelDetector1176() noexcept;
 
-					/// @brief Constructs a `LevelDetector1176` with the given parameters
+					/// @brief Constructs a `LevelDetector1176` with the given shared state
 					///
-					/// @param attackMs - The attack time, in milliseconds
-					/// @param releaseMS - The release time, in milliseconds
-					/// @param sampleRate - The sample rate, in Hertz
-					LevelDetector1176(float attackMs, float releaseMS, size_t sampleRate) noexcept;
+					/// @param state - The shared state
+					LevelDetector1176(DynamicsState* state) noexcept;
 
 					/// @brief Move constructs a `LevelDetector1176` from the given one
 					///
@@ -47,29 +47,24 @@ namespace apex {
 					LevelDetector1176<float>& operator=(LevelDetector1176<float>&& detector) noexcept = default;
 
 				private:
-					static const constexpr float INITIAL_ATTACK_MS = 0.39f;
-					static const constexpr float INITIAL_RELEASE_MS = 525.0f;
-					static const constexpr size_t INITIAL_SAMPLERATE = 44100;
-
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetector1176)
 			};
 
 		/// @brief 1176-style Level Detector for Dynamic Range Processors
 		template<>
 			class LevelDetector1176<double> : public LevelDetector<double> {
+				private:
+					typedef typename apex::dsp::DynamicsState<double, double, double>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, double, double> DynamicsState;
+
 				public:
-					/// @brief Constructs a `LevelDetector1176` with the following values:
-					/// * attack: 0.39mS,
-					/// * release: 525mS,
-					/// * sampleRate: 44100Hz
+					/// @brief Constructs a `LevelDetector1176` with zereod shared state
 					LevelDetector1176() noexcept;
 
-					/// @brief Constructs a `LevelDetector1176` with the given parameters
+					/// @brief Constructs a `LevelDetector1176` with the given shared state
 					///
-					/// @param attackMs - The attack time, in milliseconds
-					/// @param releaseMS - The release time, in milliseconds
-					/// @param sampleRate - The sample rate, in Hertz
-					LevelDetector1176(double attackMs, double releaseMS, size_t sampleRate) noexcept;
+					/// @param state - The shared state
+					LevelDetector1176(DynamicsState* state) noexcept;
 
 					/// @brief Move constructs a `LevelDetector1176` from the given one
 					///
@@ -80,10 +75,6 @@ namespace apex {
 					LevelDetector1176<double>& operator=(LevelDetector1176<double>&& detector) noexcept = default;
 
 				private:
-					static const constexpr double INITIAL_ATTACK_MS = 0.39;
-					static const constexpr double INITIAL_RELEASE_MS = 525.0;
-					static const constexpr size_t INITIAL_SAMPLERATE = 44100;
-
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetector1176)
 			};
 	}
