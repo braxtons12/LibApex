@@ -25,12 +25,14 @@ namespace apex {
 
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-					static_assert(std::is_floating_point<AttackKind>::value ||
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
 							std::is_enum<AttackKind>::value,
-							"AttacKind must be a floating point type or an enum");
-					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
-							"ReleaseKind must be a floating point type or an enum");
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
 					/// @brief Constructs a default `GainReductionFET`
 					/// (zeroed shared state, rise time = 0.2ms
@@ -39,7 +41,8 @@ namespace apex {
 						{
 							this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
 							this->mNumSamplesToTransitionGain = static_cast<size_t>(
-									this->mRiseTimeSeconds * this->mState->getSampleRate() + 0.5
+									this->mRiseTimeSeconds * this->mState->getSampleRate() +
+									static_cast<T>(0.5)
 									);
 						}
 
@@ -72,10 +75,12 @@ namespace apex {
 						T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
 							/ static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
 
-						if(math::fabs(gainReductionStep) - 0.001 > 0.0) {
+						if(math::fabs(gainReductionStep) - static_cast<T>(0.001) >
+								static_cast<T>(0.0)) {
 							gainReductionStep = waveshapers::softSaturation(
 									this->mCurrentGainReduction +
-									(gainReductionStep > 0.0 ? -SLEW_RATE_OFFSET : SLEW_RATE_OFFSET),
+									(gainReductionStep > static_cast<T>(0.0) ?
+									 -SLEW_RATE_OFFSET : SLEW_RATE_OFFSET),
 									SLEW_RATE_AMOUNT,
 									SLEW_RATE_SLOPE);
 						}
@@ -94,17 +99,17 @@ namespace apex {
 
 				private:
 					///The "amount" for the `softSaturation` WaveShaper
-					static const constexpr T WAVE_SHAPER_AMOUNT = -0.2;
+					static const constexpr T WAVE_SHAPER_AMOUNT = static_cast<T>(-0.2);
 					///The "slope" for the `softSaturation` WaveShaper
-					static const constexpr T WAVE_SHAPER_SLOPE = 0.25;
+					static const constexpr T WAVE_SHAPER_SLOPE = static_cast<T>(0.25);
 					///The "amount" for the slew rate WaveShaper
-					static const constexpr T SLEW_RATE_AMOUNT = 0.4;
+					static const constexpr T SLEW_RATE_AMOUNT = static_cast<T>(0.4);
 					///The "slope" for the slew rate WaveShaper
-					static const constexpr T SLEW_RATE_SLOPE = 0.4;
+					static const constexpr T SLEW_RATE_SLOPE = static_cast<T>(0.4);
 					///The offset for the slew rate WaveShaper
-					static const constexpr T SLEW_RATE_OFFSET = 0.1;
+					static const constexpr T SLEW_RATE_OFFSET = static_cast<T>(0.1);
 					///The default rise time
-					static const constexpr T DEFAULT_RISE_TIME = 0.0002;
+					static const constexpr T DEFAULT_RISE_TIME = static_cast<T>(0.0002);
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionFET)
 			};

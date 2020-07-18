@@ -20,12 +20,14 @@ namespace apex {
 			class DynamicsState {
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-					static_assert(std::is_floating_point<AttackKind>::value ||
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
 							std::is_enum<AttackKind>::value,
-							"AttacKind must be a floating point type or an enum");
-					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
-							"ReleaseKind must be a floating point type or an enum");
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
 					/// @brief The fields in the State callbacks can be registered for
 					enum class Field {
@@ -273,48 +275,43 @@ namespace apex {
 					///
 					/// @param field - The field to register the callback on
 					/// @param callback - The callback to register
-					template<typename F>
-						inline void registerCallback(Field field, std::function<void(F)> callback) noexcept {
-							//ensure that F matches the field type
-							static_assert((field == Field::Attack && std::is_same<F, AttackKind>::value) ||
-									(field == Field::Release && std::is_same<F, ReleaseKind>::value) ||
-									( (field == Field::Ratio || field == Field::Threshold || field == Field::KneeWidth)
-									  && std::is_same<F, T>::value) || (field == Field::SampleRate && std::is_same<F, size_t>::value),
-									"The callback type, `F`, must match the type of the field associated with `field`");
+					template<typename F, Field field>
+						void registerCallback(std::function<void(F)> callback) noexcept;
 
-							//register the callback
-							switch(field) {
-								case Field::Attack: {
-														callback(mAttack);
-														mAttackCallbacks.push_back(callback);
-													}
-													break;
-								case Field::Release: {
-														 callback(mRelease);
-														 mReleaseCallbacks.push_back(callback);
-													 }
-													 break;
-								case Field::Ratio: {
-													   callback(mRatio);
-													   mRatioCallbacks.push_back(callback);
-												   }
-												   break;
-								case Field::Threshold: {
-														   callback(mThreshold);
-														   mThresholdCallbacks.push_back(callback);
-													   }
-													   break;
-								case Field::KneeWidth: {
-														   callback(mKneeWidth);
-														   mKneeWidthCallbacks.push_back(callback);
-													   }
-													   break;
-								case Field::SampleRate: {
-															callback(mSampleRate);
-															mSampleRateCallbacks.push_back(callback);
-														}
-														break;
-							}
+					template<>
+						void registerCallback<T, Field::Attack>(std::function<void(T)> callback) noexcept {
+							callback(mAttack);
+							mAttackCallbacks.push_back(callback);
+						}
+
+					template<>
+						void registerCallback<T, Field::Release>(std::function<void(T)> callback) noexcept {
+							callback(mRelease);
+							mAttackCallbacks.push_back(callback);
+						}
+
+					template<>
+						void registerCallback<T, Field::Ratio>(std::function<void(T)> callback) noexcept {
+							callback(mRatio);
+							mAttackCallbacks.push_back(callback);
+						}
+
+					template<>
+						void registerCallback<T, Field::Threshold>(std::function<void(T)> callback) noexcept {
+							callback(mThreshold);
+							mAttackCallbacks.push_back(callback);
+						}
+
+					template<>
+						void registerCallback<T, Field::KneeWidth>(std::function<void(T)> callback) noexcept {
+							callback(mKneeWidth);
+							mAttackCallbacks.push_back(callback);
+						}
+
+					template<>
+						void registerCallback<size_t, Field::SampleRate>(std::function<void(size_t)> callback) noexcept {
+							callback(mSampleRate);
+							mAttackCallbacks.push_back(callback);
 						}
 
 					DynamicsState<T, AttackKind, ReleaseKind>& operator=(
@@ -324,23 +321,23 @@ namespace apex {
 					///State variables
 
 					///The attack, can be `float`, `double`, or an associated `enum`
-					AttackKind mAttack = 0;
+					AttackKind mAttack = static_cast<AttackKind>(0);
 					///The release, can be `float, `double`, or an associated `enum`
-					ReleaseKind mRelease = 0;
+					ReleaseKind mRelease = static_cast<ReleaseKind>(0);
 					///The ratio, `float` or `double`
-					T mRatio = 1.1;
+					T mRatio = static_cast<T>(1.1);
 					///The threshold in Decibels, `float` or `double`
-					T mThreshold = -12.0;
+					T mThreshold = static_cast<T>(-12.0);
 					///The knee width in Decibels, `float` or `double`
-					T mKneeWidth = 6.0;
+					T mKneeWidth = static_cast<T>(6.0);
 					///The first attack coefficient, `float` or `double`
-					T mAttackCoefficient1 = 0.0;
+					T mAttackCoefficient1 = static_cast<T>(0.0);
 					///The second attack coefficient, `float` or `double`
-					T mAttackCoefficient2 = 0.0;
+					T mAttackCoefficient2 = static_cast<T>(0.0);
 					///The first release coefficient, `float` or `double`
-					T mReleaseCoefficient1 = 0.0;
+					T mReleaseCoefficient1 = static_cast<T>(0.0);
 					///The second release coefficient, `float` or `double`
-					T mReleaseCoefficient2 = 0.0;
+					T mReleaseCoefficient2 = static_cast<T>(0.0);
 					///The sample rate in Hertz
 					size_t mSampleRate = 44100;
 

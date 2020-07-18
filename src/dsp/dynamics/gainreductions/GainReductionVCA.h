@@ -25,12 +25,14 @@ namespace apex {
 
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-					static_assert(std::is_floating_point<AttackKind>::value ||
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
 							std::is_enum<AttackKind>::value,
-							"AttacKind must be a floating point type or an enum");
-					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
-							"ReleaseKind must be a floating point type or an enum");
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
 					/// @brief Constructs a default `GainReductionVCA`
 					/// (zeroed shared state, rise time = 0.4ms)
@@ -39,7 +41,8 @@ namespace apex {
 						{
 							this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
 							this->mNumSamplesToTransitionGain = static_cast<size_t>(
-									this->mRiseTimeSeconds * this->mState->getSampleRate() + 0.5
+									this->mRiseTimeSeconds * this->mState->getSampleRate() +
+									static_cast<T>(0.5)
 									);
 						}
 
@@ -68,7 +71,8 @@ namespace apex {
 					T adjustedGainReduction(T gainReduction) noexcept override {
 						T samplesToTransition =	static_cast<T>(this->mNumSamplesToTransitionGain);
 
-						if(gainReduction < this->mCurrentGainReduction) samplesToTransition *= 2.0f;
+						if(gainReduction < this->mCurrentGainReduction) samplesToTransition *=
+							static_cast<T>(2.0);
 
 						if(this->mCurrentSample > samplesToTransition) this->mCurrentSample = 0;
 
@@ -89,11 +93,11 @@ namespace apex {
 
 				private:
 					///The "amount" for the `softSaturation` wave shaper
-					static const constexpr T WAVE_SHAPER_AMOUNT = 0.2;
+					static const constexpr T WAVE_SHAPER_AMOUNT = static_cast<T>(0.2);
 					///The "slope" for the `softSaturation` wave shaper
-					static const constexpr T WAVE_SHAPER_SLOPE = 0.4;
+					static const constexpr T WAVE_SHAPER_SLOPE = static_cast<T>(0.4);
 					///The default rise time
-					static const constexpr T DEFAULT_RISE_TIME = 0.0004;
+					static const constexpr T DEFAULT_RISE_TIME = static_cast<T>(0.0004);
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionVCA)
 			};

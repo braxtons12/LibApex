@@ -26,12 +26,14 @@ namespace apex {
 
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-					static_assert(std::is_floating_point<AttackKind>::value ||
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
 							std::is_enum<AttackKind>::value,
-							"AttacKind must be a floating point type or an enum");
-					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
-							"ReleaseKind must be a floating point type or an enum");
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
 					/// @brief Constructs a default `GainReductionOptical`
 					/// (zeroed shared state)
@@ -46,8 +48,9 @@ namespace apex {
 					/// @param state - The shared state
 					GainReductionOptical(DynamicsState* state) noexcept {
 						this->mState = state;
-						this->mState->registerCallback(Field::SampleRate,
-								&GainReductionOptical<T, AttackKind,ReleaseKind>::setSampleRate);
+						this->mState->template registerCallback<size_t, Field::SampleRate>([this](size_t sampleRate) {
+								this->setSampleRate(sampleRate);
+								});
 					}
 
 					/// @brief Move constructs the given `GainReductionOptical`
@@ -75,12 +78,12 @@ namespace apex {
 						if(gainReduction > this->mCurrentGainReduction) {
 							this->mCurrentGainReduction =
 								(mAttackCoefficients[coefficientIndex] * oldGainReduction)
-								+ (1.0 - mAttackCoefficients[coefficientIndex]) * gainReduction;
+								+ (static_cast<T>(1.0) - mAttackCoefficients[coefficientIndex]) * gainReduction;
 						}
 						else {
 							this->mCurrentGainReduction =
 								(mReleaseCoefficients[coefficientIndex] * oldGainReduction)
-								+ (1.0 - mReleaseCoefficients[coefficientIndex]) * gainReduction;
+								+ (static_cast<T>(1.0) - mReleaseCoefficients[coefficientIndex]) * gainReduction;
 						}
 
 						return waveshapers::softSaturation(
@@ -96,15 +99,21 @@ namespace apex {
 						for(size_t coefficient = 0; coefficient < NUM_COEFFICIENTS; ++coefficient) {
 							T decibel = static_cast<T>(coefficient) /
 								static_cast<T>(NUM_COEFFICIENTS_PER_STEP);
-							T resistance = 510.0 / (3.0 + decibel);
-							T attackSeconds = (resistance / 10.0) / 1000.0;
-							T releaseSeconds = resistance / 1000.0;
+							T resistance = static_cast<T>(510.0) / (static_cast<T>(3.0) + decibel);
+							T attackSeconds = (resistance / static_cast<T>(10.0)) /
+								static_cast<T>(1000.0);
+							T releaseSeconds = resistance / static_cast<T>(1000.0);
 
 							T sampleRateFloat = static_cast<T>(sampleRate);
+
 							mAttackCoefficients[coefficient] =
-								math::exp(math::log(0.27) / (attackSeconds * sampleRateFloat));
+								static_cast<T>(math::exp(math::log(0.27) /
+											static_cast<double>(attackSeconds * sampleRateFloat))
+										);
 							mReleaseCoefficients[coefficient] =
-								math::exp(math::log(0.27) / (releaseSeconds * sampleRateFloat));
+								static_cast<T>(math::exp(math::log(0.27) /
+											static_cast<double>(releaseSeconds * sampleRateFloat))
+										);
 						}
 					}
 
@@ -119,9 +128,9 @@ namespace apex {
 					///The total number of coefficients
 					static const constexpr size_t NUM_COEFFICIENTS = NUM_DB_STEPS * NUM_COEFFICIENTS_PER_STEP;
 					///The "amount" to use for the `softSaturation` wave shaper
-					static const constexpr T WAVE_SHAPER_AMOUNT = 0.2;
+					static const constexpr T WAVE_SHAPER_AMOUNT = static_cast<T>(0.2);
 					///The "slope" to use for the `softSaturation` wave shaper
-					static const constexpr T WAVE_SHAPER_SLOPE = 0.2;
+					static const constexpr T WAVE_SHAPER_SLOPE = static_cast<T>(0.2);
 					///The attack response coefficients
 					std::vector<T> mAttackCoefficients = std::vector<T>(NUM_COEFFICIENTS);
 					///The release response coefficients
@@ -130,6 +139,7 @@ namespace apex {
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionOptical)
 			};
 	}
+
 }
 
 #endif //GAIN_REDUCTION_OPTICAL

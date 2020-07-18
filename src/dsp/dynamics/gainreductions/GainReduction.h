@@ -25,12 +25,14 @@ namespace apex {
 
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-					static_assert(std::is_floating_point<AttackKind>::value ||
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
 							std::is_enum<AttackKind>::value,
-							"AttacKind must be a floating point type or an enum");
-					static_assert(std::is_floating_point<ReleaseKind>::value ||
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
-							"ReleaseKind must be a floating point type or an enum");
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
 					/// @brief Constructs a default `GainReduction` - zeroed state, zero rise time
 					GainReduction() noexcept = default;
@@ -43,8 +45,9 @@ namespace apex {
 						: mState(state),
 						mRiseTimeSeconds(riseTimeSeconds)
 						{
-							mState->registerCallback(Field::SampleRate,
-									&GainReduction<T, AttackKind, ReleaseKind>::setSampleRate);
+							mState->template registerCallback<size_t, Field::SampleRate>([this](size_t sampleRate) {
+									this->setSampleRate(sampleRate);
+									});
 						}
 
 					/// @brief Move constructs the given `GainReduction`
@@ -84,7 +87,7 @@ namespace apex {
 					/// @param sampleRate - The new sample rate to use
 					inline virtual void setSampleRate(size_t sampleRate) noexcept {
 						mNumSamplesToTransitionGain = static_cast<size_t>(
-								sampleRate * mRiseTimeSeconds + 0.5
+								sampleRate * mRiseTimeSeconds + static_cast<T>(0.5)
 								);
 					}
 
@@ -94,7 +97,7 @@ namespace apex {
 					inline virtual void setRiseTimeSeconds(T seconds) noexcept {
 						mRiseTimeSeconds = seconds;
 						mNumSamplesToTransitionGain = static_cast<size_t>(
-								mState->getSampleRate() * mRiseTimeSeconds + 0.5
+								mState->getSampleRate() * mRiseTimeSeconds + static_cast<T>(0.5)
 								);
 					}
 
@@ -116,9 +119,9 @@ namespace apex {
 					///The number of samples the slew takes to complete
 					size_t mNumSamplesToTransitionGain = 0;
 					///The current gain reduction value
-					T mCurrentGainReduction = 0.0;
+					T mCurrentGainReduction = static_cast<T>(0.0);
 					///The slew rate
-					T mRiseTimeSeconds = 0.0;
+					T mRiseTimeSeconds = static_cast<T>(0.0);
 
 				private:
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)

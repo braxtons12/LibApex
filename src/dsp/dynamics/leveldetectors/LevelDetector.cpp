@@ -3,21 +3,25 @@
 namespace apex {
 	namespace dsp {
 
-		/// @brief Constructs a `LevelDetector` with the given parameters
+		/// @brief Constructs a `LevelDetector` of the given type
+		/// with the given shared state
 		///
-		/// @param attackMS - The attack time, in milliseconds
-		/// @param releaseMS - The release time, in milliseconds
-		/// @param sampleRate - The sample rate, in Hertz
-		/// @param type - The detector topology to use
-		LevelDetector<float>::LevelDetector(float attackMS, float releaseMS,
-				size_t sampleRate, DetectorType type) noexcept
-			: mAttackSeconds(attackMS * 0.001f),
-			mReleaseSeconds(releaseMS * 0.001f),
-			mSampleRate(sampleRate),
-			mAttackCoeff(math::expf(-1.0f / (mAttackSeconds * static_cast<float>(mSampleRate)))),
-			mReleaseCoeff(math::expf(-1.0f / (mReleaseSeconds * static_cast<float>(mSampleRate)))),
-			mType(type)
+		/// @param state - The shared state
+		/// @param type - The detector type
+		LevelDetector<float>::LevelDetector(DynamicsState* state,
+				DetectorType type) noexcept
+			: mType(type),
+			mState(state)
 			{
+				mState->registerCallback<float, DynamicsState::Field::Attack>([this](float attack) {
+						this->setAttackTime(attack);
+						});
+				mState->registerCallback<float, DynamicsState::Field::Release>([this](float release) {
+						this->setReleaseTime(release);
+						});
+				mState->registerCallback<size_t, DynamicsState::Field::SampleRate>([this](size_t sampleRate) {
+						this->setSampleRate(sampleRate);
+						});
 
 			}
 
@@ -28,70 +32,51 @@ namespace apex {
 		/// @return - The detected level
 		float LevelDetector<float>::process(float input) noexcept {
 			switch(mType) {
-				case NonCorrected: return processNonCorrected(input);
-				case Branching: return processBranching(input);
-				case Decoupled: return processDecoupled(input);
-				case BranchingSmooth: return processBranchingSmooth(input);
-				case DecoupledSmooth: return processDecoupledSmooth(input);
+				case DetectorType::NonCorrected: return processNonCorrected(input);
+				case DetectorType::Branching: return processBranching(input);
+				case DetectorType::Decoupled: return processDecoupled(input);
+				case DetectorType::BranchingSmooth: return processBranchingSmooth(input);
+				case DetectorType::DecoupledSmooth: return processDecoupledSmooth(input);
 			}
 			return 0.0f;
 		}
 
 		/// @brief Resets this level detector to an initial state
-		void LevelDetector<float>::reset() noexcept {
+		inline void LevelDetector<float>::reset() noexcept {
 			mYOut1 = 0.0f;
 			mYTempStage1 = 0.0f;
 		}
 
 		/// @brief Sets the attack time to the given value
 		///
-		/// @param attackMS - The new attack time, in milliseconds
-		void LevelDetector<float>::setAttackTime(float attackMS) noexcept {
-			mAttackSeconds = attackMS * 0.001f;
-			mAttackCoeff = math::expf(-1.0f / (mAttackSeconds * static_cast<float>(mSampleRate)));
-		}
-
-		/// @brief Returns the current attack time
-		///
-		/// @return - The attack time, in milliseconds
-		float LevelDetector<float>::getAttackTime() const noexcept {
-			return mAttackSeconds * 1000.0f;
+		/// @param attackSeconds - The new attack time, in seconds
+		inline void LevelDetector<float>::setAttackTime(float attackSeconds) noexcept {
+			mState->setAttackCoefficient1(math::expf(-1.0f /
+						(attackSeconds * static_cast<float>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the release time to the given value
 		///
-		/// @param releaseMS - The new release time, in milliseconds
-		void LevelDetector<float>::setReleaseTime(float releaseMS) noexcept {
-			mReleaseSeconds = releaseMS * 0.001f;
-			mReleaseCoeff = math::expf(-1.0f / (mReleaseSeconds * static_cast<float>(mSampleRate)));
-		}
-
-		/// @brief Returns the current release time
-		///
-		/// @return - The release time, in milliseconds
-		float LevelDetector<float>::getReleaseTime() const noexcept {
-			return mReleaseSeconds * 1000.0f;
+		/// @param releaseSeconds - The new release time, in seconds
+		inline void LevelDetector<float>::setReleaseTime(float releaseSeconds) noexcept {
+			mState->setReleaseCoefficient1(math::expf(-1.0f /
+						(releaseSeconds * static_cast<float>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		void LevelDetector<float>::setSampleRate(size_t sampleRate) noexcept {
-			mSampleRate = sampleRate;
-			mAttackCoeff = math::expf(-1.0f / (mAttackSeconds * static_cast<float>(mSampleRate)));
-			mReleaseCoeff = math::expf(-1.0f / (mReleaseSeconds * static_cast<float>(mSampleRate)));
-		}
-
-		/// @brief Returns the current sample rate
-		///
-		/// @return - The sample rate, in Hertz
-		size_t LevelDetector<float>::getSampleRate() const noexcept {
-			return mSampleRate;
+		inline void LevelDetector<float>::setSampleRate(size_t sampleRate) noexcept {
+			mState->setAttackCoefficient1(math::expf(-1.0f /
+						(mState->getAttack() * static_cast<float>(sampleRate))));
+			mState->setReleaseCoefficient1(math::expf(-1.0f /
+						(mState->getRelease() * static_cast<float>(sampleRate))));
 		}
 
 		float LevelDetector<float>::processNonCorrected(float input) noexcept {
-			//y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-			float yn = mReleaseCoeff * mYOut1 + (1.0f - mAttackCoeff) *
+			//y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
+			float yn = mState->getReleaseCoefficient1() * mYOut1 +
+				(1.0f - mState->getAttackCoefficient1()) *
 				math::max(input - mYOut1, 0.0f);
 			mYOut1 = yn;
 			return yn;
@@ -102,8 +87,9 @@ namespace apex {
 			//y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 			//       {
 			float yn = (input > mYOut1 ?
-					(mAttackCoeff * mYOut1 + (1.0f - mAttackCoeff) * input)
-					: (mReleaseCoeff * mYOut1));
+					(mState->getAttackCoefficient1() * mYOut1 +
+					 (1.0f - mState->getAttackCoefficient1()) * input)
+					: (mState->getReleaseCoefficient1() * mYOut1));
 			mYOut1 = yn;
 			return yn;
 		}
@@ -111,8 +97,9 @@ namespace apex {
 		float LevelDetector<float>::processDecoupled(float input) noexcept {
 			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-			float ytempn = math::max(input, mReleaseCoeff * mYTempStage1);
-			float yn = mAttackCoeff * mYOut1 + (1.0f - mAttackCoeff) * ytempn;
+			float ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
+			float yn = mState->getAttackCoefficient1() * mYOut1 +
+				(1.0f - mState->getAttackCoefficient1()) * ytempn;
 			mYTempStage1 = ytempn;
 			mYOut1 = yn;
 			return yn;
@@ -123,8 +110,10 @@ namespace apex {
 			//y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 			//       {
 			float yn = (input > mYOut1 ?
-					(mAttackCoeff * mYOut1 + (1.0f - mAttackCoeff) * input)
-					: (mReleaseCoeff * mYOut1 + (1.0f - mReleaseCoeff) * input));
+					(mState->getAttackCoefficient1() * mYOut1 +
+					 (1.0f - mState->getAttackCoefficient1()) * input)
+					: (mState->getReleaseCoefficient1() * mYOut1 +
+						(1.0f - mState->getReleaseCoefficient1()) * input));
 			mYOut1 = yn;
 			return yn;
 		}
@@ -132,30 +121,34 @@ namespace apex {
 		float LevelDetector<float>::processDecoupledSmooth(float input) noexcept {
 			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-			float ytempn = math::max(input, mReleaseCoeff * mYTempStage1
-					+ (1.0f - mReleaseCoeff) * input);
-			float yn = mAttackCoeff * mYOut1 + (1.0f - mAttackCoeff) * ytempn;
+			float ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1
+					+ (1.0f - mState->getReleaseCoefficient1()) * input);
+			float yn = mState->getAttackCoefficient1() * mYOut1 +
+				(1.0f - mState->getAttackCoefficient1()) * ytempn;
 			mYTempStage1 = ytempn;
 			mYOut1 = yn;
 			return yn;
 		}
 
-		/// @brief Constructs a `LevelDetector` with the given parameters
+		/// @brief Constructs a `LevelDetector` of the given type
+		/// with the given shared state
 		///
-		/// @param attackMS - The attack time, in milliseconds
-		/// @param releaseMS - The release time, in milliseconds
-		/// @param sampleRate - The sample rate, in Hertz
-		/// @param type - The detector topology to use
-		LevelDetector<double>::LevelDetector(double attackMS, double releaseMS,
-				size_t sampleRate, DetectorType type) noexcept
-			: mAttackSeconds(attackMS * 0.001),
-			mReleaseSeconds(releaseMS * 0.001),
-			mSampleRate(sampleRate),
-			mAttackCoeff(math::exp(-1.0 / (mAttackSeconds * static_cast<double>(mSampleRate)))),
-			mReleaseCoeff(math::exp(-1.0 / (mReleaseSeconds * static_cast<double>(mSampleRate)))),
-			mType(type)
+		/// @param state - The shared state
+		/// @param type - The detector type
+		LevelDetector<double>::LevelDetector(DynamicsState* state,
+				DetectorType type) noexcept
+			: mType(type),
+			mState(state)
 			{
-
+				mState->registerCallback<double, DynamicsState::Field::Attack>([this](double attack) {
+						this->setAttackTime(attack);
+						});
+				mState->registerCallback<double, DynamicsState::Field::Release>([this](double release) {
+						this->setReleaseTime(release);
+						});
+				mState->registerCallback<size_t, DynamicsState::Field::SampleRate>([this](size_t sampleRate) {
+						this->setSampleRate(sampleRate);
+						});
 			}
 
 		/// @brief Generates the detected level from the given input
@@ -165,70 +158,51 @@ namespace apex {
 		/// @return - The detected level
 		double LevelDetector<double>::process(double input) noexcept {
 			switch(mType) {
-				case NonCorrected: return processNonCorrected(input);
-				case Branching: return processBranching(input);
-				case Decoupled: return processDecoupled(input);
-				case BranchingSmooth: return processBranchingSmooth(input);
-				case DecoupledSmooth: return processDecoupledSmooth(input);
+				case DetectorType::NonCorrected: return processNonCorrected(input);
+				case DetectorType::Branching: return processBranching(input);
+				case DetectorType::Decoupled: return processDecoupled(input);
+				case DetectorType::BranchingSmooth: return processBranchingSmooth(input);
+				case DetectorType::DecoupledSmooth: return processDecoupledSmooth(input);
 			}
-			return 0.0;
+			return 0.0f;
 		}
 
 		/// @brief Resets this level detector to an initial state
-		void LevelDetector<double>::reset() noexcept {
-			mYOut1 = 0.0;
-			mYTempStage1 = 0.0;
+		inline void LevelDetector<double>::reset() noexcept {
+			mYOut1 = 0.0f;
+			mYTempStage1 = 0.0f;
 		}
 
 		/// @brief Sets the attack time to the given value
 		///
-		/// @param attackMS - The new attack time, in milliseconds
-		void LevelDetector<double>::setAttackTime(double attackMS) noexcept {
-			mAttackSeconds = attackMS * 0.001;
-			mAttackCoeff = math::exp(-1.0 / (mAttackSeconds * static_cast<double>(mSampleRate)));
-		}
-
-		/// @brief Returns the current attack time
-		///
-		/// @return - The attack time, in milliseconds
-		double LevelDetector<double>::getAttackTime() const noexcept {
-			return mAttackSeconds * 1000.0;
+		/// @param attackSeconds - The new attack time, in seconds
+		inline void LevelDetector<double>::setAttackTime(double attackSeconds) noexcept {
+			mState->setAttackCoefficient1(math::exp(-1.0 /
+						(attackSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the release time to the given value
 		///
-		/// @param releaseMS - The new release time, in milliseconds
-		void LevelDetector<double>::setReleaseTime(double releaseMS) noexcept {
-			mReleaseSeconds = releaseMS * 0.001;
-			mReleaseCoeff = math::exp(-1.0 / (mReleaseSeconds * static_cast<double>(mSampleRate)));
-		}
-
-		/// @brief Returns the current release time
-		///
-		/// @return - The release time, in milliseconds
-		double LevelDetector<double>::getReleaseTime() const noexcept {
-			return mReleaseSeconds * 1000.0;
+		/// @param releaseSeconds - The new release time, in seconds
+		inline void LevelDetector<double>::setReleaseTime(double releaseSeconds) noexcept {
+			mState->setReleaseCoefficient1(math::exp(-1.0 /
+						(releaseSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		void LevelDetector<double>::setSampleRate(size_t sampleRate) noexcept {
-			mSampleRate = sampleRate;
-			mAttackCoeff = math::exp(-1.0 / (mAttackSeconds * static_cast<double>(mSampleRate)));
-			mReleaseCoeff = math::exp(-1.0 / (mReleaseSeconds * static_cast<double>(mSampleRate)));
-		}
-
-		/// @brief Returns the current sample rate
-		///
-		/// @return - The sample rate, in Hertz
-		size_t LevelDetector<double>::getSampleRate() const noexcept {
-			return mSampleRate;
+		inline void LevelDetector<double>::setSampleRate(size_t sampleRate) noexcept {
+			mState->setAttackCoefficient1(math::exp(-1.0 /
+						(mState->getAttack() * static_cast<double>(sampleRate))));
+			mState->setReleaseCoefficient1(math::exp(-1.0 /
+						(mState->getRelease() * static_cast<double>(sampleRate))));
 		}
 
 		double LevelDetector<double>::processNonCorrected(double input) noexcept {
-			//y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-			double yn = mReleaseCoeff * mYOut1 + (1.0 - mAttackCoeff) *
+			//y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
+			double yn = mState->getReleaseCoefficient1() * mYOut1 +
+				(1.0 - mState->getAttackCoefficient1()) *
 				math::max(input - mYOut1, 0.0);
 			mYOut1 = yn;
 			return yn;
@@ -239,8 +213,9 @@ namespace apex {
 			//y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 			//       {
 			double yn = (input > mYOut1 ?
-					(mAttackCoeff * mYOut1 + (1.0 - mAttackCoeff) * input)
-					: (mReleaseCoeff * mYOut1));
+					(mState->getAttackCoefficient1() * mYOut1 +
+					 (1.0 - mState->getAttackCoefficient1()) * input)
+					: (mState->getReleaseCoefficient1() * mYOut1));
 			mYOut1 = yn;
 			return yn;
 		}
@@ -248,8 +223,9 @@ namespace apex {
 		double LevelDetector<double>::processDecoupled(double input) noexcept {
 			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-			double ytempn = math::max(input, mReleaseCoeff * mYTempStage1);
-			double yn = mAttackCoeff * mYOut1 + (1.0 - mAttackCoeff) * ytempn;
+			double ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
+			double yn = mState->getAttackCoefficient1() * mYOut1 +
+				(1.0 - mState->getAttackCoefficient1()) * ytempn;
 			mYTempStage1 = ytempn;
 			mYOut1 = yn;
 			return yn;
@@ -260,22 +236,24 @@ namespace apex {
 			//y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 			//       {
 			double yn = (input > mYOut1 ?
-					(mAttackCoeff * mYOut1 + (1.0 - mAttackCoeff) * input)
-					: (mReleaseCoeff * mYOut1 + (1.0 - mReleaseCoeff) * input));
+					(mState->getAttackCoefficient1() * mYOut1 +
+					 (1.0 - mState->getAttackCoefficient1()) * input)
+					: (mState->getReleaseCoefficient1() * mYOut1 +
+						(1.0 - mState->getReleaseCoefficient1()) * input));
 			mYOut1 = yn;
 			return yn;
 		}
 
 		double LevelDetector<double>::processDecoupledSmooth(double input) noexcept {
-			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * x[n])
+			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-			double ytempn = math::max(input, mReleaseCoeff * mYTempStage1
-					+ (1.0 - mReleaseCoeff) * input);
-			double yn = mAttackCoeff * mYOut1 + (1.0 - mAttackCoeff) * ytempn;
+			double ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1
+					+ (1.0 - mState->getReleaseCoefficient1()) * input);
+			double yn = mState->getAttackCoefficient1() * mYOut1 +
+				(1.0 - mState->getAttackCoefficient1()) * ytempn;
 			mYTempStage1 = ytempn;
 			mYOut1 = yn;
 			return yn;
 		}
-
 		} //dsp, not sure why auto-format is glitching w/ these
 		} //apex, not sure why auto-format is glitching w/ these
