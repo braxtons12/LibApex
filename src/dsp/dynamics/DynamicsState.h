@@ -271,43 +271,55 @@ namespace apex {
 					/// @tparam F - The type associated with the given field indicated by `field`,
 					/// eg: for `Ratio`, this could be `float` or `double` and for `Attack` this could be `float`,
 					/// `double`, or an associated `enum`, depending on what was specified at construction time.
-					/// The type of the field and this type MUST match (failure to do this will cause a compile-time error).
+					/// The type associated with the field and this type MUST match (failure to do this will cause a compile-time error).
+					/// @tparam field - The field to register the callback on
 					///
-					/// @param field - The field to register the callback on
 					/// @param callback - The callback to register
 					template<typename F, Field field>
 						void registerCallback(std::function<void(F)> callback) noexcept;
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<T, Field::Attack>(std::function<void(T)> callback) noexcept {
 							callback(mAttack);
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<T, Field::Release>(std::function<void(T)> callback) noexcept {
 							callback(mRelease);
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<T, Field::Ratio>(std::function<void(T)> callback) noexcept {
 							callback(mRatio);
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<T, Field::Threshold>(std::function<void(T)> callback) noexcept {
 							callback(mThreshold);
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<T, Field::KneeWidth>(std::function<void(T)> callback) noexcept {
 							callback(mKneeWidth);
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
 						void registerCallback<size_t, Field::SampleRate>(std::function<void(size_t)> callback) noexcept {
 							callback(mSampleRate);
