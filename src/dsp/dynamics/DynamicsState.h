@@ -1,13 +1,13 @@
 #pragma once
 
-#ifndef DYNAMICS_STATE
-#define DYNAMICS_STATE
-
 #include <functional>
 #include <type_traits>
 #include <utility>
 
 #include "../../base/StandardIncludes.h"
+
+#ifndef DYNAMICS_STATE
+#define DYNAMICS_STATE
 
 namespace apex {
 	namespace dsp {

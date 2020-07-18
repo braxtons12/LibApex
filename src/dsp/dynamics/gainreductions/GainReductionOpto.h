@@ -8,6 +8,9 @@
 #include "../../../base/StandardIncludes.h"
 #include "../../WaveShaper.h"
 
+#ifndef GAIN_REDUCTION_OPTICAL
+#define GAIN_REDUCTION_OPTICAL
+
 namespace apex {
 	namespace dsp {
 		/// @brief Class for calculating gain reduction values adjusted to roughly model Optical topology behavior
@@ -128,3 +131,5 @@ namespace apex {
 			};
 	}
 }
+
+#endif //GAIN_REDUCTION_OPTICAL

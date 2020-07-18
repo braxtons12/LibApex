@@ -7,6 +7,9 @@
 #include "../../../base/StandardIncludes.h"
 #include "../../WaveShaper.h"
 
+#ifndef GAIN_REDUCTION_VCA
+#define GAIN_REDUCTION_VCA
+
 namespace apex {
 	namespace dsp {
 		/// @brief Class for calculating gain reduction values adjusted to roughly model VCA topology behavior
@@ -96,3 +99,5 @@ namespace apex {
 			};
 	}
 }
+
+#endif //GAIN_REDUCTION_VCA

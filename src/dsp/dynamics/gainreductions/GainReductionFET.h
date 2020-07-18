@@ -7,6 +7,9 @@
 #include "../../../base/StandardIncludes.h"
 #include "../../WaveShaper.h"
 
+#ifndef GAIN_REDUCTION_FET
+#define GAIN_REDUCTION_FET
+
 namespace apex {
 	namespace dsp {
 		/// @brief Class for calculating gain reduction values adjusted to roughly model FET topology behavior
@@ -107,3 +110,5 @@ namespace apex {
 			};
 	}
 }
+
+#endif //GAIN_REDUCTION_FET

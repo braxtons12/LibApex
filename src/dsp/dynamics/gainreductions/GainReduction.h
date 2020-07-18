@@ -6,6 +6,9 @@
 #include "../../../base/StandardIncludes.h"
 #include "../DynamicsState.h"
 
+#ifndef GAIN_REDUCTION
+#define GAIN_REDUCTION
+
 namespace apex {
 	namespace dsp {
 		/// @brief Base class for calculating gain reduction values adjusted to match different topology behaviors.
@@ -122,3 +125,5 @@ namespace apex {
 			};
 	}
 }
+
+#endif //GAIN_REDUCTION
