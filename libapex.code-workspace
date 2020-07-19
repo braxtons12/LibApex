@@ -4,5 +4,10 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"xtr1common": "cpp",
+			"type_traits": "cpp"
+		}
+	}
 }

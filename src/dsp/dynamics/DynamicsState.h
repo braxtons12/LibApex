@@ -36,7 +36,8 @@ namespace apex {
 						Ratio,
 						Threshold,
 						KneeWidth,
-						SampleRate
+						SampleRate,
+						AutoRelease
 					};
 
 					/// @brief Constructs a blank `DynamicsState` with everything zeroed
@@ -175,6 +176,47 @@ namespace apex {
 					/// @return - The sample rate, in Hertz
 					inline size_t getSampleRate() const noexcept {
 						return mSampleRate;
+					}
+
+					/// @brief Sets whether the dynamics processor associated with this
+					/// has an auto release function
+					///
+					/// @param hasAutoRelease - Whether this has an auto release function
+					inline void setHasAutoRelease(bool hasAutoRelease) noexcept {
+						mHasAutoRelease = hasAutoRelease;
+						if(!mHasAutoRelease) {
+							mAutoReleaseEnabled = false;
+							for(auto callback : mAutoReleaseCallbacks) {
+								callback(mAutoReleaseEnabled);
+							}
+						}
+					}
+
+					/// @brief Returns whether the dynamics processor associated with this
+					/// has an auto release function
+					///
+					/// @return - Whether this has an auto release function 
+					inline bool getHasAutoRelease() const noexcept {
+						return mHasAutoRelease;
+					}
+
+					/// @brief Sets if auto release is enabled
+					///
+					/// @param enabled - Whether auto release is enabled
+					inline void setAutoReleaseEnabled(bool enabled) noexcept {
+						if(mHasAutoRelease) {
+							mAutoReleaseEnabled = enabled;
+							for(auto callback : mAutoReleaseCallbacks) {
+								callback(mAutoReleaseEnabled);
+							}
+						}
+					}
+
+					/// @brief Returns whether auto release is enabled
+					///
+					/// @return - Whether auto release is enabled
+					inline bool getAutoReleaseEnabled() const noexcept {
+						return mAutoReleaseEnabled;
 					}
 
 					/// @brief Sets the first attack coefficient to the given value
@@ -326,6 +368,14 @@ namespace apex {
 							mAttackCallbacks.push_back(callback);
 						}
 
+					/// @brief Registers the given callback to be called on changes to the given field.
+					/// The callback is called immediately to allow for synchronization with the current state.
+					template<>
+						void registerCallback<bool, Field::AutoRelease>(std::function<void(bool)> callback) noexcept {
+							callback(mAutoReleaseEnabled);
+							mAutoReleaseCallbacks.push_back(callback);
+						}
+
 					DynamicsState<T, AttackKind, ReleaseKind>& operator=(
 							DynamicsState<T, AttackKind, ReleaseKind>&& state) noexcept = default;
 
@@ -352,6 +402,8 @@ namespace apex {
 					T mReleaseCoefficient2 = static_cast<T>(0.0);
 					///The sample rate in Hertz
 					size_t mSampleRate = 44100;
+					bool mHasAutoRelease = false;
+					bool mAutoReleaseEnabled = false;
 
 					///Callback containers
 
@@ -367,6 +419,8 @@ namespace apex {
 					std::vector<std::function<void(T)>> mKneeWidthCallbacks;
 					///Sample rate callbacks
 					std::vector<std::function<void(size_t)>> mSampleRateCallbacks;
+					///AutoRelease callbacks
+					std::vector<std::function<void(bool)>> mAutoReleaseCallbacks;
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DynamicsState)
 			};
