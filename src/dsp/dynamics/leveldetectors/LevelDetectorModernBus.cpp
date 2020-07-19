@@ -11,6 +11,9 @@ namespace apex {
 
 			}
 
+		///@brief Constructs a `LevelDetectorModernBus` with the given shared state
+		///
+		///@param state - The shared state
 		LevelDetectorModernBus<float>::LevelDetectorModernBus(DynamicsState* state) noexcept
 			: LevelDetector<float>(state, DetectorType::DecoupledSmooth)
 			{
@@ -133,6 +136,9 @@ namespace apex {
 
 			}
 
+		///@brief Constructs a `LevelDetectorModernBus` with the given shared state
+		///
+		///@param state - The shared state
 		LevelDetectorModernBus<double>::LevelDetectorModernBus(DynamicsState* state) noexcept
 			: LevelDetector<double>(state, DetectorType::DecoupledSmooth)
 			{
