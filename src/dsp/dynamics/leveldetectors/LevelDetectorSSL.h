@@ -42,8 +42,8 @@ namespace apex {
 		template<>
 			class LevelDetectorSSL<float> : public LevelDetector<float> {
 				private:
-					using Field = typename apex::dsp::DynamicsState<float, float, float>::Field;
-					using DynamicsState = typename apex::dsp::DynamicsState<float, float, float>;
+					using Field = typename apex::dsp::DynamicsState<float, SSLBusAttackTime, SSLBusReleaseTime>::Field;
+					using DynamicsState = typename apex::dsp::DynamicsState<float, SSLBusAttackTime, SSLBusReleaseTime>;
 
 				public:
 					/// @brief Constructs a `LevelDetectorSSL` with zereod shared state
@@ -130,8 +130,8 @@ namespace apex {
 		template<>
 			class LevelDetectorSSL<double> : public LevelDetector<double> {
 				private:
-					using Field = typename apex::dsp::DynamicsState<double, double, double>::Field;
-					using DynamicsState = typename apex::dsp::DynamicsState<double, double, double>;
+					using Field = typename apex::dsp::DynamicsState<double, SSLBusAttackTime, SSLBusReleaseTime>::Field;
+					using DynamicsState = typename apex::dsp::DynamicsState<double, SSLBusAttackTime, SSLBusReleaseTime>;
 
 				public:
 					/// @brief Constructs a `LevelDetectorSSL` with zereod shared state
