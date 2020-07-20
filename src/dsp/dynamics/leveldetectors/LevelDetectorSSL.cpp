@@ -42,10 +42,16 @@ namespace apex {
 			);
 		}
 
+		/// @brief Sets the attack time to the given value
+		///
+		/// @param attack - The new attack time
 		void LevelDetectorSSL<float>::setAttackTime(SSLBusAttackTime attack) noexcept {
 			calculateAttackCoefficients(attack, mState->getSampleRate());
 		}
 
+		/// @brief Sets the release time to the given value
+		///
+		/// @param release - The new release time
 		void LevelDetectorSSL<float>::setReleaseTime(SSLBusReleaseTime release) noexcept {
 			calculateReleaseCoefficients(release, mState->getSampleRate());
 			if(release == SSLBusReleaseTime::Auto)
@@ -189,10 +195,16 @@ namespace apex {
 			);
 		}
 
+		/// @brief Sets the attack time to the given value
+		///
+		/// @param attack - The new attack time
 		void LevelDetectorSSL<double>::setAttackTime(SSLBusAttackTime attack) noexcept {
 			calculateAttackCoefficients(attack, mState->getSampleRate());
 		}
 
+		/// @brief Sets the release time to the given value
+		///
+		/// @param release - The new release time
 		void LevelDetectorSSL<double>::setReleaseTime(SSLBusReleaseTime release) noexcept {
 			calculateReleaseCoefficients(release, mState->getSampleRate());
 			if(release == SSLBusReleaseTime::Auto)

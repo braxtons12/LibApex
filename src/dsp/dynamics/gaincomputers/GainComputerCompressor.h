@@ -33,22 +33,34 @@ namespace apex {
 								std::is_same<T, ReleaseKind>::value) ||
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
-				
+
+				/// @brief Constructs a `GainComputerCompressor` with zeroed shared state
 				GainComputerCompressor() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
-				
+
+				/// @brief Constructs a `GainComputerCompressor` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerCompressor(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerCompressor`
+				/// 
+				/// @param computer - The `GainComputerCompressor` to move
 				GainComputerCompressor(GainComputerCompressor<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerCompressor() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				T process(T input) noexcept override;
 
 				GainComputerCompressor<T, AttackKind, ReleaseKind>& operator=(
@@ -76,21 +88,33 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 				
+				/// @brief Constructs a `GainComputerCompressor` with zeroed shared state
 				GainComputerCompressor() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
 				
+				/// @brief Constructs a `GainComputerCompressor` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerCompressor(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerCompressor`
+				/// 
+				/// @param computer - The `GainComputerCompressor` to move
 				GainComputerCompressor(GainComputerCompressor<float, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerCompressor() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				float process(float input) noexcept override {
 					float threshold = mState->getThreshold();
 					float ratio = mState->getRatio();
@@ -134,21 +158,33 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 				
+				/// @brief Constructs a `GainComputerCompressor` with zeroed shared state
 				GainComputerCompressor() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
 				
+				/// @brief Constructs a `GainComputerCompressor` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerCompressor(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerCompressor`
+				/// 
+				/// @param computer - The `GainComputerCompressor` to move
 				GainComputerCompressor(GainComputerCompressor<double, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerCompressor() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				double process(double input) noexcept override {
 					double threshold = mState->getThreshold();
 					double ratio = mState->getRatio();

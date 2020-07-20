@@ -34,21 +34,33 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 				
+				/// @brief Constructs a `GainComputerExpander` with zeroed shared state
 				GainComputerExpander() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
 				
+				/// @brief Constructs a `GainComputerExpander` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerExpander(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerExpander`
+				/// 
+				/// @param computer - The `GainComputerExpander` to move
 				GainComputerExpander(GainComputerExpander<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerExpander() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				T process(T input) noexcept override;
 
 				GainComputerExpander<T, AttackKind, ReleaseKind>& operator=(
@@ -76,21 +88,33 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 				
+				/// @brief Constructs a `GainComputerExpander` with zeroed shared state
 				GainComputerExpander() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
 				
+				/// @brief Constructs a `GainComputerExpander` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerExpander(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerExpander`
+				/// 
+				/// @param computer - The `GainComputerExpander` to move
 				GainComputerExpander(GainComputerExpander<float, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerExpander() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				float process(float input) noexcept override {
 					float threshold = mState->getThreshold();
 					float ratio = mState->getRatio();
@@ -134,21 +158,33 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 				
+				/// @brief Constructs a `GainComputerExpander` with zeroed shared state
 				GainComputerExpander() noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>()
 				{
 
 				};
 				
+				/// @brief Constructs a `GainComputerExpander` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputerExpander(DynamicsState* state) noexcept
 					: GainComputer<T, AttackKind, ReleaseKind>(state)
 				{
 
 				}
 
+				/// @brief Move constructs the given `GainComputerExpander`
+				/// 
+				/// @param computer - The `GainComputerExpander` to move
 				GainComputerExpander(GainComputerExpander<double, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputerExpander() override;
 
+				/// @brief Calculates the target gain reduction value 
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				double process(double input) noexcept override {
 					double threshold = mState->getThreshold();
 					double ratio = mState->getRatio();
