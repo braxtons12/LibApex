@@ -7,161 +7,46 @@
 
 namespace apex {
 	namespace dsp {
-
-		/// @brief Base Gain Computer behaviors for use in Dynamic Range Processors's Sidechain
-		///
+		/// @brief  Base Gain Computer behaviors for use in a dynamic range processor's `Sidechain`
+		/// 
 		/// @tparam T - The floating point type to back operations
-		template<typename T>
+		/// @tparam AttackKind - The attack type used by the shared `DynamicsState`
+		/// @tparam ReleaseKind - The release type used by the shared `DynamicsState`
+		template<typename T, typename AttackKind, typename ReleaseKind>
 			class GainComputer {
+				protected:
+					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
+				
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
+							std::is_enum<AttackKind>::value,
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be the same floating point type as T, or an enum");
 
+				GainComputer() noexcept = default;
+
+				GainComputer(DynamicsState* state) noexcept
+					: mState(state)
+				{
+;
+				}
+
+				GainComputer(GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				virtual ~GainComputer() noexcept = default;
+
+				virtual T process(T input) noexcept = 0;
+
+				GainComputer<T, AttackKind, ReleaseKind>& operator=(
+					GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				
 				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputer)
-			};
-
-		/// @brief Base Gain Computer behaviors for use in Dynamic Range Processors's Sidechain
-		template<>
-			class GainComputer<float> {
-				public:
-
-					/// @brief Constructs a `GainComputer` with the following defaults:
-					/// * ratio: 1.1
-					/// * threshold: -12dB
-					/// * knee width: 6dB
-					GainComputer() noexcept = default;
-
-					/// @brief Constructs a `GainComputer` with the given values
-					///
-					/// @param ratio - The ratio
-					/// @param threshold - The threshold, in Decibels
-					/// @param kneeWidth - The knee width, in Decibels
-					GainComputer(float ratio, float threshold, float kneeWidth) noexcept;
-
-					/// @brief Move constructs a `GainComputer` from the given one
-					///
-					/// @param computer - The `GainComputer` to move
-					GainComputer(GainComputer<float>&& computer) noexcept = default;
-					virtual ~GainComputer() noexcept = default;
-
-					/// @brief Sets the ratio to the given value
-					///
-					/// @param ratio - The new ratio
-					void setRatio(float ratio) noexcept;
-
-					/// @brief Returns the current ratio
-					///
-					/// @return - The current ratio
-					float getRatio() const noexcept;
-
-					/// @brief Sets the threshold to the given value
-					///
-					/// @param threshold - The new threshold, in Decibels
-					void setThreshold(float threshold) noexcept;
-
-					/// @brief Returns the current threshold
-					///
-					/// @return - The current threshold, in Decibels
-					float getThreshold() const noexcept;
-
-					/// @brief Sets the knee width to the given value
-					///
-					/// @param kneeWidth - The new knee width, in Decibels
-					void setKneeWidth(float kneeWidth) noexcept;
-
-					/// @brief Returns the current knee width
-					///
-					/// @return - The current knee width, in Decibels
-					float getKneeWidth() const noexcept;
-
-					/// @brief Determines the processed output level from the given input
-					///
-					/// @param input - The input to process
-					///
-					/// @return - The resulting output
-					virtual float process(float input) noexcept = 0;
-
-					GainComputer<float>& operator=(GainComputer<float>&& computer) noexcept = default;
-
-				protected:
-					float mRatio = 1.1f;
-					float mThreshold = -12.0f;
-					float mKneeWidth = 6.0f;
-
-				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputer)
-			};
-
-		/// @brief Base Gain Computer behaviors for use in Dynamic Range Processors's Sidechain
-		template<>
-			class GainComputer<double> {
-				public:
-
-					/// @brief Constructs a `GainComputer` with the following defaults:
-					/// * ratio: 1.1
-					/// * threshold: -12dB
-					/// * knee width: 6dB
-					GainComputer() noexcept = default;
-
-					/// @brief Constructs a `GainComputer` with the given values
-					///
-					/// @param ratio - The ratio
-					/// @param threshold - The threshold, in Decibels
-					/// @param kneeWidth - The knee width, in Decibels
-					GainComputer(double ratio, double threshold, double kneeWidth) noexcept;
-
-					/// @brief Move constructs a `GainComputer` from the given one
-					///
-					/// @param computer - The `GainComputer` to move
-					GainComputer(GainComputer<double>&& computer) noexcept = default;
-					virtual ~GainComputer() noexcept = default;
-
-					/// @brief Sets the ratio to the given value
-					///
-					/// @param ratio - The new ratio
-					void setRatio(double ratio) noexcept;
-
-					/// @brief Returns the current ratio
-					///
-					/// @return - The current ratio
-					double getRatio() const noexcept;
-
-					/// @brief Sets the threshold to the given value
-					///
-					/// @param threshold - The new threshold, in Decibels
-					void setThreshold(double threshold) noexcept;
-
-					/// @brief Returns the current threshold
-					///
-					/// @return - The current threshold, in Decibels
-					double getThreshold() const noexcept;
-
-					/// @brief Sets the knee width to the given value
-					///
-					/// @param kneeWidth - The new knee width, in Decibels
-					void setKneeWidth(double kneeWidth) noexcept;
-
-					/// @brief Returns the current knee width
-					///
-					/// @return - The current knee width, in Decibels
-					double getKneeWidth() const noexcept;
-
-					/// @brief Determines the processed output level from the given input
-					///
-					/// @param input - The input to process
-					///
-					/// @return - The resulting output
-					virtual double process(double input) noexcept = 0;
-
-					GainComputer<double>& operator=(GainComputer<double>&& computer) noexcept = default;
-
-				protected:
-					double mRatio = 1.1;
-					double mThreshold = -12.0;
-					double mKneeWidth = 6.0;
-
-				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputer)
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputer);
 			};
 	}
 }
