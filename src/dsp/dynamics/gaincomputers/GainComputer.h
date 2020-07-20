@@ -5,6 +5,9 @@
 
 #include "../../../base/StandardIncludes.h"
 
+#ifndef GAIN_COMPUTER
+#define GAIN_COMPUTER
+
 namespace apex {
 	namespace dsp {
 		/// @brief  Base Gain Computer behaviors for use in a dynamic range processor's `Sidechain`
@@ -29,24 +32,42 @@ namespace apex {
 							std::is_enum<ReleaseKind>::value,
 							"ReleaseKind must be the same floating point type as T, or an enum");
 
+				/// @brief Constructs a `GainComputer` with zeroed shared state
 				GainComputer() noexcept = default;
 
+				/// @brief Constructs a `GainComputer` with the given shared state
+				/// 
+				/// @param state - The shared state
 				GainComputer(DynamicsState* state) noexcept
 					: mState(state)
 				{
-;
+
 				}
 
+				/// @brief Move constructs the given `GainComputer`
+				/// 
+				/// @param computer - The `GainComputer` to move
 				GainComputer(GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				virtual ~GainComputer() noexcept = default;
 
+				/// @brief Calculates the target gain reduction value
+				/// 
+				/// @param input - The input to calculate gain reduction for
+				///
+				/// @return - The target gain reduction
 				virtual T process(T input) noexcept = 0;
 
 				GainComputer<T, AttackKind, ReleaseKind>& operator=(
 					GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
-				
+
+				protected:
+					DynamicsState DEFAULT_STATE = DynamicsState();
+					DynamicsState* mState = &DefaultState;	
+
 				private:
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputer);
 			};
 	}
 }
+
+#endif //GAIN_COMPUTER

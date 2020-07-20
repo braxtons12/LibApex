@@ -5,92 +5,175 @@
 
 #include "GainComputer.h"
 #include "../../../base/StandardIncludes.h"
+#include "../DynamicsState.h"
+
+#ifndef GAIN_COMPUTER_COMPRESSOR
+#define GAIN_COMPUTER_COMPRESSOR
 
 namespace apex {
 	namespace dsp {
-		///@brief Gain Computer for compressors
-		///
-		///@tparam T - The floating point type to back operations
-		template<typename T>
-			class GainComputerCompressor : public GainComputer<T> {
+		/// @brief Gain Computer for compressors
+		/// 
+		/// @tparam T - The floating point type to back operations
+		/// @tparam AttackKind - The attack type used by the shared `DynamicsState`
+		/// @tparam ReleaseKind - The release type used by the shared `DynamicsState`
+		template<typename T, typename AttackKind, typename ReleaseKind>
+			class GainComputerCompressor : public GainComputer<T, AttackKind, ReleaseKind> {
+				protected:
+					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
+				
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<T, AttackKind>::value) ||
+							std::is_enum<AttackKind>::value,
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<T, ReleaseKind>::value) ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be the same floating point type as T, or an enum");
+				
+				GainComputerCompressor() noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>()
+				{
 
-				private:
-					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
-			};
+				};
+				
+				GainComputerCompressor(DynamicsState* state) noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>(state)
+				{
 
-		///@brief Gain Computer for compressors
-		template<>
-			class GainComputerCompressor<float> : public GainComputer<float> {
-				public:
-					///@brief Constructs a `GainComputerCompressor` with the following defaults:
-					/// * ratio: 1.1
-					/// * threshold: -12dB
-					/// * knee width: 6dB
-					GainComputerCompressor() noexcept = default;
+				}
 
-					///@brief Construct a `GainComputerCompressor` with the given parameters
-					///
-					///@param ratio - The ratio
-					///@param threshold - The threshold, in Decibels
-					///@param kneeWidth - The knee width, in Decibels
-					GainComputerCompressor(float ratio, float threshold, float kneeWidth) noexcept;
+				GainComputerCompressor(GainComputerCompressor<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				virtual ~GainComputerCompressor() override;
 
-					///@brief Move constructs a `GainComputerCompressor` from the given one
-					///
-					///@param computer - The `GainComputerCompressor` to move
-					GainComputerCompressor(GainComputerCompressor<float>&& computer) noexcept = default;
-					~GainComputerCompressor() noexcept override = default;
+				T process(T input) noexcept override;
 
-					///@brief Calculates the target compressed output value 
-					///
-					///@param input - The input to calculate compression for
-					///
-					///@return - The target output
-					float process(float input) noexcept override;
-
-					GainComputerCompressor<float>& operator=(GainComputerCompressor<float>&& comptuer) noexcept = default;
+				GainComputerCompressor<T, AttackKind, ReleaseKind>& operator=(
+					GainComputerCompressor<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				
 				private:
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
 			};
-
-		///@brief Gain Computer for compressors
-		template<>
-			class GainComputerCompressor<double> : public GainComputer<double> {
+			
+		template<typename AttackKind, typename ReleaseKind>
+			class GainComputerCompressor<float, AttackKind, ReleaseKind> :
+				public GainComputer<float, AttackKind, ReleaseKind>
+			{
+				protected:
+					typedef typename DynamicsState<float, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, AttackKind, ReleaseKind> DynamicsState;
+				
 				public:
-					///@brief Constructs a `GainComputerCompressor` with the following defaults:
-					/// * ratio: 1.1
-					/// * threshold: -12dB
-					/// * knee width: 6dB
-					GainComputerCompressor() noexcept = default;
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<float, AttackKind>::value) ||
+							std::is_enum<AttackKind>::value,
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<float, ReleaseKind>::value) ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be the same floating point type as T, or an enum");
+				
+				GainComputerCompressor() noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>()
+				{
 
-					///@brief Construct a `GainComputerCompressor` with the given parameters
-					///
-					///@param ratio - The ratio
-					///@param threshold - The threshold, in Decibels
-					///@param kneeWidth - The knee width, in Decibels
-					GainComputerCompressor(double ratio, double threshold, double kneeWidth) noexcept;
+				};
+				
+				GainComputerCompressor(DynamicsState* state) noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>(state)
+				{
 
-					///@brief Move constructs a `GainComputerCompressor` from the given one
-					///
-					///@param computer - The `GainComputerCompressor` to move
-					GainComputerCompressor(GainComputerCompressor<double>&& computer) noexcept = default;
-					~GainComputerCompressor() noexcept override = default;
+				}
 
-					///@brief Calculates the target compressed output value 
-					///
-					///@param input - The input to calculate compression for
-					///
-					///@return - The target output
-					double process(double input) noexcept override;
+				GainComputerCompressor(GainComputerCompressor<float, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				virtual ~GainComputerCompressor() override;
 
-					GainComputerCompressor<double>& operator=(GainComputerCompressor<double>&& comptuer) noexcept = default;
+				float process(float input) noexcept override {
+					float threshold = mState->getThreshold();
+					float ratio = mState->getRatio();
+					float kneeWidth = mState->getKneeWidth();
+
+					float twoXMinusT = 2.0f * (input - mState->getThreshold());
+					if(twoXMinusT < -kneeWidth) {
+						return input;
+					}
+					else if(twoXMinusT > kneeWidth) {
+						return threshold + (input - threshold) / ratio;
+					}
+					else {
+						return input + ( (1.0f / ratio) - 1.0f)
+							* math::pow2f(input - threshold + kneeWidth / 2.0f) / (2.0f * kneeWidth);
+					}
+				}
+
+				GainComputerCompressor<float, AttackKind, ReleaseKind>& operator=(
+					GainComputerCompressor<float, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				
+				private:
+					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
+			};
+			
+		template<typename AttackKind, typename ReleaseKind>
+			class GainComputerCompressor<double, AttackKind, ReleaseKind> :
+				public GainComputer<double, AttackKind, ReleaseKind>
+			{
+				protected:
+					typedef typename DynamicsState<double, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, AttackKind, ReleaseKind> DynamicsState;
+				
+				public:
+					static_assert((std::is_floating_point<AttackKind>::value &&
+								std::is_same<double, AttackKind>::value) ||
+							std::is_enum<AttackKind>::value,
+							"AttackKind must be the same floating point type as T, or an enum");
+					static_assert((std::is_floating_point<ReleaseKind>::value &&
+								std::is_same<double, ReleaseKind>::value) ||
+							std::is_enum<ReleaseKind>::value,
+							"ReleaseKind must be the same floating point type as T, or an enum");
+				
+				GainComputerCompressor() noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>()
+				{
+
+				};
+				
+				GainComputerCompressor(DynamicsState* state) noexcept
+					: GainComputer<T, AttackKind, ReleaseKind>(state)
+				{
+
+				}
+
+				GainComputerCompressor(GainComputerCompressor<double, AttackKind, ReleaseKind>&& computer) noexcept = default;
+				virtual ~GainComputerCompressor() override;
+
+				double process(double input) noexcept override {
+					double threshold = mState->getThreshold();
+					double ratio = mState->getRatio();
+					double kneeWidth = mState->getKneeWidth();
+
+					double twoXMinusT = 2.0 * (input - mState->getThreshold());
+					if(twoXMinusT < -kneeWidth) {
+						return input;
+					}
+					else if(twoXMinusT > kneeWidth) {
+						return threshold + (input - threshold) / ratio;
+					}
+					else {
+						return input + ( (1.0 / ratio) - 1.0)
+							* math::pow2(input - threshold + kneeWidth / 2.0) / (2.0 * kneeWidth);
+					}
+				}
+
+				GainComputerCompressor<double, AttackKind, ReleaseKind>& operator=(
+					GainComputerCompressor<double, AttackKind, ReleaseKind>&& computer) noexcept = default;
 				
 				private:
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainComputerCompressor)
 			};
 	}
-
 }
+
+#endif //GAIN_COMPUTER_COMPRESSOR

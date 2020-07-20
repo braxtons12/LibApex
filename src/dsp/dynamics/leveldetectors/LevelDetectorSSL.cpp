@@ -84,7 +84,7 @@ namespace apex {
 			SSLBusAttackTime attack,
 			size_t sampleRate) noexcept
 		{
-			float attackSeconds;
+			float attackSeconds = 0.0f;
 			switch(attack) {
 				case SSLBusAttackTime::PointOneMilliseconds:
 					attackSeconds = ATTACK_POINT_ONE_MS_S;
@@ -122,7 +122,7 @@ namespace apex {
 			size_t sampleRate) noexcept
 		{
 			if(release == SSLBusReleaseTime::Auto) {
-				float releaseSeconds;
+				float releaseSeconds = 0.0f;
 				switch(release) {
 					case SSLBusReleaseTime::PointOneSeconds:
 						releaseSeconds = RELEASE_POINT_ONE_S;
@@ -231,7 +231,7 @@ namespace apex {
 			SSLBusAttackTime attack,
 			size_t sampleRate) noexcept
 		{
-			double attackSeconds;
+			double attackSeconds = 0.0f;
 			switch(attack) {
 				case SSLBusAttackTime::PointOneMilliseconds:
 					attackSeconds = ATTACK_POINT_ONE_MS_S;
@@ -269,7 +269,7 @@ namespace apex {
 			size_t sampleRate) noexcept
 		{
 			if(release == SSLBusReleaseTime::Auto) {
-				double releaseSeconds;
+				double releaseSeconds = 0.0f;
 				switch(release) {
 					case SSLBusReleaseTime::PointOneSeconds:
 						releaseSeconds = RELEASE_POINT_ONE_S;
