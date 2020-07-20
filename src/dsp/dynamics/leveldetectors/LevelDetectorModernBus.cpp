@@ -17,6 +17,7 @@ namespace apex {
 		LevelDetectorModernBus<float>::LevelDetectorModernBus(DynamicsState* state) noexcept
 			: LevelDetector<float>(state, DetectorType::DecoupledSmooth)
 			{
+				mState->setHasAutoRelease(true);
 				mState->registerCallback<float, DynamicsState::Field::Attack>([this](float attack) {
 					this->setAttackTime(attack);
 					});
@@ -35,16 +36,24 @@ namespace apex {
 		///
 		/// @param autoRelease - Whether auto release should be enabled
 		void LevelDetectorModernBus<float>::setAutoRelease(bool autoRelease) noexcept {
-			mState->setAttackCoefficient2(
-				math::expf(-1.0f / (mState->getAttack() * AUTO_RELEASE_ATTACK2_MULTIPLIER *
-					static_cast<float>(mState->getSampleRate())))
-			);
-			mState->setReleaseCoefficient1(
-				math::expf(-1.0f / (AUTO_RELEASE1_S * static_cast<float>(mState->getSampleRate())))
-			);
-			mState->setReleaseCoefficient2(
-				math::expf(-1.0f / (AUTO_RELEASE2_S * static_cast<float>(mState->getSampleRate())))
-			);
+			if(autoRelease) {
+				mState->setAttackCoefficient2(
+					math::expf(-1.0f / (mState->getAttack() * AUTO_RELEASE_ATTACK2_MULTIPLIER *
+						static_cast<float>(mState->getSampleRate())))
+				);
+				mState->setReleaseCoefficient1(
+					math::expf(-1.0f / (AUTO_RELEASE1_S * static_cast<float>(mState->getSampleRate())))
+				);
+				mState->setReleaseCoefficient2(
+					math::expf(-1.0f / (AUTO_RELEASE2_S * static_cast<float>(mState->getSampleRate())))
+				);
+			}
+			else {
+				mState->setReleaseCoefficient1(
+					math::expf(-1.0f / (mState->getRelease() *
+						static_cast<float>(mState->getSampleRate())))
+				);
+			}
 		}
 
 		/// @brief Sets the attack time to the given value
@@ -142,6 +151,7 @@ namespace apex {
 		LevelDetectorModernBus<double>::LevelDetectorModernBus(DynamicsState* state) noexcept
 			: LevelDetector<double>(state, DetectorType::DecoupledSmooth)
 			{
+				mState->setHasAutoRelease(true);
 				mState->registerCallback<double, DynamicsState::Field::Attack>([this](double attack) {
 					this->setAttackTime(attack);
 					});
@@ -160,16 +170,24 @@ namespace apex {
 		///
 		/// @param autoRelease - Whether auto release should be enabled
 		void LevelDetectorModernBus<double>::setAutoRelease(bool autoRelease) noexcept {
-			mState->setAttackCoefficient2(
-				math::exp(-1.0 / (mState->getAttack() * AUTO_RELEASE_ATTACK2_MULTIPLIER *
-					static_cast<double>(mState->getSampleRate())))
-			);
-			mState->setReleaseCoefficient1(
-				math::exp(-1.0 / (AUTO_RELEASE1_S * static_cast<double>(mState->getSampleRate())))
-			);
-			mState->setReleaseCoefficient2(
-				math::exp(-1.0 / (AUTO_RELEASE2_S * static_cast<double>(mState->getSampleRate())))
-			);
+			if(autoRelease) {
+				mState->setAttackCoefficient2(
+					math::exp(-1.0 / (mState->getAttack() * AUTO_RELEASE_ATTACK2_MULTIPLIER *
+						static_cast<double>(mState->getSampleRate())))
+				);
+				mState->setReleaseCoefficient1(
+					math::exp(-1.0 / (AUTO_RELEASE1_S * static_cast<double>(mState->getSampleRate())))
+				);
+				mState->setReleaseCoefficient2(
+					math::exp(-1.0 / (AUTO_RELEASE2_S * static_cast<double>(mState->getSampleRate())))
+				);
+			}
+			else {
+				mState->setReleaseCoefficient1(
+					math::exp(-1.0 / (mState->getRelease() *
+						static_cast<double>(mState->getSampleRate())))
+				);
+			}
 		}
 
 		/// @brief Sets the attack time to the given value

@@ -333,7 +333,7 @@ namespace apex {
 					template<>
 						void registerCallback<T, Field::Release>(std::function<void(T)> callback) noexcept {
 							callback(mRelease);
-							mAttackCallbacks.push_back(callback);
+							mReleaseCallbacks.push_back(callback);
 						}
 
 					/// @brief Registers the given callback to be called on changes to the given field.
@@ -341,7 +341,7 @@ namespace apex {
 					template<>
 						void registerCallback<T, Field::Ratio>(std::function<void(T)> callback) noexcept {
 							callback(mRatio);
-							mAttackCallbacks.push_back(callback);
+							mRatioCallbacks.push_back(callback);
 						}
 
 					/// @brief Registers the given callback to be called on changes to the given field.
@@ -349,7 +349,7 @@ namespace apex {
 					template<>
 						void registerCallback<T, Field::Threshold>(std::function<void(T)> callback) noexcept {
 							callback(mThreshold);
-							mAttackCallbacks.push_back(callback);
+							mThresholdCallbacks.push_back(callback);
 						}
 
 					/// @brief Registers the given callback to be called on changes to the given field.
@@ -357,7 +357,7 @@ namespace apex {
 					template<>
 						void registerCallback<T, Field::KneeWidth>(std::function<void(T)> callback) noexcept {
 							callback(mKneeWidth);
-							mAttackCallbacks.push_back(callback);
+							mKneeWidthCallbacks.push_back(callback);
 						}
 
 					/// @brief Registers the given callback to be called on changes to the given field.
@@ -365,7 +365,7 @@ namespace apex {
 					template<>
 						void registerCallback<size_t, Field::SampleRate>(std::function<void(size_t)> callback) noexcept {
 							callback(mSampleRate);
-							mAttackCallbacks.push_back(callback);
+							mSampleRateCallbacks.push_back(callback);
 						}
 
 					/// @brief Registers the given callback to be called on changes to the given field.
