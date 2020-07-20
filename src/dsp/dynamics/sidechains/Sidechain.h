@@ -30,27 +30,27 @@ namespace apex {
 		template<>
 			class Sidechain<float> {
 				private:
-					typedef typename apex::dsp::DynamicsState<float, float, float>::Field Field;
-					typedef typename apex::dsp::DynamicsState<float, float, float> State;
+					using Field = typename apex::dsp::DynamicsState<float, float, float>::Field;
+					using DynamicsState = typename apex::dsp::DynamicsState<float, float, float>;
 
 				public:
 					/// @brief The type of dynamics processor this is used in
 					enum class DynamicsType {
-						Compressor = 0,
+						Compressor,
 						Expander
 					};
 
 					/// @brief The macro-level topology to use for the gain computer (the component
 					/// that calculates the target gain reduction)
 					enum class ComputerTopology {
-						FeedForward = 0,
+						FeedForward,
 						FeedBack
 					};
 
 					/// @brief The macro-level topology to use for the level detector (the component
 					/// that performs attack and release envelope modulation)
 					enum class DetectorTopology {
-						ReturnToZero = 0,
+						ReturnToZero,
 						ReturnToThreshold,
 						AlternateReturnToThreshold
 					};
@@ -195,7 +195,7 @@ namespace apex {
 					static const constexpr float DEFAULT_THRESHOLD = -12.0f;
 					static const constexpr float DEFAULT_KNEE_WIDTH = 6.0f;
 					static const constexpr float MS_TO_SECS_MULT = 0.001f;
-					State mState = State(
+					DynamicsState mState = DynamicsState(
 						DEFAULT_ATTACK_SECONDS,
 						DEFAULT_RELEASE_SECONDS,
 						DEFAULT_RATIO,
@@ -240,8 +240,8 @@ namespace apex {
 		template<>
 			class Sidechain<double> {
 				private:
-					typedef typename apex::dsp::DynamicsState<double, double, double>::Field Field;
-					typedef typename apex::dsp::DynamicsState<double, double, double> State;
+					using Field = typename apex::dsp::DynamicsState<double, double, double>::Field;
+					using DynamicsState = typename apex::dsp::DynamicsState<double, double, double>;
 
 				public:
 					/// @brief The type of dynamics processor this is used in
@@ -405,7 +405,7 @@ namespace apex {
 					static const constexpr double DEFAULT_THRESHOLD = -12.0;
 					static const constexpr double DEFAULT_KNEE_WIDTH = 6.0;
 					static const constexpr double MS_TO_SECS_MULT = 0.001;
-					State mState = State(
+					DynamicsState mState = DynamicsState(
 						DEFAULT_ATTACK_SECONDS,
 						DEFAULT_RELEASE_SECONDS,
 						DEFAULT_RATIO,

@@ -3,6 +3,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "../../base/StandardIncludes.h"
 

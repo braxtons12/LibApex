@@ -19,8 +19,8 @@ namespace apex {
 		template<typename T, typename AttackKind, typename ReleaseKind>
 			class GainComputer {
 				protected:
-					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
-					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
+					using Field = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field;
+					using DynamicsState = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>;
 
 				public:
 					static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
