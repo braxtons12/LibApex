@@ -32,7 +32,4 @@
 #include "src/dsp/processors/ParallelEQBand.cpp"
 #include "src/dsp/processors/Gain.cpp"
 
-#include "src/math/Decibels.cpp"
-#include "src/math/General.cpp"
-#include "src/math/Exponentials.cpp"
-#include "src/math/TrigFuncs.cpp"
+#include "src/math/Random.cpp"

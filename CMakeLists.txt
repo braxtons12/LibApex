@@ -147,10 +147,11 @@ set(DSP
 	)
 
 set(MATH
-	"${CMAKE_SOURCE_DIR}/src/math/General.cpp"
-	"${CMAKE_SOURCE_DIR}/src/math/Decibels.cpp"
-	"${CMAKE_SOURCE_DIR}/src/math/Exponentials.cpp"
-	"${CMAKE_SOURCE_DIR}/src/math/TrigFuncs.cpp"
+	"${CMAKE_SOURCE_DIR}/src/math/General.h"
+	"${CMAKE_SOURCE_DIR}/src/math/Decibels.h"
+	"${CMAKE_SOURCE_DIR}/src/math/Exponentials.h"
+	"${CMAKE_SOURCE_DIR}/src/math/TrigFuncs.h"
+	"${CMAKE_SOURCE_DIR}/src/math/Random.cpp"
 	)
 
 set(UTILS
