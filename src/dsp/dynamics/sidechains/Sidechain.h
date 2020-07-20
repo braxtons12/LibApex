@@ -23,6 +23,10 @@ namespace apex {
 
 		template<>
 			class Sidechain<float> {
+				private:
+					typedef typename apex::dsp::DynamicsState<float, float, float>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, float, float> State;
+
 				public:
 					enum DynamicsType {
 						Compressor = 0,
@@ -71,16 +75,26 @@ namespace apex {
 					void setDetectorTopology(DetectorTopology topology) noexcept;
 					DetectorTopology getDetectorTopology() const noexcept;
 
-					void setGainReductionProcessor(GainReduction<float>&& reduction) noexcept;
+					void setGainReductionProcessor(GainReduction<float, float, float>&& reduction) noexcept;
 
 				protected:
-					float mAttackMS = 10.0f;
-					float mReleaseMS = 50.0f;
-					size_t mSampleRate = 44100;
-					float mRatio = 1.1f;
-					float mThreshold = -12.0f;
-					float mKneeWidth = 6.0f;
+					static const constexpr float DEFAULT_ATTACK_SECONDS = 0.01f;
+					static const constexpr float DEFAULT_RELEASE_SECONDS = 0.05f;
+					static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
+					static const constexpr float DEFAULT_RATIO = 1.1f;
+					static const constexpr float DEFAULT_THRESHOLD = -12.0f;
+					static const constexpr float DEFAULT_KNEE_WIDTH = 6.0f;
+					static const constexpr float MS_TO_SECS_MULT = 0.001f;
+					State mState = State(
+						DEFAULT_ATTACK_SECONDS,
+						DEFAULT_RELEASE_SECONDS,
+						DEFAULT_RATIO,
+						DEFAULT_THRESHOLD,
+						DEFAULT_KNEE_WIDTH,
+						DEFAULT_SAMPLE_RATE
+					);
 					float mGainReductionDB = 0.0f;
+
 					DynamicsType mDynamicsType = DynamicsType::Compressor;
 					ComputerTopology mComputerTopology = ComputerTopology::FeedBack;
 					DetectorTopology mDetectorTopology =
@@ -88,12 +102,14 @@ namespace apex {
 					LevelDetector<float>::DetectorType mDetectorType =
 						LevelDetector<float>::DetectorType::Decoupled;
 					LevelDetector<float> mLevelDetector =
-						LevelDetector<float>(mAttackMS, mReleaseMS, mSampleRate, mDetectorType);
-					GainReduction<float> mGainReductionProcessor = GainReduction<float>();
-					GainComputerExpander<float> mExpanderComputer = GainComputerExpander<float>();
-					GainComputerCompressor<float> mCompressorComputer =
-						GainComputerCompressor<float>();
-					GainComputer<float>* mGainComputer = &mCompressorComputer;
+						LevelDetector<float>(&mState, mDetectorType);
+					GainReduction<float, float, float> mGainReductionProcessor = 
+						GainReduction<float, float, float>(&mState);
+					GainComputerExpander<float, float, float> mExpanderComputer =
+						GainComputerExpander<float, float, float>(&mState);
+					GainComputerCompressor<float, float, float> mCompressorComputer =
+						GainComputerCompressor<float, float, float>(&mState);
+					GainComputer<float, float, float>* mGainComputer = &mCompressorComputer;
 
 					float processFeedForwardReturnToZero(float input) noexcept;
 					float processFeedForwardReturnToThreshold(float input) noexcept;
@@ -109,6 +125,10 @@ namespace apex {
 
 		template<>
 			class Sidechain<double> {
+				private:
+					typedef typename apex::dsp::DynamicsState<double, double, double>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, double, double> State;
+
 				public:
 					enum DynamicsType {
 						Compressor = 0,
@@ -157,16 +177,26 @@ namespace apex {
 					void setDetectorTopology(DetectorTopology topology) noexcept;
 					DetectorTopology getDetectorTopology() const noexcept;
 
-					void setGainReductionProcessor(GainReduction<double>&& reduction) noexcept;
+					void setGainReductionProcessor(GainReduction<double, double, double>&& reduction) noexcept;
 
 				protected:
-					double mAttackMS = 10.0;
-					double mReleaseMS = 50.0;
-					size_t mSampleRate = 44100;
-					double mRatio = 1.1;
-					double mThreshold = -12.0;
-					double mKneeWidth = 6.0;
+					static const constexpr double DEFAULT_ATTACK_SECONDS = 0.01;
+					static const constexpr double DEFAULT_RELEASE_SECONDS = 0.05;
+					static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
+					static const constexpr double DEFAULT_RATIO = 1.1;
+					static const constexpr double DEFAULT_THRESHOLD = -12.0;
+					static const constexpr double DEFAULT_KNEE_WIDTH = 6.0;
+					static const constexpr double MS_TO_SECS_MULT = 0.001;
+					State mState = State(
+						DEFAULT_ATTACK_SECONDS,
+						DEFAULT_RELEASE_SECONDS,
+						DEFAULT_RATIO,
+						DEFAULT_THRESHOLD,
+						DEFAULT_KNEE_WIDTH,
+						DEFAULT_SAMPLE_RATE
+					);
 					double mGainReductionDB = 0.0;
+
 					DynamicsType mDynamicsType = DynamicsType::Compressor;
 					ComputerTopology mComputerTopology = ComputerTopology::FeedBack;
 					DetectorTopology mDetectorTopology =
@@ -174,12 +204,14 @@ namespace apex {
 					LevelDetector<double>::DetectorType mDetectorType =
 						LevelDetector<double>::DetectorType::Decoupled;
 					LevelDetector<double> mLevelDetector =
-						LevelDetector<double>(mAttackMS, mReleaseMS, mSampleRate, mDetectorType);
-					GainReduction<double> mGainReductionProcessor = GainReduction<double>();
-					GainComputerExpander<double> mExpanderComputer = GainComputerExpander<double>();
-					GainComputerCompressor<double> mCompressorComputer =
-						GainComputerCompressor<double>();
-					GainComputer<double>* mGainComputer = &mCompressorComputer;
+						LevelDetector<double>(&mState, mDetectorType);
+					GainReduction<double, double, double> mGainReductionProcessor = 
+						GainReduction<double, double, double>(&mState);
+					GainComputerExpander<double, double, double> mExpanderComputer =
+						GainComputerExpander<double, double, double>(&mState);
+					GainComputerCompressor<double, double, double> mCompressorComputer =
+						GainComputerCompressor<double, double, double>(&mState);
+					GainComputer<double, double, double>* mGainComputer = &mCompressorComputer;
 
 					double processFeedForwardReturnToZero(double input) noexcept;
 					double processFeedForwardReturnToThreshold(double input) noexcept;

@@ -18,7 +18,7 @@ namespace apex {
 		template<typename T, typename AttackKind, typename ReleaseKind>
 			class GainComputer {
 				protected:
-					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
 					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
 				
 				public:

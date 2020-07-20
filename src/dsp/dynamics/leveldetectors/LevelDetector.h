@@ -30,7 +30,7 @@ namespace apex {
 		template<>
 			class LevelDetector<float> {
 				private:
-					typedef typename DynamicsState<float, float, float>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, float, float>::Field Field;
 					typedef typename apex::dsp::DynamicsState<float, float, float> DynamicsState;
 
 				public:
@@ -111,7 +111,7 @@ namespace apex {
 		template<>
 			class LevelDetector<double> {
 				private:
-					typedef typename DynamicsState<double, double, double>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, double, double>::Field Field;
 					typedef typename apex::dsp::DynamicsState<double, double, double> DynamicsState;
 
 				public:

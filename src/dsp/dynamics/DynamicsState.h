@@ -323,7 +323,7 @@ namespace apex {
 					/// @brief Registers the given callback to be called on changes to the given field.
 					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
-						void registerCallback<T, Field::Attack>(std::function<void(T)> callback) noexcept {
+						void registerCallback<AttackKind, Field::Attack>(std::function<void(AttackKind)> callback) noexcept {
 							callback(mAttack);
 							mAttackCallbacks.push_back(callback);
 						}
@@ -331,7 +331,7 @@ namespace apex {
 					/// @brief Registers the given callback to be called on changes to the given field.
 					/// The callback is called immediately to allow for synchronization with the current state.
 					template<>
-						void registerCallback<T, Field::Release>(std::function<void(T)> callback) noexcept {
+						void registerCallback<ReleaseKind, Field::Release>(std::function<void(ReleaseKind)> callback) noexcept {
 							callback(mRelease);
 							mReleaseCallbacks.push_back(callback);
 						}

@@ -20,7 +20,7 @@ namespace apex {
 		template<typename T, typename AttackKind, typename ReleaseKind>
 			class GainComputerCompressor : public GainComputer<T, AttackKind, ReleaseKind> {
 				protected:
-					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
 					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
 				
 				public:
@@ -63,7 +63,7 @@ namespace apex {
 				public GainComputer<float, AttackKind, ReleaseKind>
 			{
 				protected:
-					typedef typename DynamicsState<float, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<float, AttackKind, ReleaseKind>::Field Field;
 					typedef typename apex::dsp::DynamicsState<float, AttackKind, ReleaseKind> DynamicsState;
 				
 				public:
@@ -121,7 +121,7 @@ namespace apex {
 				public GainComputer<double, AttackKind, ReleaseKind>
 			{
 				protected:
-					typedef typename DynamicsState<double, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<double, AttackKind, ReleaseKind>::Field Field;
 					typedef typename apex::dsp::DynamicsState<double, AttackKind, ReleaseKind> DynamicsState;
 				
 				public:

@@ -38,51 +38,43 @@ namespace apex {
 		}
 
 		void Sidechain<float>::setAttackTime(float attackMS) noexcept {
-			mAttackMS = attackMS;
-			mLevelDetector.setAttackTime(mAttackMS);
+			mState.setAttack(attackMS * MS_TO_SECS_MULT);
 		}
 
 		float Sidechain<float>::getAttackTime() const noexcept {
-			return mAttackMS;
+			return mState.getAttack();
 		}
 
 		void Sidechain<float>::setReleaseTime(float releaseMS) noexcept {
-			mReleaseMS = releaseMS;
-			mLevelDetector.setReleaseTime(mReleaseMS);
+			mState.setRelease(releaseMS * MS_TO_SECS_MULT);
 		}
 
 		float Sidechain<float>::getReleaseTime() const noexcept {
-			return mReleaseMS;
+			return mState.getRelease();
 		}
 
 		void Sidechain<float>::setRatio(float ratio) noexcept {
-			mRatio = ratio;
-			mCompressorComputer.setRatio(mRatio);
-			mExpanderComputer.setRatio(mRatio);
+			mState.setRatio(ratio);
 		}
 
 		float Sidechain<float>::getRatio() const noexcept {
-			return mRatio;
+			return mState.getRatio();
 		}
 
 		void Sidechain<float>::setThreshold(float threshold) noexcept {
-			mThreshold = threshold;
-			mCompressorComputer.setThreshold(mThreshold);
-			mExpanderComputer.setThreshold(mThreshold);
+			mState.setThreshold(threshold);
 		}
 
 		float Sidechain<float>::getThreshold() const noexcept {
-			return mThreshold;
+			return mState.getThreshold();
 		}
 
 		void Sidechain<float>::setKneeWidth(float kneeWidth) noexcept {
-			mKneeWidth = kneeWidth;
-			mCompressorComputer.setKneeWidth(mKneeWidth);
-			mExpanderComputer.setKneeWidth(mKneeWidth);
+			mState.setKneeWidth(kneeWidth);
 		}
 
 		float Sidechain<float>::getKneeWidth() const noexcept {
-			return mKneeWidth;
+			return mState.getKneeWidth();
 		}
 
 		void Sidechain<float>::setDynamicsType(DynamicsType type) noexcept {
@@ -96,13 +88,11 @@ namespace apex {
 		}
 
 		void Sidechain<float>::setSampleRate(size_t sampleRate) noexcept {
-			mSampleRate = sampleRate;
-			mLevelDetector.setSampleRate(mSampleRate);
-			mGainReductionProcessor.setSampleRate(mSampleRate);
+			mState.setSampleRate(sampleRate);
 		}
 
 		size_t Sidechain<float>::getSampleRate() const noexcept {
-			return mSampleRate;
+			return mState.getSampleRate();
 		}
 
 		float Sidechain<float>::getCurrentGainReduction() const noexcept {
@@ -111,7 +101,7 @@ namespace apex {
 
 		void Sidechain<float>::setLevelDetectorType(LevelDetector<float>::DetectorType type) noexcept {
 			mDetectorType = type;
-			mLevelDetector = LevelDetector<float>(mAttackMS, mReleaseMS, mSampleRate, mDetectorType);
+			mLevelDetector = LevelDetector<float>(&mState, mDetectorType);
 		}
 
 		LevelDetector<float>::DetectorType Sidechain<float>::getLevelDetectorType() const noexcept {
@@ -134,7 +124,9 @@ namespace apex {
 			return mDetectorTopology;
 		}
 
-		void Sidechain<float>::setGainReductionProcessor(GainReduction<float>&& reduction) noexcept {
+		void Sidechain<float>::setGainReductionProcessor(
+			GainReduction<float, float, float>&& reduction) noexcept
+		{
 			mGainReductionProcessor = std::move(reduction);
 		}
 
@@ -148,7 +140,7 @@ namespace apex {
 
 		float Sidechain<float>::processFeedForwardReturnToThreshold(float input) noexcept {
 			float rectified = math::fabsf(input);
-			float thresholdLinear = math::Decibels::decibelsToLinear(mThreshold);
+			float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
 			float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
 						rectified - thresholdLinear) + thresholdLinear);
 			float outputDB = mGainComputer->process(detectedDB);
@@ -174,7 +166,7 @@ namespace apex {
 
 		float Sidechain<float>::processFeedBackReturnToThreshold(float input) noexcept {
 			float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-			float thresholdLinear = math::Decibels::decibelsToLinear(mThreshold);
+			float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
 			float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
 						rectified - thresholdLinear) + thresholdLinear);
 			float outputDB = mGainComputer->process(detectedDB);
@@ -226,51 +218,43 @@ namespace apex {
 		}
 
 		void Sidechain<double>::setAttackTime(double attackMS) noexcept {
-			mAttackMS = attackMS;
-			mLevelDetector.setAttackTime(mAttackMS);
+			mState.setAttack(attackMS * MS_TO_SECS_MULT);
 		}
 
 		double Sidechain<double>::getAttackTime() const noexcept {
-			return mAttackMS;
+			return mState.getAttack();
 		}
 
 		void Sidechain<double>::setReleaseTime(double releaseMS) noexcept {
-			mReleaseMS = releaseMS;
-			mLevelDetector.setReleaseTime(mReleaseMS);
+			mState.setRelease(releaseMS * MS_TO_SECS_MULT);
 		}
 
 		double Sidechain<double>::getReleaseTime() const noexcept {
-			return mReleaseMS;
+			return mState.getRelease();
 		}
 
 		void Sidechain<double>::setRatio(double ratio) noexcept {
-			mRatio = ratio;
-			mCompressorComputer.setRatio(mRatio);
-			mExpanderComputer.setRatio(mRatio);
+			mState.setRatio(ratio);
 		}
 
 		double Sidechain<double>::getRatio() const noexcept {
-			return mRatio;
+			return mState.getRatio();
 		}
 
 		void Sidechain<double>::setThreshold(double threshold) noexcept {
-			mThreshold = threshold;
-			mCompressorComputer.setThreshold(mThreshold);
-			mExpanderComputer.setThreshold(mThreshold);
+			mState.setThreshold(threshold);
 		}
 
 		double Sidechain<double>::getThreshold() const noexcept {
-			return mThreshold;
+			return mState.getThreshold();
 		}
 
 		void Sidechain<double>::setKneeWidth(double kneeWidth) noexcept {
-			mKneeWidth = kneeWidth;
-			mCompressorComputer.setKneeWidth(mKneeWidth);
-			mExpanderComputer.setKneeWidth(mKneeWidth);
+			mState.setKneeWidth(kneeWidth);
 		}
 
 		double Sidechain<double>::getKneeWidth() const noexcept {
-			return mKneeWidth;
+			return mState.getKneeWidth();
 		}
 
 		void Sidechain<double>::setDynamicsType(DynamicsType type) noexcept {
@@ -284,13 +268,11 @@ namespace apex {
 		}
 
 		void Sidechain<double>::setSampleRate(size_t sampleRate) noexcept {
-			mSampleRate = sampleRate;
-			mLevelDetector.setSampleRate(mSampleRate);
-			mGainReductionProcessor.setSampleRate(mSampleRate);
+			mState.setSampleRate(sampleRate);
 		}
 
 		size_t Sidechain<double>::getSampleRate() const noexcept {
-			return mSampleRate;
+			return mState.getSampleRate();
 		}
 
 		double Sidechain<double>::getCurrentGainReduction() const noexcept {
@@ -299,7 +281,7 @@ namespace apex {
 
 		void Sidechain<double>::setLevelDetectorType(LevelDetector<double>::DetectorType type) noexcept {
 			mDetectorType = type;
-			mLevelDetector = LevelDetector<double>(mAttackMS, mReleaseMS, mSampleRate, mDetectorType);
+			mLevelDetector = LevelDetector<double>(&mState, mDetectorType);
 		}
 
 		LevelDetector<double>::DetectorType Sidechain<double>::getLevelDetectorType() const noexcept {
@@ -322,7 +304,9 @@ namespace apex {
 			return mDetectorTopology;
 		}
 
-		void Sidechain<double>::setGainReductionProcessor(GainReduction<double>&& reduction) noexcept {
+		void Sidechain<double>::setGainReductionProcessor(
+			GainReduction<double, double, double>&& reduction) noexcept
+		{
 			mGainReductionProcessor = std::move(reduction);
 		}
 
@@ -336,7 +320,7 @@ namespace apex {
 
 		double Sidechain<double>::processFeedForwardReturnToThreshold(double input) noexcept {
 			double rectified = math::fabs(input);
-			double thresholdLinear = math::Decibels::decibelsToLinear(mThreshold);
+			double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
 			double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
 						rectified - thresholdLinear) + thresholdLinear);
 			double outputDB = mGainComputer->process(detectedDB);
@@ -362,7 +346,7 @@ namespace apex {
 
 		double Sidechain<double>::processFeedBackReturnToThreshold(double input) noexcept {
 			double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-			double thresholdLinear = math::Decibels::decibelsToLinear(mThreshold);
+			double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
 			double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
 						rectified - thresholdLinear) + thresholdLinear);
 			double outputDB = mGainComputer->process(detectedDB);

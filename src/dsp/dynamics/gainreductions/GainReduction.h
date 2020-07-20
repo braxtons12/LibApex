@@ -20,7 +20,7 @@ namespace apex {
 		template<typename T, typename AttackKind, typename ReleaseKind>
 			class GainReduction {
 				protected:
-					typedef typename DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
+					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field Field;
 					typedef typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind> DynamicsState;
 
 				public:
@@ -108,6 +108,8 @@ namespace apex {
 						mState = state;
 					}
 
+					GainReduction<T, AttackKind, ReleaseKind>& operator=(
+						GainReduction<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
 
 				protected:
 					///prevent us from having to `new` or use a smart pointer
