@@ -1,0 +1,7 @@
+SET(CMAKE_SYSTEM_NAME Windows)
+
+set(CMAKE_C_FLAGS_DEBUG "/Od /MT /Zi")
+set(CMAKE_CXX_FLAGS_DEBUG "/Od /MT /Zi")
+
+set(CMAKE_C_FLAGS_RELEASE "/Ox /Ob2 /MT /Gw /Gy /GL /Gm")
+SET(CMAKE_CXX_FLAGS_RELEASE "/Ox /Ob2 /MT /Gw /Gy /GL /Gm")

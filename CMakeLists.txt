@@ -175,8 +175,8 @@ target_compile_definitions(Apex PRIVATE
 
 target_link_libraries(Apex PRIVATE
 	#juce::juce_recommended_warning_flags
-	juce::juce_recommended_config_flags
-	juce::juce_recommended_lto_flags
+	#juce::juce_recommended_config_flags
+	#juce::juce_recommended_lto_flags
 	juce::juce_gui_basics
 	juce::juce_gui_extra
 	juce::juce_dsp
