@@ -50,7 +50,7 @@ namespace apex {
 					LevelDetectorSSL() noexcept;
 
 					/// @brief Constructs a `LevelDetectorSSL` with the given shared state
-					/// 
+					///
 					/// @param state - The shared state
 					LevelDetectorSSL(DynamicsState* state) noexcept;
 
@@ -60,18 +60,6 @@ namespace apex {
 					LevelDetectorSSL(LevelDetectorSSL<float>&& detector) noexcept = default;
 
 					~LevelDetectorSSL() noexcept override = default;
-
-					/// @deprecated DO NOT USE, USE `setAttackType`
-					[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]]
-						void setAttackTime(float attackMS) noexcept override {
-							juce::ignoreUnused(attackMS);
-						}
-
-					/// @deprecated DO NOT USE, USE `setReleaseType`
-					[[deprecated("Use `setReleaseType` for this specific `LevelDetector`")]]
-						void setReleaseTime(float releaseMS) noexcept override {
-							juce::ignoreUnused(releaseMS);
-						}
 
 					/// @brief Sets the attack time to the given value
 					///
@@ -123,6 +111,18 @@ namespace apex {
 					void calculateAttackCoefficients(SSLBusAttackTime attack, size_t sampleRate) noexcept;
 					void calculateReleaseCoefficients(SSLBusReleaseTime release, size_t sampleRate) noexcept;
 
+					/// @deprecated DO NOT USE, USE `setAttackTime(SSLBusAttackTime)`
+					[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]]
+						void setAttackTime(float attackMS) noexcept override {
+							juce::ignoreUnused(attackMS);
+						}
+
+					/// @deprecated DO NOT USE, USE `setReleaseTime(SSLBusReleaseTime)`
+					[[deprecated("Use `setReleaseType` for this specific `LevelDetector`")]]
+						void setReleaseTime(float releaseMS) noexcept override {
+							juce::ignoreUnused(releaseMS);
+						}
+
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetectorSSL)
 			};
 
@@ -138,7 +138,7 @@ namespace apex {
 					LevelDetectorSSL() noexcept;
 
 					/// @brief Constructs a `LevelDetectorSSL` with the given shared state
-					/// 
+					///
 					/// @param state - The shared state
 					LevelDetectorSSL(DynamicsState* state) noexcept;
 
@@ -148,18 +148,6 @@ namespace apex {
 					LevelDetectorSSL(LevelDetectorSSL<double>&& detector) noexcept = default;
 
 					~LevelDetectorSSL() noexcept override = default;
-
-					/// @deprecated DO NOT USE, USE `setAttackType`
-					[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]]
-						void setAttackTime(double attackMS) noexcept override {
-							juce::ignoreUnused(attackMS);
-						}
-
-					/// @deprecated DO NOT USE, USE `setReleaseType`
-					[[deprecated("Use `setReleaseType` for this specific `LevelDetector`")]]
-						void setReleaseTime(double releaseMS) noexcept override {
-							juce::ignoreUnused(releaseMS);
-						}
 
 					/// @brief Sets the attack time to the given value
 					///
@@ -210,6 +198,18 @@ namespace apex {
 
 					void calculateAttackCoefficients(SSLBusAttackTime attack, size_t sampleRate) noexcept;
 					void calculateReleaseCoefficients(SSLBusReleaseTime release, size_t sampleRate) noexcept;
+
+					/// @deprecated DO NOT USE, USE `setAttackTime(SSLBusAttackTime)`
+					[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]]
+						void setAttackTime(double attackMS) noexcept override {
+							juce::ignoreUnused(attackMS);
+						}
+
+					/// @deprecated DO NOT USE, USE `setReleaseTime(SSLBusReleaseTime)`
+					[[deprecated("Use `setReleaseType` for this specific `LevelDetector`")]]
+						void setReleaseTime(double releaseMS) noexcept override {
+							juce::ignoreUnused(releaseMS);
+						}
 
 					JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetectorSSL)
 			};
