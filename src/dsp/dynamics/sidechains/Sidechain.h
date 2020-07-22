@@ -190,13 +190,14 @@ namespace apex {
 
 					Sidechain<float>& operator=(Sidechain<float>&& sidechain) noexcept = default;
 
-				protected:
 					static const constexpr float DEFAULT_ATTACK_SECONDS = 0.01f;
 					static const constexpr float DEFAULT_RELEASE_SECONDS = 0.05f;
 					static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
 					static const constexpr float DEFAULT_RATIO = 1.1f;
 					static const constexpr float DEFAULT_THRESHOLD = -12.0f;
 					static const constexpr float DEFAULT_KNEE_WIDTH = 6.0f;
+
+				protected:
 					static const constexpr float MS_TO_SECS_MULT = 0.001f;
 					DynamicsState mState = DynamicsState(
 							DEFAULT_ATTACK_SECONDS,
@@ -401,13 +402,14 @@ namespace apex {
 
 					Sidechain<double>& operator=(Sidechain<double>&& sidechain) noexcept = default;
 
-				protected:
 					static const constexpr double DEFAULT_ATTACK_SECONDS = 0.01;
 					static const constexpr double DEFAULT_RELEASE_SECONDS = 0.05;
 					static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
 					static const constexpr double DEFAULT_RATIO = 1.1;
 					static const constexpr double DEFAULT_THRESHOLD = -12.0;
 					static const constexpr double DEFAULT_KNEE_WIDTH = 6.0;
+
+				protected:
 					static const constexpr double MS_TO_SECS_MULT = 0.001;
 					DynamicsState mState = DynamicsState(
 							DEFAULT_ATTACK_SECONDS,

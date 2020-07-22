@@ -91,7 +91,6 @@ namespace apex {
 
 					Sidechain1176<float>& operator=(Sidechain1176<float>&& sidechain) noexcept = default;
 
-				private:
 					static const constexpr float DEFAULT_ATTACK_SECONDS = 0.00039f;
 					static const constexpr float MIN_ATTACK_SECONDS = 0.00002f;
 					static const constexpr float MAX_ATTACK_SECONDS = 0.0008f;
@@ -100,6 +99,7 @@ namespace apex {
 					static const constexpr float MIN_RELEASE_SECONDS = 0.05f;
 					static const constexpr float MAX_RELEASE_SECONDS = 1.1f;
 
+				private:
 					static const constexpr float DEFAULT_RATIO = 4.0f;
 					static const constexpr float RATIO_4_TO_1 = 4.0f;
 					static const constexpr float RATIO_8_TO_1 = 8.0f;
@@ -230,7 +230,6 @@ namespace apex {
 
 					Sidechain1176<double>& operator=(Sidechain1176<double>&& sidechain) noexcept = default;
 
-				private:
 					static const constexpr double DEFAULT_ATTACK_SECONDS = 0.00039;
 					static const constexpr double MIN_ATTACK_SECONDS = 0.00002;
 					static const constexpr double MAX_ATTACK_SECONDS = 0.0008;
@@ -239,6 +238,7 @@ namespace apex {
 					static const constexpr double MIN_RELEASE_SECONDS = 0.05;
 					static const constexpr double MAX_RELEASE_SECONDS = 1.1;
 
+				private:
 					static const constexpr double DEFAULT_RATIO = 4.0;
 					static const constexpr double RATIO_4_TO_1 = 4.0;
 					static const constexpr double RATIO_8_TO_1 = 8.0;
