@@ -5,6 +5,7 @@ project(Apex VERSION 0.1.0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 find_package(JUCE CONFIG REQUIRED)
+find_package(Microsoft.GSL CONFIG REQUIRED)
 
 add_library(Apex STATIC)
 
@@ -138,6 +139,7 @@ else()
 endif()
 
 target_include_directories(Apex INTERFACE
+	"${CMAKE_SOURCE_DIR}/../dependencies/GSL_CMAKE/include"
 	"${CMAKE_SOURCE_DIR}/src"
 	"${CMAKE_SOURCE_DIR}/src/base"
 	"${CMAKE_SOURCE_DIR}/src/ui"
@@ -240,4 +242,5 @@ target_link_libraries(Apex PRIVATE
 	juce::juce_gui_basics
 	juce::juce_gui_extra
 	juce::juce_dsp
+	Microsoft.GSL::GSL
 	)
