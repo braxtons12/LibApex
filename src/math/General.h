@@ -1,76 +1,125 @@
 #pragma once
 #include <cstdint>
 
+namespace apex::math {
+
 #ifndef _MSC_VER
 	using std::size_t;
-#endif
+#endif //_MSC_VER
 
-namespace apex {
-	namespace math {
-		constexpr inline float sqrtf(float x) noexcept {
-			float n = x > 10.0f ? x / 10.0f : x / 2.0f;
-			float y = 1;
-			double e = 0.0000000001;
-			while(n - y > e) {
-				n = (n + y) / 2.0f;
-				y = x / n;
-			}
-			return n;
+	/// @brief Fast approximation calculation of the square root of the given value 
+	/// 
+	/// @param x - The value to take the square root of
+	/// @return - The square root of x
+	constexpr inline auto sqrtf(float x) noexcept -> float {
+		float n = (x > 10.0F ? (x / 10.0F) : (x / 2.0F));
+		float y = 1;
+		double e = 0.0000000001;
+		while(n - y > e) {
+			n = (n + y) / 2.0F;
+			y = x / n;
 		}
-
-		constexpr inline float fabsf(float x) noexcept {
-			return sqrtf(x * x);
-		}
-
-		constexpr inline float truncf(float x) noexcept {
-			return static_cast<float>(static_cast<int>(x));
-		}
-
-		constexpr inline float fmodf(float x, float y) noexcept {
-			return x - truncf(x / y) * y;
-		}
-
-		constexpr inline float max(float x, float y) noexcept {
-			if(x > y) return x;
-			else return y;
-		}
-
-		constexpr inline double sqrt(double x) noexcept {
-			double n = x > 10.0 ? x / 10.0 : x / 2.0;
-			double y = 1;
-			double e = 0.0000000001;
-			while(n - y > e) {
-				n = (n + y) / 2.0;
-				y = x / n;
-			}
-			return n;
-		}
-
-		constexpr inline double fabs(double x) noexcept {
-			return sqrt(x * x);
-		}
-
-		constexpr inline double trunc(double x) noexcept {
-			return int(x);
-		}
-
-		constexpr inline double fmod(double x, double y) noexcept {
-			return x - trunc(x / y) * y;
-		}
-
-		constexpr inline double max(double x, double y) noexcept {
-			if(x > y) return x;
-			else return y;
-		}
-
-		constexpr inline int max(int x, int y) noexcept {
-			if(x > y) return x;
-			else return y;
-		}
-
-		constexpr inline size_t max(size_t x, size_t y) noexcept {
-			if(x > y) return x;
-			else return y;
-		}
+		return n;
 	}
-}
+
+	/// @brief Calculates the absolute value of x 
+	/// 
+	/// @param x - The value to take the absolute value of
+	/// @return - The absolute value of x
+	constexpr inline auto fabsf(float x) noexcept -> float {
+		return sqrtf(x * x);
+	}
+
+	/// @brief Calculates the truncation of x 
+	/// 
+	/// @param x - The value to truncate
+	/// @return - The truncated value
+	constexpr inline auto truncf(float x) noexcept -> float {
+		return static_cast<float>(static_cast<std::int64_t>(x));
+	}
+
+	/// @brief Calculates the floating point modulus x mod y 
+	/// 
+	/// @param x - The moduland
+	/// @param y - The dividend
+	/// @return x mod y
+	constexpr inline auto fmodf(float x, float y) noexcept -> float {
+		return x - truncf(x / y) * y;
+	}
+
+	/// @brief Calculates the maximum of the two values 
+	/// 
+	/// @param x 
+	/// @param y 
+	/// @return The maximum of the two
+	constexpr inline auto max(float x, float y) noexcept -> float {
+		return (x > y ? x : y);
+	}
+
+	/// @brief Fast approximation calculation of the square root of the given value 
+	/// 
+	/// @param x - The value to take the square root of
+	/// @return - The square root of x
+	constexpr inline auto sqrt(double x) noexcept -> double {
+		double n = (x > 10.0 ? (x / 10.0) : (x / 2.0));
+		double y = 1;
+		double e = 0.0000000001;
+		while(n - y > e) {
+			n = (n + y) / 2.0;
+			y = x / n;
+		}
+		return n;
+	}
+
+	/// @brief Calculates the absolute value of x 
+	/// 
+	/// @param x - The value to take the absolute value of
+	/// @return - The absolute value of x
+	constexpr inline auto fabs(double x) noexcept -> double {
+		return sqrt(x * x);
+	}
+
+	/// @brief Calculates the truncation of x 
+	/// 
+	/// @param x - The value to truncate
+	/// @return - The truncated value
+	constexpr inline auto trunc(double x) noexcept -> double {
+		return static_cast<float>(static_cast<std::int64_t>(x));
+	}
+
+	/// @brief Calculates the floating point modulus x mod y 
+	/// 
+	/// @param x - The moduland
+	/// @param y - The dividend
+	/// @return x mod y
+	constexpr inline auto fmod(double x, double y) noexcept -> double {
+		return x - trunc(x / y) * y;
+	}
+
+	/// @brief Calculates the maximum of the two values 
+	/// 
+	/// @param x 
+	/// @param y 
+	/// @return The maximum of the two
+	constexpr inline auto max(double x, double y) noexcept -> double {
+		return (x > y ? x : y);
+	}
+
+	/// @brief Calculates the maximum of the two values 
+	/// 
+	/// @param x 
+	/// @param y 
+	/// @return The maximum of the two
+	constexpr inline auto max(int x, int y) noexcept -> int {
+		return (x > y ? x : y);
+	}
+
+	/// @brief Calculates the maximum of the two values 
+	/// 
+	/// @param x 
+	/// @param y 
+	/// @return The maximum of the two
+	constexpr inline auto max(size_t x, size_t y) noexcept -> size_t {
+		return (x > y ? x : y);
+	}
+} //namespace apex::math
