@@ -11,6 +11,13 @@ namespace apex::math {
 	/// @brief Pseudo-Random number generator
 	class Random {
 		public:
+			Random() noexcept = default;
+
+			/// @brief Constructs a `Random` pre-seeded with the given value
+			/// 
+			/// @param seed - The seed to use
+			explicit Random(size_t seed) noexcept;
+
 			/// @brief Seeds this random number generator with the given value
 			///
 			/// @param seed - The seed to use

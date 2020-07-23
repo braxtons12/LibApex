@@ -64,7 +64,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				virtual auto process(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto process(float input) noexcept -> float;
 
 				/// @brief Resets this level detector to an initial state
 				virtual auto reset() noexcept -> void;
@@ -94,11 +95,16 @@ namespace apex::dsp {
 				float mYTempStage1 = 0.0F;
 				DetectorType mType = DetectorType::NonCorrected;
 
-				virtual auto processNonCorrected(float input) noexcept -> float;
-				virtual auto processBranching(float input) noexcept -> float;
-				virtual auto processDecoupled(float input) noexcept -> float;
-				virtual auto processBranchingSmooth(float input) noexcept -> float;
-				virtual auto processDecoupledSmooth(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto processNonCorrected(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto processBranching(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto processDecoupled(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto processBranchingSmooth(float input) noexcept -> float;
+				[[nodiscard]]
+					virtual auto processDecoupledSmooth(float input) noexcept -> float;
 
 			private:
 				DynamicsState DEFAULT_STATE = DynamicsState();
@@ -146,7 +152,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				virtual auto process(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto process(double input) noexcept -> double;
 
 				/// @brief Resets this level detector to an initial state
 				virtual auto reset() noexcept -> void;
@@ -176,11 +183,16 @@ namespace apex::dsp {
 				double mYTempStage1 = 0.0;
 				DetectorType mType = DetectorType::NonCorrected;
 
-				virtual auto processNonCorrected(double input) noexcept -> double;
-				virtual auto processBranching(double input) noexcept -> double;
-				virtual auto processDecoupled(double input) noexcept -> double;
-				virtual auto processBranchingSmooth(double input) noexcept -> double;
-				virtual auto processDecoupledSmooth(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto processNonCorrected(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto processBranching(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto processDecoupled(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto processBranchingSmooth(double input) noexcept -> double;
+				[[nodiscard]]
+					virtual auto processDecoupledSmooth(double input) noexcept -> double;
 
 			private:
 				DynamicsState DEFAULT_STATE = DynamicsState();

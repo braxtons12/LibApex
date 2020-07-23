@@ -60,7 +60,8 @@ namespace apex::dsp {
 				/// @param input - The input to calculate gain reduction for
 				///
 				/// @return - The target gain reduction
-				auto process(T input) noexcept -> T override;
+				[[nodiscard]]
+					auto process(T input) noexcept -> T override;
 
 				auto operator=(GainComputerExpander<T, AttackKind, ReleaseKind>&& computer)
 					noexcept -> GainComputerExpander<T, AttackKind, ReleaseKind>& = default;
@@ -114,23 +115,24 @@ namespace apex::dsp {
 				/// @param input - The input to calculate gain reduction for
 				///
 				/// @return - The target gain reduction
-				auto process(float input) noexcept -> float override {
-					float threshold = this->mState->getThreshold();
-					float ratio = this->mState->getRatio();
-					float kneeWidth = this->mState->getKneeWidth();
+				[[nodiscard]]
+					auto process(float input) noexcept -> float override {
+						float threshold = this->mState->getThreshold();
+						float ratio = this->mState->getRatio();
+						float kneeWidth = this->mState->getKneeWidth();
 
-					float twoXMinusT = 2.0F * (input - this->mState->getThreshold());
-					if(twoXMinusT < -kneeWidth) {
-						return threshold + (input - threshold) * ratio;
+						float twoXMinusT = 2.0F * (input - this->mState->getThreshold());
+						if(twoXMinusT < -kneeWidth) {
+							return threshold + (input - threshold) * ratio;
+						}
+						else if(twoXMinusT > kneeWidth) {
+							return input;
+						}
+						else {
+							return input + (1.0F - ratio)
+								* math::pow2f(input - threshold - kneeWidth / 2.0F) / (2.0F * kneeWidth);
+						}
 					}
-					else if(twoXMinusT > kneeWidth) {
-						return input;
-					}
-					else {
-						return input + (1.0F - ratio)
-							* math::pow2f(input - threshold - kneeWidth / 2.0F) / (2.0F * kneeWidth);
-					}
-				}
 
 				auto operator=(GainComputerExpander<float, AttackKind, ReleaseKind>&& computer)
 					noexcept -> GainComputerExpander<float, AttackKind, ReleaseKind>& = default;
@@ -184,23 +186,24 @@ namespace apex::dsp {
 				/// @param input - The input to calculate gain reduction for
 				///
 				/// @return - The target gain reduction
-				auto process(double input) noexcept -> double override {
-					double threshold = this->mState->getThreshold();
-					double ratio = this->mState->getRatio();
-					double kneeWidth = this->mState->getKneeWidth();
+				[[nodiscard]]
+					auto process(double input) noexcept -> double override {
+						double threshold = this->mState->getThreshold();
+						double ratio = this->mState->getRatio();
+						double kneeWidth = this->mState->getKneeWidth();
 
-					double twoXMinusT = 2.0 * (input - this->mState->getThreshold());
-					if(twoXMinusT < -kneeWidth) {
-						return threshold + (input - threshold) * ratio;
+						double twoXMinusT = 2.0 * (input - this->mState->getThreshold());
+						if(twoXMinusT < -kneeWidth) {
+							return threshold + (input - threshold) * ratio;
+						}
+						else if(twoXMinusT > kneeWidth) {
+							return input;
+						}
+						else {
+							return input + (1.0 - ratio)
+								* math::pow2(input - threshold - kneeWidth / 2.0) / (2.0 * kneeWidth);
+						}
 					}
-					else if(twoXMinusT > kneeWidth) {
-						return input;
-					}
-					else {
-						return input + (1.0 - ratio)
-							* math::pow2(input - threshold - kneeWidth / 2.0) / (2.0 * kneeWidth);
-					}
-				}
 
 				auto operator=(GainComputerExpander<double, AttackKind, ReleaseKind>&& computer)
 					noexcept -> GainComputerExpander<double, AttackKind, ReleaseKind>& = default;

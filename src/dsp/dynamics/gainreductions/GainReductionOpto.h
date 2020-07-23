@@ -63,33 +63,34 @@ namespace apex::dsp {
 				/// @param gainReduction - The gain reduction determined by the gain computer
 				///
 				/// @return - The adjusted gain reduction
-				auto adjustedGainReduction(T gainReduction) noexcept -> T override {
-					T oldGainReduction = this->mCurrentGainReduction;
-					T coefficient = gainReduction;
-					auto coefficientIndex = static_cast<size_t>(
-							coefficient * static_cast<T>(NUM_COEFFICIENTS_PER_STEP)
-							);
+				[[nodiscard]]
+					auto adjustedGainReduction(T gainReduction) noexcept -> T override {
+						T oldGainReduction = this->mCurrentGainReduction;
+						T coefficient = gainReduction;
+						auto coefficientIndex = static_cast<size_t>(
+								coefficient * static_cast<T>(NUM_COEFFICIENTS_PER_STEP)
+								);
 
-					if(coefficientIndex > (NUM_COEFFICIENTS - 1)) {
-						coefficientIndex = NUM_COEFFICIENTS - 1;
-					}
+						if(coefficientIndex > (NUM_COEFFICIENTS - 1)) {
+							coefficientIndex = NUM_COEFFICIENTS - 1;
+						}
 
-					if(gainReduction > this->mCurrentGainReduction) {
-						this->mCurrentGainReduction =
-							(mAttackCoefficients[coefficientIndex] * oldGainReduction)
-							+ (static_cast<T>(1.0) - mAttackCoefficients[coefficientIndex]) * gainReduction;
-					}
-					else {
-						this->mCurrentGainReduction =
-							(mReleaseCoefficients[coefficientIndex] * oldGainReduction)
-							+ (static_cast<T>(1.0) - mReleaseCoefficients[coefficientIndex]) * gainReduction;
-					}
+						if(gainReduction > this->mCurrentGainReduction) {
+							this->mCurrentGainReduction =
+								(mAttackCoefficients[coefficientIndex] * oldGainReduction)
+								+ (static_cast<T>(1.0) - mAttackCoefficients[coefficientIndex]) * gainReduction;
+						}
+						else {
+							this->mCurrentGainReduction =
+								(mReleaseCoefficients[coefficientIndex] * oldGainReduction)
+								+ (static_cast<T>(1.0) - mReleaseCoefficients[coefficientIndex]) * gainReduction;
+						}
 
-					return waveshapers::softSaturation(
-							this->mCurrentGainReduction,
-							WAVE_SHAPER_AMOUNT,
-							WAVE_SHAPER_SLOPE);
-				}
+						return waveshapers::softSaturation(
+								this->mCurrentGainReduction,
+								WAVE_SHAPER_AMOUNT,
+								WAVE_SHAPER_SLOPE);
+					}
 
 				/// @brief Sets the sample rate to use for calculations to the given value
 				///

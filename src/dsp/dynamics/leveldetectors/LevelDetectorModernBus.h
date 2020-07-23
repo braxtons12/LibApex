@@ -66,7 +66,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				auto process(float input) noexcept -> float override;
+				[[nodiscard]]
+					auto process(float input) noexcept -> float override;
 
 				auto operator=(LevelDetectorModernBus<float>&& detector)
 					noexcept -> LevelDetectorModernBus<float>& = default;
@@ -130,7 +131,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				auto process(double input) noexcept -> double override;
+				[[nodiscard]]
+					auto process(double input) noexcept -> double override;
 
 				auto operator=(LevelDetectorModernBus<double>&& detector)
 					noexcept -> LevelDetectorModernBus<double>& = default;

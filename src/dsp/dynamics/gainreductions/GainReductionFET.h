@@ -67,32 +67,33 @@ namespace apex::dsp {
 				/// @param gainReduction - The gain reduction determined by the gain computer
 				///
 				/// @return  - The adjusted gain reduction
-				auto adjustedGainReduction(T gainReduction) noexcept -> T override {
-					if(this->mCurrentSample > this->mNumSamplesToTransitionGain) {
-						this->mCurrentSample = 0;
+				[[nodiscard]]
+					auto adjustedGainReduction(T gainReduction) noexcept -> T override {
+						if(this->mCurrentSample > this->mNumSamplesToTransitionGain) {
+							this->mCurrentSample = 0;
+						}
+
+						T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
+							/ static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
+
+						if(math::fabs(gainReductionStep) - static_cast<T>(0.001) >
+								static_cast<T>(0.0)) {
+							gainReductionStep = waveshapers::softSaturation(
+									this->mCurrentGainReduction +
+									(gainReductionStep > static_cast<T>(0.0) ?
+									 -SLEW_RATE_OFFSET : SLEW_RATE_OFFSET),
+									SLEW_RATE_AMOUNT,
+									SLEW_RATE_SLOPE);
+						}
+
+						this->mCurrentGainReduction += gainReductionStep;
+						this->mCurrentSample++;
+
+						return waveshapers::softSaturation(
+								this->mCurrentGainReduction,
+								WAVE_SHAPER_AMOUNT,
+								WAVE_SHAPER_SLOPE);
 					}
-
-					T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
-						/ static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
-
-					if(math::fabs(gainReductionStep) - static_cast<T>(0.001) >
-							static_cast<T>(0.0)) {
-						gainReductionStep = waveshapers::softSaturation(
-								this->mCurrentGainReduction +
-								(gainReductionStep > static_cast<T>(0.0) ?
-								 -SLEW_RATE_OFFSET : SLEW_RATE_OFFSET),
-								SLEW_RATE_AMOUNT,
-								SLEW_RATE_SLOPE);
-					}
-
-					this->mCurrentGainReduction += gainReductionStep;
-					this->mCurrentSample++;
-
-					return waveshapers::softSaturation(
-							this->mCurrentGainReduction,
-							WAVE_SHAPER_AMOUNT,
-							WAVE_SHAPER_SLOPE);
-				}
 
 				auto operator=(GainReductionFET<T, AttackKind, ReleaseKind>&& reduction)
 					noexcept -> GainReductionFET<T, AttackKind, ReleaseKind>& = default;

@@ -67,28 +67,29 @@ namespace apex::dsp {
 				/// @param gainReduction - The gain reduction determined by the gain computer
 				///
 				/// @return - The adjusted gain reduction
-				auto adjustedGainReduction(T gainReduction) noexcept -> T override {
-					T samplesToTransition =	static_cast<T>(this->mNumSamplesToTransitionGain);
+				[[nodiscard]]
+					auto adjustedGainReduction(T gainReduction) noexcept -> T override {
+						T samplesToTransition =	static_cast<T>(this->mNumSamplesToTransitionGain);
 
-					if(gainReduction < this->mCurrentGainReduction) {
-						samplesToTransition *= static_cast<T>(2.0);
+						if(gainReduction < this->mCurrentGainReduction) {
+							samplesToTransition *= static_cast<T>(2.0);
+						}
+
+						if(this->mCurrentSample > samplesToTransition) {
+							this->mCurrentSample = 0;
+						}
+
+						T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
+							/ static_cast<T>(samplesToTransition - this->mCurrentSample);
+
+						this->mCurrentGainReduction += gainReductionStep;
+						this->mCurrentSample++;
+
+						return waveshapers::softSaturation(
+								this->mCurrentGainReduction,
+								WAVE_SHAPER_AMOUNT,
+								WAVE_SHAPER_SLOPE);
 					}
-
-					if(this->mCurrentSample > samplesToTransition) {
-						this->mCurrentSample = 0;
-					}
-
-					T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
-						/ static_cast<T>(samplesToTransition - this->mCurrentSample);
-
-					this->mCurrentGainReduction += gainReductionStep;
-					this->mCurrentSample++;
-
-					return waveshapers::softSaturation(
-							this->mCurrentGainReduction,
-							WAVE_SHAPER_AMOUNT,
-							WAVE_SHAPER_SLOPE);
-				}
 
 				auto operator=(GainReductionVCA<T, AttackKind, ReleaseKind>&& reduction)
 					noexcept -> GainReductionVCA<T, AttackKind, ReleaseKind>& = default;

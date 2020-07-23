@@ -55,7 +55,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				auto process(float input) noexcept -> float override;
+				[[nodiscard]]
+					auto process(float input) noexcept -> float override;
 
 				/// @brief Resets this level detector to an initial state
 				auto reset() noexcept -> void override;
@@ -120,7 +121,8 @@ namespace apex::dsp {
 				/// @param input - The input to detect on
 				///
 				/// @return - The detected level
-				auto process(double input) noexcept -> double override;
+				[[nodiscard]]
+					auto process(double input) noexcept -> double override;
 
 				/// @brief Resets this level detector to an initial state
 				auto reset() noexcept -> void override;

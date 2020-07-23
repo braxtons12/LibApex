@@ -387,7 +387,8 @@ namespace apex::dsp {
 				/// @param input - The input value to apply filtering to
 				///
 				/// @return - The filtered value
-				auto process(float input) noexcept -> float;
+				[[nodiscard]]
+					auto process(float input) noexcept -> float;
 
 				/// @brief Applies this filter to the array of given input values, in place
 				///
@@ -855,7 +856,8 @@ namespace apex::dsp {
 				/// @param input - The input value to apply filtering to
 				///
 				/// @return - The filtered value
-				auto process(double input) noexcept -> double;
+				[[nodiscard]]
+					auto process(double input) noexcept -> double;
 
 				/// @brief Applies this filter to the array of given input values, in place
 				///

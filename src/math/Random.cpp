@@ -1,6 +1,14 @@
 #include "Random.h"
 
 namespace apex::math {
+
+	/// @brief Constructs a `Random` pre-seeded with the given value
+	/// 
+	/// @param seed - The seed to use
+	Random::Random(size_t seed) noexcept {
+		srand(seed);
+	}
+
 	/// @brief Seeds this random number generator with the given value
 	///
 	/// @param seed - The seed to use

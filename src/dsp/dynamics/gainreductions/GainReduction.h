@@ -60,22 +60,23 @@ namespace apex::dsp {
 				/// @param gainReduction - The gain reduction determined by the gain computer
 				///
 				/// @return The adjusted gain reduction
-				virtual auto adjustedGainReduction(T gainReduction) noexcept -> T {
-					if(mCurrentSample > mNumSamplesToTransitionGain) {
-						mCurrentSample = 0;
-					}
+				[[nodiscard]]
+					virtual auto adjustedGainReduction(T gainReduction) noexcept -> T {
+						if(mCurrentSample > mNumSamplesToTransitionGain) {
+							mCurrentSample = 0;
+						}
 
-					if(mNumSamplesToTransitionGain != 0) {
-						T gainReductionStep = (gainReduction - mCurrentGainReduction)
-							/ static_cast<T>(mNumSamplesToTransitionGain - mCurrentSample);
-						mCurrentGainReduction += gainReductionStep;
-						mCurrentSample++;
+						if(mNumSamplesToTransitionGain != 0) {
+							T gainReductionStep = (gainReduction - mCurrentGainReduction)
+								/ static_cast<T>(mNumSamplesToTransitionGain - mCurrentSample);
+							mCurrentGainReduction += gainReductionStep;
+							mCurrentSample++;
+						}
+						else {
+							mCurrentGainReduction = gainReduction;
+						}
+						return mCurrentGainReduction;
 					}
-					else {
-						mCurrentGainReduction = gainReduction;
-					}
-					return mCurrentGainReduction;
-				}
 
 				/// @brief Resets this `GainReduction` to an initial state.
 				///
