@@ -1,16 +1,49 @@
 #pragma once
 
-namespace apex {
-	namespace dsp {
-		namespace waveshapers {
-			float softSaturation(float input, float amount = 1.0f, float slope = 0.4f) noexcept;
-			double softSaturation(double input, double amount = 1.0, double slope = 0.4) noexcept;
+namespace apex::dsp::waveshapers {
+	/// @brief Calculates the resulting value from applying soft saturation to the input 
+	/// 
+	/// @param input - The input to apply saturation to
+	/// @param amount - The amount of saturation
+	/// @param slope - The slope of the saturation
+	/// @return - The saturated value
+	auto softSaturation(float input, float amount = 1.0F, float slope = 0.4F) noexcept -> float;
 
-			float softClip(float input, float amount = 1.0f) noexcept;
-			double softClip(double input, double amount = 1.0) noexcept;
+	/// @brief Calculates the resulting value from applying soft saturation to the input 
+	/// 
+	/// @param input - The input to apply saturation to
+	/// @param amount - The amount of saturation
+	/// @param slope - The slope of the saturation
+	/// @return - The saturated value
+	auto softSaturation(double input, double amount = 1.0, double slope = 0.4) noexcept -> double;
 
-			float hardClip(float input , float clipLevel, float amount = 1.0f) noexcept;
-			double hardClip(double input, double clipLevel, double amount = 1.0) noexcept;
-		}
-	}
-}
+	/// @brief Calculates the resulting value from applying soft clipping to the input 
+	/// 
+	/// @param input - The input to apply soft clipping to
+	/// @param amount - The amount of clipping
+	/// @return - The clipped value
+	auto softClip(float input, float amount = 1.0F) noexcept -> float;
+
+	/// @brief Calculates the resulting value from applying soft clipping to the input 
+	/// 
+	/// @param input - The input to apply soft clipping to
+	/// @param amount - The amount of clipping
+	/// @return - The clipped value
+	auto softClip(double input, double amount = 1.0) noexcept -> double;
+
+	/// @brief Calculates the resulting value from applying hard clipping to the input 
+	/// 
+	/// @param input - The input to apply clipping to
+	/// @param clipLevel - The hard clip level, in the linear domain
+	/// @param amount  - The amount of clipping
+	/// @return - The clipped value
+	auto hardClip(float input , float clipLevel, float amount = 1.0F) noexcept -> float;
+
+	/// @brief Calculates the resulting value from applying hard clipping to the input 
+	/// 
+	/// @param input - The input to apply clipping to
+	/// @param clipLevel - The hard clip level, in the linear domain
+	/// @param amount  - The amount of clipping
+	/// @return - The clipped value
+	auto hardClip(double input, double clipLevel, double amount = 1.0) noexcept -> double;
+} //namespace apex::dsp::waveshapers
