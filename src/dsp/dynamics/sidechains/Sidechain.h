@@ -81,22 +81,22 @@ namespace apex {
 					/// @brief Sets the attack to the given value
 					///
 					/// @param attackMS - The attack time, in milliseconds
-					void setAttackTime(float attackMS) noexcept;
+					virtual void setAttackTime(float attackMS) noexcept;
 
 					/// @brief Returns the attack
 					///
 					/// @return - The attack time, in milliseconds
-					float getAttackTime() const noexcept;
+					virtual float getAttackTime() const noexcept;
 
 					/// @brief Sets the release to the given value
 					///
 					/// @param releaseMS - The release time, in milliseconds
-					void setReleaseTime(float releaseMS) noexcept;
+					virtual void setReleaseTime(float releaseMS) noexcept;
 
 					/// @brief Returns the release
 					///
 					/// @return - The release time, in milliseconds
-					float getReleaseTime() const noexcept;
+					virtual float getReleaseTime() const noexcept;
 
 					/// @brief Sets the Ratio
 					///
@@ -293,22 +293,22 @@ namespace apex {
 					/// @brief Sets the attack to the given value
 					///
 					/// @param attackMS - The attack time, in milliseconds
-					void setAttackTime(double attackMS) noexcept;
+					virtual void setAttackTime(double attackMS) noexcept;
 
 					/// @brief Returns the attack
 					///
 					/// @return - The attack time, in milliseconds
-					double getAttackTime() const noexcept;
+					virtual double getAttackTime() const noexcept;
 
 					/// @brief Sets the release to the given value
 					///
 					/// @param releaseMS - The release time, in milliseconds
-					void setReleaseTime(double releaseMS) noexcept;
+					virtual void setReleaseTime(double releaseMS) noexcept;
 
 					/// @brief Returns the release
 					///
 					/// @return - The release time, in milliseconds
-					double getReleaseTime() const noexcept;
+					virtual double getReleaseTime() const noexcept;
 
 					/// @brief Sets the Ratio
 					///
