@@ -2,14 +2,22 @@
 
 #include "../WaveShaper.h"
 
-namespace apex {
-	namespace dsp {
-		float GainStageVCA<float>::process(float input) noexcept {
-			return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
-		}
-
-		double GainStageVCA<double>::process(double input) noexcept {
-			return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
-		}
+namespace apex::dsp {
+	/// @brief Processes the input through the gain stage
+	///
+	/// @param input - The input to process
+	///
+	/// @return - The processed output
+	auto GainStageVCA<float>::process(float input) noexcept -> float {
+		return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
 	}
-}
+
+	/// @brief Processes the input through the gain stage
+	///
+	/// @param input - The input to process
+	///
+	/// @return - The processed output
+	auto GainStageVCA<double>::process(double input) noexcept -> double {
+		return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
+	}
+} //namespace apex::dsp
