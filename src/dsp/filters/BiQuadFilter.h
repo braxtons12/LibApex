@@ -414,11 +414,12 @@ namespace apex::dsp {
 				/// @param magnitudes - The array to store the magnitudes in
 				template<size_t numFrequencies>
 					auto getMagnitudesForFrequencies(
-							gsl::span<float, numFrequencies> frequencies,
+							gsl::span<const float, numFrequencies> frequencies,
 							gsl::span<float, numFrequencies> magnitudes)
 					const noexcept -> void
 					{
-						for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+						auto size = static_cast<gsl::index>(numFrequencies);
+						for(gsl::index frequency = 0; frequency < size; ++frequency) {
 							gsl::at(magnitudes, frequency) =
 								getMagnitudeForFrequency(gsl::at(frequencies, frequency));
 						}
@@ -441,11 +442,12 @@ namespace apex::dsp {
 				/// @param phases - The array to store the phases in
 				template<size_t numFrequencies>
 					auto getPhasesForFrequencies(
-							gsl::span<float, numFrequencies> frequencies,
+							gsl::span<const float, numFrequencies> frequencies,
 							gsl::span<float, numFrequencies> phases)
 					const noexcept -> void
 					{
-						for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+						auto size = static_cast<gsl::index>(numFrequencies);
+						for(gsl::index frequency = 0; frequency < size; ++frequency) {
 							gsl::at(phases, frequency) =
 								getPhaseForFrequency(gsl::at(frequencies, frequency));
 						}
@@ -884,11 +886,12 @@ namespace apex::dsp {
 				/// @param magnitudes - The array to store the magnitudes in
 				template<size_t numFrequencies>
 					auto getMagnitudesForFrequencies(
-							gsl::span<double, numFrequencies> frequencies,
+							gsl::span<const double, numFrequencies> frequencies,
 							gsl::span<double, numFrequencies> magnitudes)
 					const noexcept -> void
 					{
-						for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+						auto size = static_cast<gsl::index>(numFrequencies);
+						for(gsl::index frequency = 0; frequency < size; ++frequency) {
 							gsl::at(magnitudes, frequency) =
 								getMagnitudeForFrequency(gsl::at(frequencies, frequency));
 						}
@@ -910,11 +913,12 @@ namespace apex::dsp {
 				/// @param phases - The array to store the phases in
 				template<size_t numFrequencies>
 					auto getPhasesForFrequencies(
-							gsl::span<double, numFrequencies> frequencies,
+							gsl::span<const double, numFrequencies> frequencies,
 							gsl::span<double, numFrequencies> phases)
 					const noexcept -> void
 					{
-						for(size_t frequency = 0; frequency < numFrequencies; ++frequency) {
+						auto size = static_cast<gsl::index>(numFrequencies);
+						for(gsl::index frequency = 0; frequency < size; ++frequency) {
 							gsl::at(phases, frequency) =
 								getPhaseForFrequency(gsl::at(frequencies, frequency));
 						}
