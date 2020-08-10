@@ -33,3 +33,5 @@
 #include "src/dsp/processors/Gain.cpp"
 
 #include "src/math/Random.cpp"
+
+#include "src/utils/Error.cpp"

@@ -54,6 +54,8 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 			-Wno-implicit-fallthrough
 			-Wno-date-time
 			-Wno-disabled-macro-expansion
+			-Wno-suggest-destructor-override
+			-Wno-suggest-override
 			)
 	else()
 		target_compile_options(Apex PRIVATE
@@ -219,6 +221,7 @@ set(UTILS
 	"${CMAKE_SOURCE_DIR}/src/utils/Option.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Result.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Error.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
 	)
 
 target_sources(Apex PUBLIC
