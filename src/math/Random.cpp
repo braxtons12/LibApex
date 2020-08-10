@@ -3,7 +3,7 @@
 namespace apex::math {
 
 	/// @brief Constructs a `Random` pre-seeded with the given value
-	/// 
+	///
 	/// @param seed - The seed to use
 	Random::Random(size_t seed) noexcept {
 		srand(seed);
@@ -34,4 +34,4 @@ namespace apex::math {
 		seed4 = ((seed4 & 4294967168U) << 13U) ^ b;
 		return (seed1 ^ seed2 ^ seed3 ^ seed4);
 	}
-} //namespace apex::math
+} // namespace apex::math

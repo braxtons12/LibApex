@@ -3,34 +3,30 @@
 namespace apex {
 	namespace ui {
 		ApexThumbSlider::ApexThumbSlider(juce::Slider::SliderStyle style,
-				std::function<double(double)> proportionToValueFunc,
-				std::function<double(double)> valueToProportionFunc, juce::Image thumbImage)
+										 std::function<double(double)> proportionToValueFunc,
+										 std::function<double(double)> valueToProportionFunc,
+										 juce::Image thumbImage)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
-			mThumbImage(thumbImage),
-			mUsesThumbImage(true)
-		{
+			  mThumbImage(thumbImage), mUsesThumbImage(true) {
 			mThumbComponent.setImage(mThumbImage);
 			mThumbComponent.setImagePlacement(juce::RectanglePlacement(
-						juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
+				juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
 			addAndMakeVisible(mThumbComponent);
 			mInitialThumbWidth = mThumbImage.getWidth();
 			mInitialThumbHeight = mThumbImage.getHeight();
 		}
 
 		ApexThumbSlider::ApexThumbSlider(juce::Slider::SliderStyle style,
-				std::function<double(double)> proportionToValueFunc,
-				std::function<double(double)> valueToProportionFunc,
-				int initialThumbWidth, int initialThumbHeight)
+										 std::function<double(double)> proportionToValueFunc,
+										 std::function<double(double)> valueToProportionFunc,
+										 int initialThumbWidth,
+										 int initialThumbHeight)
 			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
-			mUsesThumbImage(false),
-			mInitialThumbWidth(initialThumbWidth),
-			mInitialThumbHeight(initialThumbHeight)
-		{
-
+			  mUsesThumbImage(false), mInitialThumbWidth(initialThumbWidth),
+			  mInitialThumbHeight(initialThumbHeight) {
 		}
 
 		ApexThumbSlider::~ApexThumbSlider() {
-
 		}
 
 		void ApexThumbSlider::paint(juce::Graphics& g) {
@@ -41,10 +37,14 @@ namespace apex {
 				resizeThumb();
 			}
 			else if(mLookAndFeel != nullptr) {
-				mLookAndFeel->drawLinearApexSliderThumb(g, getX(), getY(),
-						getWidth(), getHeight(), static_cast<float>(sliderPos), *this);
+				mLookAndFeel->drawLinearApexSliderThumb(g,
+														getX(),
+														getY(),
+														getWidth(),
+														getHeight(),
+														static_cast<float>(sliderPos),
+														*this);
 			}
-
 		}
 
 		void ApexThumbSlider::resized() {
@@ -63,13 +63,13 @@ namespace apex {
 			if(isHorizontal()) {
 				int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
-				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = {thumbX, thumbY, thumbWidth, thumbHeight};
 				mThumbComponent.setBounds(bounds);
 			}
 			else {
 				int thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
 				int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
-				juce::Rectangle<int> bounds = { thumbX, thumbY, thumbWidth, thumbHeight };
+				juce::Rectangle<int> bounds = {thumbX, thumbY, thumbWidth, thumbHeight};
 				mThumbComponent.setBounds(bounds);
 			}
 		}
@@ -96,8 +96,8 @@ namespace apex {
 				thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
 				thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
 			}
-			return (x >= thumbX && x <= thumbX + thumbWidth
-					&& y >= thumbY && y <= thumbY + thumbWidth);
+			return (x >= thumbX && x <= thumbX + thumbWidth && y >= thumbY
+					&& y <= thumbY + thumbWidth);
 		}
-	}
-}
+	} // namespace ui
+} // namespace apex

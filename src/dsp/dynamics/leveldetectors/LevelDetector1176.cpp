@@ -14,10 +14,8 @@ namespace apex::dsp {
 	///
 	/// @param state - The shared state
 	LevelDetector1176<float>::LevelDetector1176(DynamicsState* state) noexcept
-		: LevelDetector<float>(state, DetectorType::NonCorrected)
-		{
-
-		}
+		: LevelDetector<float>(state, DetectorType::NonCorrected) {
+	}
 
 	/// @brief Constructs a `LevelDetector1176` with the following values:
 	/// * attack: 0.39mS,
@@ -32,8 +30,6 @@ namespace apex::dsp {
 	///
 	/// @param state - The shared state
 	LevelDetector1176<double>::LevelDetector1176(DynamicsState* state) noexcept
-		: LevelDetector<double>(state, DetectorType::NonCorrected)
-		{
-
-		}
-} //namespace apex::dsp
+		: LevelDetector<double>(state, DetectorType::NonCorrected) {
+	}
+} // namespace apex::dsp

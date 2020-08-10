@@ -20,4 +20,4 @@ namespace apex::math {
 	static const constexpr double piOver4 = pi / 4.0;
 	static const constexpr double piOver6 = pi / 6.0;
 	static const constexpr double piOver12 = pi / 12.0;
-} //namespace apex::math
+} // namespace apex::math

@@ -20,4 +20,4 @@ namespace apex::dsp {
 	auto GainStageFET<double>::process(double input) noexcept -> double {
 		return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

@@ -7,23 +7,15 @@ namespace apex::dsp {
 	/// @param state - The shared state
 	/// @param type - The detector type
 	LevelDetectorRMS<float>::LevelDetectorRMS(DynamicsState* state, DetectorType type) noexcept
-		: LevelDetector<float>(state, type),
-		mState(state)
-		{
-			mType = type;
-			mState->registerCallback<float, DynamicsState::Field::Attack>(
-					[this](float attack) {
-					this->setAttackTime(attack);
-					});
-			mState->registerCallback<float, DynamicsState::Field::Release>(
-					[this](float release) {
-					this->setReleaseTime(release);
-					});
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-					[this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					});
-		}
+		: LevelDetector<float>(state, type), mState(state) {
+		mType = type;
+		mState->registerCallback<float, DynamicsState::Field::Attack>(
+			[this](float attack) { this->setAttackTime(attack); });
+		mState->registerCallback<float, DynamicsState::Field::Release>(
+			[this](float release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+	}
 
 	/// @brief Generates the detected level from the given input
 	///
@@ -57,8 +49,7 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<float>::setReleaseTime(float releaseSeconds) noexcept -> void {
 		LevelDetector<float>::setReleaseTime(releaseSeconds);
 		mRMSSeconds = releaseSeconds * 2.0F;
-		mRMSCoeff = math::expf(-1.0F / (mRMSSeconds *
-					static_cast<float>(mState->getSampleRate())));
+		mRMSCoeff = math::expf(-1.0F / (mRMSSeconds * static_cast<float>(mState->getSampleRate())));
 	}
 
 	/// @brief Sets the sample rate to the given value
@@ -75,23 +66,15 @@ namespace apex::dsp {
 	/// @param state - The shared state
 	/// @param type - The detector type
 	LevelDetectorRMS<double>::LevelDetectorRMS(DynamicsState* state, DetectorType type) noexcept
-		: LevelDetector<double>(state, type),
-		mState(state)
-		{
-			mType = type;
-			mState->registerCallback<double, DynamicsState::Field::Attack>(
-					[this](double attack) {
-					this->setAttackTime(attack);
-					});
-			mState->registerCallback<double, DynamicsState::Field::Release>(
-					[this](double release) {
-					this->setReleaseTime(release);
-					});
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-					[this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					});
-		}
+		: LevelDetector<double>(state, type), mState(state) {
+		mType = type;
+		mState->registerCallback<double, DynamicsState::Field::Attack>(
+			[this](double attack) { this->setAttackTime(attack); });
+		mState->registerCallback<double, DynamicsState::Field::Release>(
+			[this](double release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+	}
 
 	/// @brief Generates the detected level from the given input
 	///
@@ -125,8 +108,7 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<double>::setReleaseTime(double releaseSeconds) noexcept -> void {
 		LevelDetector<double>::setReleaseTime(releaseSeconds);
 		mRMSSeconds = releaseSeconds * 2.0;
-		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds *
-					static_cast<double>(mState->getSampleRate())));
+		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds * static_cast<double>(mState->getSampleRate())));
 	}
 
 	/// @brief Sets the sample rate to the given value
@@ -136,4 +118,4 @@ namespace apex::dsp {
 		LevelDetector<double>::setSampleRate(sampleRate);
 		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds * static_cast<double>(sampleRate)));
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

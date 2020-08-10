@@ -12,11 +12,10 @@ namespace apex::dsp {
 	/// @param numBits - The bit-depth to convert to
 	/// @param noiseShaping - The noise shaping to use
 	Dither<float>::Dither(size_t numBits, float noiseShaping) noexcept
-		: mNumBits(numBits), mNoiseShaping(noiseShaping)
-		{
-			jassert(numBits <= 24);
-			updateState();
-		}
+		: mNumBits(numBits), mNoiseShaping(noiseShaping) {
+		jassert(numBits <= 24);
+		updateState();
+	}
 
 	/// @brief Sets the bit-depth of this `Dither` to the given value
 	///
@@ -42,8 +41,8 @@ namespace apex::dsp {
 	/// @return - The dithered, bit-depth reduced result
 	auto Dither<float>::dither(float input) noexcept -> float {
 		float output = input + mNoiseShaping * (mFeedbackOne + mFeedbackOne - mFeedbackTwo);
-		float outputTemp = output + mDCOffset + mAmplitude
-			* static_cast<float>(mRandomOne - mRandomTwo);
+		float outputTemp
+			= output + mDCOffset + mAmplitude * static_cast<float>(mRandomOne - mRandomTwo);
 		int outputTruncated = static_cast<int>(mWordLength * outputTemp);
 
 		if(outputTemp < 0.0F) {
@@ -85,11 +84,10 @@ namespace apex::dsp {
 	/// @param numBits - The bit-depth to convert to
 	/// @param noiseShaping - The noise shaping to use
 	Dither<double>::Dither(size_t numBits, double noiseShaping) noexcept
-		: mNumBits(numBits), mNoiseShaping(noiseShaping)
-		{
-			jassert(numBits <= 48);
-			updateState();
-		}
+		: mNumBits(numBits), mNoiseShaping(noiseShaping) {
+		jassert(numBits <= 48);
+		updateState();
+	}
 
 	/// @brief Sets the bit-depth of this `Dither` to the given value
 	///
@@ -115,8 +113,8 @@ namespace apex::dsp {
 	/// @return - The dithered, bit-depth reduced result
 	auto Dither<double>::dither(double input) noexcept -> double {
 		double output = input + mNoiseShaping * (mFeedbackOne + mFeedbackOne - mFeedbackTwo);
-		double outputTemp = output + mDCOffset + mAmplitude
-			* static_cast<double>(mRandomOne - mRandomTwo);
+		double outputTemp
+			= output + mDCOffset + mAmplitude * static_cast<double>(mRandomOne - mRandomTwo);
 		int outputTruncated = static_cast<int>(mWordLength * outputTemp);
 
 		if(outputTemp < 0.0) {
@@ -149,4 +147,4 @@ namespace apex::dsp {
 
 		mDCOffset = mWordLengthInverse * 0.5;
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

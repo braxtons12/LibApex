@@ -23,11 +23,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeLowpass(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Lowpass);
-		}
+	inline auto BiQuadFilter<float>::MakeLowpass(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Lowpass);
+	}
 
 	/// @brief Creates a lowpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -37,11 +36,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeLowpass(float frequency, float q, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Lowpass);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeLowpass(float frequency, float q, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Lowpass);
+	}
 
 	/// @brief Creates a default highpass BiQuad filter
 	///
@@ -57,11 +56,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeHighpass(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Highpass);
-		}
+	inline auto BiQuadFilter<float>::MakeHighpass(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Highpass);
+	}
 
 	/// @brief Creates a highpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -71,11 +69,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeHighpass(float frequency, float q, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Highpass);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeHighpass(float frequency, float q, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Highpass);
+	}
 
 	/// @brief Creates a default bandpass BiQuad Filter
 	///
@@ -91,11 +89,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bandpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeBandpass(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Bandpass);
-		}
+	inline auto BiQuadFilter<float>::MakeBandpass(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Bandpass);
+	}
 
 	/// @brief Creates a bandpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -105,11 +102,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bandpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeBandpass(float frequency, float q, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Bandpass);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeBandpass(float frequency, float q, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Bandpass);
+	}
 
 	/// @brief Creates a default allpass BiQuad Filter
 	///
@@ -125,11 +122,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An allpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeAllpass(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Allpass);
-		}
+	inline auto BiQuadFilter<float>::MakeAllpass(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Allpass);
+	}
 
 	/// @brief Creates an allpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -139,11 +135,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An allpass BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeAllpass(float frequency, float q, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Allpass);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeAllpass(float frequency, float q, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Allpass);
+	}
 
 	/// @brief Creates a default notch BiQuad Filter
 	///
@@ -159,11 +155,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A notch BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeNotch(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Notch);
-		}
+	inline auto BiQuadFilter<float>::MakeNotch(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Notch);
+	}
 
 	/// @brief Creates a notch BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -173,11 +168,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A notch BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeNotch(float frequency, float q, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Notch);
-		}
+	inline auto BiQuadFilter<float>::MakeNotch(float frequency, float q, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, 0.0F, sampleRate, FilterType::Notch);
+	}
 
 	/// @brief Creates a default lowshelf BiQuad Filter
 	///
@@ -193,11 +187,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeLowShelf(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::LowShelf);
-		}
+	inline auto BiQuadFilter<float>::MakeLowShelf(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a lowshelf BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -207,11 +200,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeLowShelf(float frequency, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::LowShelf);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeLowShelf(float frequency, float gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a lowshelf BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -222,12 +215,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeLowShelf(
-			float frequency, float q, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::LowShelf);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeLowShelf(float frequency,
+									  float q,
+									  float gain,
+									  size_t sampleRate) noexcept -> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a default highshelf BiQuad Filter
 	///
@@ -243,11 +237,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeHighShelf(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::HighShelf);
-		}
+	inline auto BiQuadFilter<float>::MakeHighShelf(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a highshelf BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -257,11 +250,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeHighShelf(float frequency, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::HighShelf);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeHighShelf(float frequency, float gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a highshelf BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -272,12 +265,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeHighShelf(
-			float frequency, float q, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::HighShelf);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeHighShelf(float frequency,
+									   float q,
+									   float gain,
+									   size_t sampleRate) noexcept -> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a default bell-shape BiQuad Filter
 	///
@@ -293,11 +287,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeBell(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Bell);
-		}
+	inline auto BiQuadFilter<float>::MakeBell(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates a bell-shape BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -307,11 +300,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeBell(float frequency, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::Bell);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeBell(float frequency, float gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates a bell-shape BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -322,12 +315,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeBell(
-			float frequency, float q, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::Bell);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeBell(float frequency, float q, float gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter
 	///
@@ -343,11 +335,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An analog-style bell-shape BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeAnalogBell(float frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto BiQuadFilter<float>::MakeAnalogBell(float frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, 0.0F, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter with the given
 	/// frequency, gain, and sample rate
@@ -357,11 +348,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An analog-style bell-shape BiQuad Filter
-	inline auto BiQuadFilter<float>::MakeAnalogBell(float frequency, float gain, size_t sampleRate)
-		noexcept ->  BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeAnalogBell(float frequency, float gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, 0.7F, gain, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter with the given
 	/// frequency, q, gain, and sample rate
@@ -372,12 +363,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return
-	inline auto BiQuadFilter<float>::MakeAnalogBell(
-			float frequency, float q, float gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<float>
-		{
-			return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto
+	BiQuadFilter<float>::MakeAnalogBell(float frequency,
+										float q,
+										float gain,
+										size_t sampleRate) noexcept -> BiQuadFilter<float> {
+		return BiQuadFilter<float>(frequency, q, gain, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Sets the frequency of this filter to the given value
 	///
@@ -390,14 +382,14 @@ namespace apex::dsp {
 	/// @brief Returns the frequency of this filter
 	///
 	/// @return - The frequency, in Hertz
-	inline auto BiQuadFilter<float>::getFrequency() const  noexcept -> float {
+	inline auto BiQuadFilter<float>::getFrequency() const noexcept -> float {
 		return mFrequency;
 	}
 
 	/// @brief Sets the Q of this filter to the given value
 	///
 	/// @param q - The new Q
-	inline auto BiQuadFilter<float>::setQ(float q)  noexcept -> void {
+	inline auto BiQuadFilter<float>::setQ(float q) noexcept -> void {
 		mQ = q;
 		updateCoefficients();
 	}
@@ -445,8 +437,8 @@ namespace apex::dsp {
 	///
 	/// @return - The filtered value
 	auto BiQuadFilter<float>::process(float input) noexcept -> float {
-		float yn = input * mB0 / mA0 + mX1 * mB1 / mA0 + mX2 * mB2 / mA0
-			- mY1 * mA1 / mA0 - mY2 * mA2 / mA0;
+		float yn = input * mB0 / mA0 + mX1 * mB1 / mA0 + mX2 * mB2 / mA0 - mY1 * mA1 / mA0
+				   - mY2 * mA2 / mA0;
 
 		mX2 = mX1;
 		mX1 = input;
@@ -459,13 +451,12 @@ namespace apex::dsp {
 	/// @brief Applies this filter to the array of given input values, in place
 	///
 	/// @param input - The array of input values to filter
-	auto BiQuadFilter<float>::process(gsl::span<float, gsl::dynamic_extent> input)
-		noexcept -> void
-		{
-			for(auto& in : input) {
-				in = process(in);
-			}
+	auto
+	BiQuadFilter<float>::process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void {
+		for(auto& in : input) {
+			in = process(in);
 		}
+	}
 
 	/// @brief Resets this filter to an initial state
 	auto BiQuadFilter<float>::reset() noexcept -> void {
@@ -490,15 +481,16 @@ namespace apex::dsp {
 	auto BiQuadFilter<float>::getMagnitudeForFrequency(float frequency) const noexcept -> float {
 		constexpr std::complex<float> j(0.0F, 1.0F);
 		const size_t order = 2;
-		const std::array<float, 5> coefficients = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+		const std::array<float, 5> coefficients
+			= {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
 
 		jassert(frequency >= 0 && frequency <= mSampleRate * 0.5F);
 
 		std::complex<float> numerator = 0.0F;
 		std::complex<float> denominator = 1.0F;
 		std::complex<float> factor = 1.0F;
-		std::complex<float> jw = std::exp(-math::twoPif * frequency * j /
-				static_cast<float>(mSampleRate));
+		std::complex<float> jw
+			= std::exp(-math::twoPif * frequency * j / static_cast<float>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -523,15 +515,16 @@ namespace apex::dsp {
 	auto BiQuadFilter<float>::getPhaseForFrequency(float frequency) const noexcept -> float {
 		constexpr std::complex<float> j(0.0F, 1.0F);
 		const size_t order = 2;
-		const std::array<float, 5> coefficients = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+		const std::array<float, 5> coefficients
+			= {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
 
 		jassert(frequency >= 0 && frequency <= mSampleRate * 0.5F);
 
 		std::complex<float> numerator = 0.0F;
 		std::complex<float> denominator = 1.0F;
 		std::complex<float> factor = 1.0F;
-		std::complex<float> jw = std::exp(-math::twoPif * frequency * j /
-				static_cast<float>(mSampleRate));
+		std::complex<float> jw
+			= std::exp(-math::twoPif * frequency * j / static_cast<float>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -548,18 +541,14 @@ namespace apex::dsp {
 		return std::arg(numerator / denominator);
 	}
 
-	BiQuadFilter<float>::BiQuadFilter(
-			float frequency, float q, float gain,
-			size_t sampleRate, FilterType type)
-		noexcept
-		: mType(type),
-		mFrequency(frequency),
-		mQ(q),
-		mGain(gain),
-		mSampleRate(sampleRate)
-		{
-			updateCoefficients();
-		}
+	BiQuadFilter<float>::BiQuadFilter(float frequency,
+									  float q,
+									  float gain,
+									  size_t sampleRate,
+									  FilterType type) noexcept
+		: mType(type), mFrequency(frequency), mQ(q), mGain(gain), mSampleRate(sampleRate) {
+		updateCoefficients();
+	}
 
 	/// @brief Updates the coefficients of this filter
 	auto BiQuadFilter<float>::updateCoefficients() noexcept -> void {
@@ -579,89 +568,97 @@ namespace apex::dsp {
 		}
 
 		switch(mType) {
-			case FilterType::Lowpass: {
-										  mB0 = (1.0F - cosw0) / 2.0F;
-										  mB1 = 1.0F - cosw0;
-										  mB2 = mB0;
-										  mA0 = 1.0F + alpha;
-										  mA1 = -2.0F * cosw0;
-										  mA2 = 1.0F - alpha;
-									  }
-									  break;
-			case FilterType::Highpass: {
-										   mB0 = (1.0F + cosw0) / 2.0F;
-										   mB1 = -(1.0F + cosw0);
-										   mB2 = mB0;
-										   mA0 = 1.0F + alpha;
-										   mA1 = -2.0F * cosw0;
-										   mA2 = 1.0F - alpha;
-									   }
-									   break;
-			case FilterType::Bandpass: {
-										   mB0 = alpha;
-										   mB1 = 0.0F;
-										   mB2 = -alpha;
-										   mA0 = 1.0F + alpha;
-										   mA1 = -2.0F * cosw0;
-										   mA2 = 1.0F - alpha;
-									   }
-									   break;
-			case FilterType::Allpass: {
-										  mB0 = 1.0F - alpha;
-										  mB1 = -2.0F * cosw0;
-										  mB2 = 1.0F + alpha;
-										  mA0 = mB2;
-										  mA1 = mB1;
-										  mA2 = mB0;
-									  }
-									  break;
-			case FilterType::Notch: {
-										mB0 = 1.0F;
-										mB1 = -2.0F * cosw0;
-										mB2 = 1.0F;
-										mA0 = 1.0F + alpha;
-										mA1 = mB1;
-										mA2 = 1.0F - alpha;
-									}
-									break;
-			case FilterType::LowShelf: {
-										   mB0 = a * ( (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha);
-										   mB1 = 2.0F * a * ( (a - 1.0F) + (a + 1.0F) * cosw0);
-										   mB2 = a * ( (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha);
-										   mA0 = (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha;
-										   mA1 = -2.0F * ( (a - 1.0F) - (a + 1.0F) * cosw0);
-										   mA2 = (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha;
-									   }
-									   break;
-			case FilterType::HighShelf: {
-											mB0 = a * ( (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha);
-											mB1 = -2.0F * a * ( (a - 1.0F) + (a + 1.0F) * cosw0);
-											mB2 = a * ( (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha);
-											mA0 = (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha;
-											mA1 = 2.0F * ( (a - 1.0F) - (a + 1.0F) * cosw0);
-											mA2 = (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha;
-										}
-										break;
-			case FilterType::Bell: {
-									   mB0 = 1.0F + alpha * a;
-									   mB1 = -2.0F * cosw0;
-									   mB2 = 1.0F - alpha * a;
-									   mA0 = 1.0F + alpha / a;
-									   mA1 = mB1;
-									   mA2 = 1.0F - alpha / a;
-								   }
-								   break;
-			case FilterType::AnalogBell: {
-											 mB0 = 1.0F + alpha * a;
-											 mB1 = -2.0F * cosw0;
-											 mB2 = 1.0F - alpha * a;
-											 mA0 = 1.0F + alpha / a;
-											 mA1 = mB1;
-											 mA2 = 1.0F - alpha / a;
-										 }
-										 break;
+			case FilterType::Lowpass:
+				{
+					mB0 = (1.0F - cosw0) / 2.0F;
+					mB1 = 1.0F - cosw0;
+					mB2 = mB0;
+					mA0 = 1.0F + alpha;
+					mA1 = -2.0F * cosw0;
+					mA2 = 1.0F - alpha;
+				}
+				break;
+			case FilterType::Highpass:
+				{
+					mB0 = (1.0F + cosw0) / 2.0F;
+					mB1 = -(1.0F + cosw0);
+					mB2 = mB0;
+					mA0 = 1.0F + alpha;
+					mA1 = -2.0F * cosw0;
+					mA2 = 1.0F - alpha;
+				}
+				break;
+			case FilterType::Bandpass:
+				{
+					mB0 = alpha;
+					mB1 = 0.0F;
+					mB2 = -alpha;
+					mA0 = 1.0F + alpha;
+					mA1 = -2.0F * cosw0;
+					mA2 = 1.0F - alpha;
+				}
+				break;
+			case FilterType::Allpass:
+				{
+					mB0 = 1.0F - alpha;
+					mB1 = -2.0F * cosw0;
+					mB2 = 1.0F + alpha;
+					mA0 = mB2;
+					mA1 = mB1;
+					mA2 = mB0;
+				}
+				break;
+			case FilterType::Notch:
+				{
+					mB0 = 1.0F;
+					mB1 = -2.0F * cosw0;
+					mB2 = 1.0F;
+					mA0 = 1.0F + alpha;
+					mA1 = mB1;
+					mA2 = 1.0F - alpha;
+				}
+				break;
+			case FilterType::LowShelf:
+				{
+					mB0 = a * ((a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha);
+					mB1 = 2.0F * a * ((a - 1.0F) + (a + 1.0F) * cosw0);
+					mB2 = a * ((a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha);
+					mA0 = (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha;
+					mA1 = -2.0F * ((a - 1.0F) - (a + 1.0F) * cosw0);
+					mA2 = (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha;
+				}
+				break;
+			case FilterType::HighShelf:
+				{
+					mB0 = a * ((a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha);
+					mB1 = -2.0F * a * ((a - 1.0F) + (a + 1.0F) * cosw0);
+					mB2 = a * ((a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha);
+					mA0 = (a + 1.0F) - (a - 1.0F) * cosw0 + twoSqrtAAlpha;
+					mA1 = 2.0F * ((a - 1.0F) - (a + 1.0F) * cosw0);
+					mA2 = (a + 1.0F) - (a - 1.0F) * cosw0 - twoSqrtAAlpha;
+				}
+				break;
+			case FilterType::Bell:
+				{
+					mB0 = 1.0F + alpha * a;
+					mB1 = -2.0F * cosw0;
+					mB2 = 1.0F - alpha * a;
+					mA0 = 1.0F + alpha / a;
+					mA1 = mB1;
+					mA2 = 1.0F - alpha / a;
+				}
+				break;
+			case FilterType::AnalogBell:
+				{
+					mB0 = 1.0F + alpha * a;
+					mB1 = -2.0F * cosw0;
+					mB2 = 1.0F - alpha * a;
+					mA0 = 1.0F + alpha / a;
+					mA1 = mB1;
+					mA2 = 1.0F - alpha / a;
+				}
+				break;
 		}
-
 	}
 
 	/// @brief Constructs a default `BiQuadFilter`
@@ -683,11 +680,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeLowpass(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Lowpass);
-		}
+	inline auto BiQuadFilter<double>::MakeLowpass(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Lowpass);
+	}
 
 	/// @brief Creates a lowpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -697,11 +693,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeLowpass(double frequency, double q, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Lowpass);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeLowpass(double frequency, double q, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Lowpass);
+	}
 
 	/// @brief Creates a default highpass BiQuad filter
 	///
@@ -717,11 +713,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeHighpass(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Highpass);
-		}
+	inline auto BiQuadFilter<double>::MakeHighpass(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Highpass);
+	}
 
 	/// @brief Creates a highpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -731,11 +726,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeHighpass(double frequency, double q, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Highpass);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeHighpass(double frequency, double q, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Highpass);
+	}
 
 	/// @brief Creates a default bandpass BiQuad Filter
 	///
@@ -751,11 +746,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bandpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeBandpass(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Bandpass);
-		}
+	inline auto BiQuadFilter<double>::MakeBandpass(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Bandpass);
+	}
 
 	/// @brief Creates a bandpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -765,11 +759,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bandpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeBandpass(double frequency, double q, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Bandpass);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeBandpass(double frequency, double q, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Bandpass);
+	}
 
 	/// @brief Creates a default allpass BiQuad Filter
 	///
@@ -785,11 +779,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An allpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeAllpass(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Allpass);
-		}
+	inline auto BiQuadFilter<double>::MakeAllpass(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Allpass);
+	}
 
 	/// @brief Creates an allpass BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -799,11 +792,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An allpass BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeAllpass(double frequency, double q, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Allpass);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeAllpass(double frequency, double q, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Allpass);
+	}
 
 	/// @brief Creates a default notch BiQuad Filter
 	///
@@ -819,11 +812,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A notch BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeNotch(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Notch);
-		}
+	inline auto BiQuadFilter<double>::MakeNotch(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Notch);
+	}
 
 	/// @brief Creates a notch BiQuad Filter with the given frequency, q,
 	/// and sample rate
@@ -833,11 +825,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A notch BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeNotch(double frequency, double q, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Notch);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeNotch(double frequency, double q, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, 0.0, sampleRate, FilterType::Notch);
+	}
 
 	/// @brief Creates a default lowshelf BiQuad Filter
 	///
@@ -853,11 +845,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeLowShelf(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::LowShelf);
-		}
+	inline auto BiQuadFilter<double>::MakeLowShelf(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a lowshelf BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -867,12 +858,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeLowShelf(
-			double frequency, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::LowShelf);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeLowShelf(double frequency, double gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a lowshelf BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -883,12 +873,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A lowshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeLowShelf(
-			double frequency, double q, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::LowShelf);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeLowShelf(double frequency,
+									   double q,
+									   double gain,
+									   size_t sampleRate) noexcept -> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::LowShelf);
+	}
 
 	/// @brief Creates a default highshelf BiQuad Filter
 	///
@@ -904,11 +895,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeHighShelf(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::HighShelf);
-		}
+	inline auto BiQuadFilter<double>::MakeHighShelf(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a highshelf BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -918,12 +908,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeHighShelf(
-			double frequency, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::HighShelf);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeHighShelf(double frequency, double gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a highshelf BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -934,12 +923,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A highshelf BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeHighShelf(
-			double frequency, double q, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::HighShelf);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeHighShelf(double frequency,
+										double q,
+										double gain,
+										size_t sampleRate) noexcept -> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::HighShelf);
+	}
 
 	/// @brief Creates a default bell-shape BiQuad Filter
 	///
@@ -955,11 +945,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeBell(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Bell);
-		}
+	inline auto BiQuadFilter<double>::MakeBell(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates a bell-shape BiQuad Filter with the given frequency, gain,
 	/// and sample rate
@@ -969,11 +958,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeBell(double frequency, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::Bell);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeBell(double frequency, double gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates a bell-shape BiQuad Filter with the given frequency, q,
 	/// gain, and sample rate
@@ -984,12 +973,12 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - A bell-shape BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeBell(
-			double frequency, double q, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::Bell);
-		}
+	inline auto BiQuadFilter<double>::MakeBell(double frequency,
+											   double q,
+											   double gain,
+											   size_t sampleRate) noexcept -> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::Bell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter
 	///
@@ -1005,11 +994,10 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An analog-style bell-shape BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeAnalogBell(double frequency, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto BiQuadFilter<double>::MakeAnalogBell(double frequency, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, 0.0, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter with the given
 	/// frequency, gain, and sample rate
@@ -1019,12 +1007,11 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return - An analog-style bell-shape BiQuad Filter
-	inline auto BiQuadFilter<double>::MakeAnalogBell(
-			double frequency, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeAnalogBell(double frequency, double gain, size_t sampleRate) noexcept
+		-> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, 0.7, gain, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Creates an analog-style bell-shape BiQuad Filter with the given
 	/// frequency, q, gain, and sample rate
@@ -1035,12 +1022,13 @@ namespace apex::dsp {
 	/// @param sampleRate - The sample rate to use, in Hertz
 	///
 	/// @return
-	inline auto BiQuadFilter<double>::MakeAnalogBell(
-			double frequency, double q, double gain, size_t sampleRate)
-		noexcept -> BiQuadFilter<double>
-		{
-			return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::AnalogBell);
-		}
+	inline auto
+	BiQuadFilter<double>::MakeAnalogBell(double frequency,
+										 double q,
+										 double gain,
+										 size_t sampleRate) noexcept -> BiQuadFilter<double> {
+		return BiQuadFilter<double>(frequency, q, gain, sampleRate, FilterType::AnalogBell);
+	}
 
 	/// @brief Sets the frequency of this filter to the given value
 	///
@@ -1108,8 +1096,8 @@ namespace apex::dsp {
 	///
 	/// @return - The filtered value
 	auto BiQuadFilter<double>::process(double input) noexcept -> double {
-		double yn = input * mB0 / mA0 + mX1 * mB1 / mA0 + mX2 * mB2 / mA0
-			- mY1 * mA1 / mA0 - mY2 * mA2 / mA0;
+		double yn = input * mB0 / mA0 + mX1 * mB1 / mA0 + mX2 * mB2 / mA0 - mY1 * mA1 / mA0
+					- mY2 * mA2 / mA0;
 
 		mX2 = mX1;
 		mX1 = input;
@@ -1123,13 +1111,12 @@ namespace apex::dsp {
 	///
 	/// @param input - The array of input values to filter
 	/// @param numSamples - The number of samples in the array
-	auto BiQuadFilter<double>::process(gsl::span<double, gsl::dynamic_extent> input)
-		noexcept -> void
-		{
-			for(auto& in : input) {
-				in = process(in);
-			}
+	auto
+	BiQuadFilter<double>::process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void {
+		for(auto& in : input) {
+			in = process(in);
 		}
+	}
 
 	/// @brief Resets this filter to an initial state
 	auto BiQuadFilter<double>::reset() noexcept -> void {
@@ -1154,15 +1141,16 @@ namespace apex::dsp {
 	auto BiQuadFilter<double>::getMagnitudeForFrequency(double frequency) const noexcept -> double {
 		constexpr std::complex<double> j(0.0, 1.0);
 		const size_t order = 2;
-		const std::array<double, 5> coefficients = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+		const std::array<double, 5> coefficients
+			= {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
 
 		jassert(frequency >= 0 && frequency <= mSampleRate * 0.5);
 
 		std::complex<double> numerator = 0.0;
 		std::complex<double> denominator = 1.0;
 		std::complex<double> factor = 1.0;
-		std::complex<double> jw = std::exp(-math::twoPi * frequency *
-				j / static_cast<double>(mSampleRate));
+		std::complex<double> jw
+			= std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -1187,14 +1175,16 @@ namespace apex::dsp {
 	auto BiQuadFilter<double>::getPhaseForFrequency(double frequency) const noexcept -> double {
 		constexpr std::complex<double> j(0.0, 1.0);
 		const size_t order = 2;
-		const std::array<double, 5> coefficients = {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
+		const std::array<double, 5> coefficients
+			= {mB0 / mA0, mB1 / mA0, mB2 / mA0, mA1 / mA0, mA2 / mA0};
 
 		jassert(frequency >= 0 && frequency <= mSampleRate * 0.5f);
 
 		std::complex<double> numerator = 0.0;
 		std::complex<double> denominator = 1.0;
 		std::complex<double> factor = 1.0;
-		std::complex<double> jw = std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
+		std::complex<double> jw
+			= std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -1211,18 +1201,14 @@ namespace apex::dsp {
 		return std::arg(numerator / denominator);
 	}
 
-	BiQuadFilter<double>::BiQuadFilter(
-			double frequency, double q, double gain,
-			size_t sampleRate, FilterType type)
-		noexcept
-		: mType(type),
-		mFrequency(frequency),
-		mQ(q),
-		mGain(gain),
-		mSampleRate(sampleRate)
-		{
-			updateCoefficients();
-		}
+	BiQuadFilter<double>::BiQuadFilter(double frequency,
+									   double q,
+									   double gain,
+									   size_t sampleRate,
+									   FilterType type) noexcept
+		: mType(type), mFrequency(frequency), mQ(q), mGain(gain), mSampleRate(sampleRate) {
+		updateCoefficients();
+	}
 
 	/// @brief Updates the coefficients of this filter
 	auto BiQuadFilter<double>::updateCoefficients() noexcept -> void {
@@ -1242,88 +1228,96 @@ namespace apex::dsp {
 		}
 
 		switch(mType) {
-			case FilterType::Lowpass: {
-										  mB0 = (1.0 - cosw0) / 2.0;
-										  mB1 = 1.0 - cosw0;
-										  mB2 = mB0;
-										  mA0 = 1.0 + alpha;
-										  mA1 = -2.0 * cosw0;
-										  mA2 = 1.0 - alpha;
-									  }
-									  break;
-			case FilterType::Highpass: {
-										   mB0 = (1.0 + cosw0) / 2.0;
-										   mB1 = -(1.0 + cosw0);
-										   mB2 = mB0;
-										   mA0 = 1.0 + alpha;
-										   mA1 = -2.0 * cosw0;
-										   mA2 = 1.0 - alpha;
-									   }
-									   break;
-			case FilterType::Bandpass: {
-										   mB0 = alpha;
-										   mB1 = 0.0;
-										   mB2 = -alpha;
-										   mA0 = 1.0 + alpha;
-										   mA1 = -2.0 * cosw0;
-										   mA2 = 1.0 - alpha;
-									   }
-									   break;
-			case FilterType::Allpass: {
-										  mB0 = 1.0 - alpha;
-										  mB1 = -2.0 * cosw0;
-										  mB2 = 1.0 + alpha;
-										  mA0 = 1.0 + alpha;
-										  mA1 = -2.0 * cosw0;
-										  mA2 = 1.0 - alpha;
-									  }
-									  break;
-			case FilterType::Notch: {
-										mB0 = 1.0;
-										mB1 = -2.0 * cosw0;
-										mB2 = 1.0;
-										mA0 = 1.0 + alpha;
-										mA1 = -2.0 * cosw0;
-										mA2 = 1.0 - alpha;
-									}
-									break;
-			case FilterType::LowShelf: {
-										   mB0 = a * ( (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha);
-										   mB1 = 2.0 * a * ( (a - 1.0) + (a + 1.0) * cosw0);
-										   mB2 = a * ( (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha);
-										   mA0 = (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha;
-										   mA1 = -2.0 * ( (a - 1.0) - (a + 1.0) * cosw0);
-										   mA2 = (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha;
-									   }
-									   break;
-			case FilterType::HighShelf: {
-											mB0 = a * ( (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha);
-											mB1 = -2.0 * a * ( (a - 1.0) + (a + 1.0) * cosw0);
-											mB2 = a * ( (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha);
-											mA0 = (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha;
-											mA1 = 2.0 * ( (a - 1.0) - (a + 1.0) * cosw0);
-											mA2 = (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha;
-										}
-										break;
-			case FilterType::Bell: {
-									   mB0 = 1.0 + alpha * a;
-									   mB1 = -2.0 * cosw0;
-									   mB2 = 1.0 - alpha * a;
-									   mA0 = 1.0 + alpha / a;
-									   mA1 = -2.0 * cosw0;
-									   mA2 = 1.0 - alpha / a;
-								   }
-								   break;
-			case FilterType::AnalogBell: {
-											 mB0 = 1.0 + alpha * a;
-											 mB1 = -2.0 * cosw0;
-											 mB2 = 1.0 - alpha * a;
-											 mA0 = 1.0 + alpha / a;
-											 mA1 = -2.0 * cosw0;
-											 mA2 = 1.0 - alpha / a;
-										 }
-										 break;
+			case FilterType::Lowpass:
+				{
+					mB0 = (1.0 - cosw0) / 2.0;
+					mB1 = 1.0 - cosw0;
+					mB2 = mB0;
+					mA0 = 1.0 + alpha;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha;
+				}
+				break;
+			case FilterType::Highpass:
+				{
+					mB0 = (1.0 + cosw0) / 2.0;
+					mB1 = -(1.0 + cosw0);
+					mB2 = mB0;
+					mA0 = 1.0 + alpha;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha;
+				}
+				break;
+			case FilterType::Bandpass:
+				{
+					mB0 = alpha;
+					mB1 = 0.0;
+					mB2 = -alpha;
+					mA0 = 1.0 + alpha;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha;
+				}
+				break;
+			case FilterType::Allpass:
+				{
+					mB0 = 1.0 - alpha;
+					mB1 = -2.0 * cosw0;
+					mB2 = 1.0 + alpha;
+					mA0 = 1.0 + alpha;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha;
+				}
+				break;
+			case FilterType::Notch:
+				{
+					mB0 = 1.0;
+					mB1 = -2.0 * cosw0;
+					mB2 = 1.0;
+					mA0 = 1.0 + alpha;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha;
+				}
+				break;
+			case FilterType::LowShelf:
+				{
+					mB0 = a * ((a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha);
+					mB1 = 2.0 * a * ((a - 1.0) + (a + 1.0) * cosw0);
+					mB2 = a * ((a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha);
+					mA0 = (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha;
+					mA1 = -2.0 * ((a - 1.0) - (a + 1.0) * cosw0);
+					mA2 = (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha;
+				}
+				break;
+			case FilterType::HighShelf:
+				{
+					mB0 = a * ((a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha);
+					mB1 = -2.0 * a * ((a - 1.0) + (a + 1.0) * cosw0);
+					mB2 = a * ((a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha);
+					mA0 = (a + 1.0) - (a - 1.0) * cosw0 + twoSqrtAAlpha;
+					mA1 = 2.0 * ((a - 1.0) - (a + 1.0) * cosw0);
+					mA2 = (a + 1.0) - (a - 1.0) * cosw0 - twoSqrtAAlpha;
+				}
+				break;
+			case FilterType::Bell:
+				{
+					mB0 = 1.0 + alpha * a;
+					mB1 = -2.0 * cosw0;
+					mB2 = 1.0 - alpha * a;
+					mA0 = 1.0 + alpha / a;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha / a;
+				}
+				break;
+			case FilterType::AnalogBell:
+				{
+					mB0 = 1.0 + alpha * a;
+					mB1 = -2.0 * cosw0;
+					mB2 = 1.0 - alpha * a;
+					mA0 = 1.0 + alpha / a;
+					mA1 = -2.0 * cosw0;
+					mA2 = 1.0 - alpha / a;
+				}
+				break;
 		}
-
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

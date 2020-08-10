@@ -53,7 +53,7 @@ namespace apex::dsp {
 	/// @param input - The input to apply the gain to
 	///
 	/// @return The resulting value after applying the gain
-	auto Gain<float>::process(float input) noexcept -> float{
+	auto Gain<float>::process(float input) noexcept -> float {
 		return input * mGainLinear;
 	}
 
@@ -74,11 +74,11 @@ namespace apex::dsp {
 			reg *= mGainLinear;
 			reg.copyToRawArray(input.subspan(sample).data());
 		}
-#else //JUCE_USE_SIMD
+#else // JUCE_USE_SIMD
 		for(auto& in : input) {
 			in *= mGainLinear;
 		}
-#endif //JUCE_USE_SIMD
+#endif // JUCE_USE_SIMD
 	}
 
 	/// @brief Constructs a `Gain` with the given gain value.
@@ -152,10 +152,10 @@ namespace apex::dsp {
 			reg *= mGainLinear;
 			reg.copyToRawArray(input.subspan(sample).data());
 		}
-#else //JUCE_USE_SIMD
+#else // JUCE_USE_SIMD
 		for(auto& in : input) {
 			in *= mGainLinear;
 		}
-#endif //JUCE_USE_SIMD
+#endif // JUCE_USE_SIMD
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

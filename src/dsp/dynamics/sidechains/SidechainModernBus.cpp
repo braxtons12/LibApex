@@ -23,15 +23,15 @@ namespace apex::dsp {
 		}
 	}
 
-	auto SidechainModernBus<float>::processFeedForwardAlternateReturnToThreshold(float input)
-		noexcept -> float
-		{
-			float rectified = math::fabsf(input);
-			float rectifiedDB = math::Decibels::linearToDecibels(rectified);
-			float gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-			mGainReductionDB = mLevelDetector.process(gainReduction);
-			return math::Decibels::decibelsToLinear(mGainReductionDB);
-		}
+	auto
+	SidechainModernBus<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept
+		-> float {
+		float rectified = math::fabsf(input);
+		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
+		float gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(gainReduction);
+		return math::Decibels::decibelsToLinear(mGainReductionDB);
+	}
 
 	/// @brief Calculates the target gain reduction to apply to the input value
 	///
@@ -55,13 +55,13 @@ namespace apex::dsp {
 		}
 	}
 
-	auto SidechainModernBus<double>::processFeedForwardAlternateReturnToThreshold(double input)
-		noexcept -> double
-		{
-			double rectified = math::fabs(input);
-			double rectifiedDB = math::Decibels::linearToDecibels(rectified);
-			double gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-			mGainReductionDB = mLevelDetector.process(gainReduction);
-			return math::Decibels::decibelsToLinear(mGainReductionDB);
-		}
-} //namespace apex::dsp
+	auto
+	SidechainModernBus<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
+		-> double {
+		double rectified = math::fabs(input);
+		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
+		double gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(gainReduction);
+		return math::Decibels::decibelsToLinear(mGainReductionDB);
+	}
+} // namespace apex::dsp

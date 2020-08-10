@@ -9,34 +9,36 @@ namespace apex::dsp {
 	auto Sidechain<float>::process(float input) noexcept -> float {
 		float x = 0.0F;
 		switch(mComputerTopology) {
-			case ComputerTopology::FeedForward: {
-													switch(mDetectorTopology) {
-														case DetectorTopology::ReturnToZero:
-															x = processFeedForwardReturnToZero(input);
-															break;
-														case DetectorTopology::ReturnToThreshold:
-															x = processFeedForwardReturnToThreshold(input);
-															break;
-														case DetectorTopology::AlternateReturnToThreshold:
-															x = processFeedForwardAlternateReturnToThreshold(input);
-															break;
-													}
-												}
-												break;
-			case ComputerTopology::FeedBack: {
-												 switch(mDetectorTopology) {
-													 case DetectorTopology::ReturnToZero:
-														 x = processFeedBackReturnToZero(input);
-														 break;
-													 case DetectorTopology::ReturnToThreshold:
-														 x = processFeedBackReturnToThreshold(input);
-														 break;
-													 case DetectorTopology::AlternateReturnToThreshold:
-														 x = processFeedBackAlternateReturnToThreshold(input);
-														 break;
-												 }
-											 }
-											 break;
+			case ComputerTopology::FeedForward:
+				{
+					switch(mDetectorTopology) {
+						case DetectorTopology::ReturnToZero:
+							x = processFeedForwardReturnToZero(input);
+							break;
+						case DetectorTopology::ReturnToThreshold:
+							x = processFeedForwardReturnToThreshold(input);
+							break;
+						case DetectorTopology::AlternateReturnToThreshold:
+							x = processFeedForwardAlternateReturnToThreshold(input);
+							break;
+					}
+				}
+				break;
+			case ComputerTopology::FeedBack:
+				{
+					switch(mDetectorTopology) {
+						case DetectorTopology::ReturnToZero:
+							x = processFeedBackReturnToZero(input);
+							break;
+						case DetectorTopology::ReturnToThreshold:
+							x = processFeedBackReturnToThreshold(input);
+							break;
+						case DetectorTopology::AlternateReturnToThreshold:
+							x = processFeedBackAlternateReturnToThreshold(input);
+							break;
+					}
+				}
+				break;
 		}
 		return mGainReductionProcessor.adjustedGainReduction(x);
 	}
@@ -155,7 +157,8 @@ namespace apex::dsp {
 	/// @brief Sets the type of the `LevelDetector` to the given value
 	///
 	/// @param type - The type of the `LevelDetector`
-	auto Sidechain<float>::setLevelDetectorType(LevelDetector<float>::DetectorType type) noexcept -> void {
+	auto Sidechain<float>::setLevelDetectorType(LevelDetector<float>::DetectorType type) noexcept
+		-> void {
 		mDetectorType = type;
 		mLevelDetector = LevelDetector<float>(&mState, mDetectorType);
 	}
@@ -163,7 +166,8 @@ namespace apex::dsp {
 	/// @brief Returns the type of the `LevelDetector`
 	///
 	/// @return - The type of the `LevelDetector`
-	auto Sidechain<float>::getLevelDetectorType() const noexcept -> LevelDetector<float>::DetectorType {
+	auto
+	Sidechain<float>::getLevelDetectorType() const noexcept -> LevelDetector<float>::DetectorType {
 		return mDetectorType;
 	}
 
@@ -177,7 +181,8 @@ namespace apex::dsp {
 	/// @brief Returns the macro-level topology of the gain reduction computer
 	///
 	/// @return - The macro-level topology of the gain reduction computer
-	auto Sidechain<float>::getComputerTopology() const noexcept -> Sidechain<float>::ComputerTopology {
+	auto
+	Sidechain<float>::getComputerTopology() const noexcept -> Sidechain<float>::ComputerTopology {
 		return mComputerTopology;
 	}
 
@@ -191,7 +196,8 @@ namespace apex::dsp {
 	/// @brief Returns the macro-level topology of the level detector
 	///
 	/// @return - The macro-level topology of the level detector
-	auto Sidechain<float>::getDetectorTopology() const noexcept -> Sidechain<float>::DetectorTopology {
+	auto
+	Sidechain<float>::getDetectorTopology() const noexcept -> Sidechain<float>::DetectorTopology {
 		return mDetectorTopology;
 	}
 
@@ -199,8 +205,7 @@ namespace apex::dsp {
 	///
 	/// @param reduction - The new `GainReduction`
 	auto Sidechain<float>::setGainReductionProcessor(
-			GainReduction<float, float, float>&& reduction) noexcept -> void
-	{
+		GainReduction<float, float, float>&& reduction) noexcept -> void {
 		mGainReductionProcessor = std::move(reduction);
 	}
 
@@ -215,14 +220,15 @@ namespace apex::dsp {
 	auto Sidechain<float>::processFeedForwardReturnToThreshold(float input) noexcept -> float {
 		float rectified = math::fabsf(input);
 		float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
-					rectified - thresholdLinear) + thresholdLinear);
+		float detectedDB = math::Decibels::linearToDecibels(
+			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		float outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
 
-	auto Sidechain<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept -> float {
+	auto
+	Sidechain<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept -> float {
 		float rectified = math::fabsf(input);
 		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
 		float gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
@@ -241,14 +247,15 @@ namespace apex::dsp {
 	auto Sidechain<float>::processFeedBackReturnToThreshold(float input) noexcept -> float {
 		float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
 		float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
-					rectified - thresholdLinear) + thresholdLinear);
+		float detectedDB = math::Decibels::linearToDecibels(
+			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		float outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
 
-	auto Sidechain<float>::processFeedBackAlternateReturnToThreshold(float input) noexcept -> float {
+	auto
+	Sidechain<float>::processFeedBackAlternateReturnToThreshold(float input) noexcept -> float {
 		float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
 		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
 		float gainReduction = mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
@@ -264,34 +271,36 @@ namespace apex::dsp {
 	auto Sidechain<double>::process(double input) noexcept -> double {
 		double x = 0.0;
 		switch(mComputerTopology) {
-			case ComputerTopology::FeedForward: {
-													switch(mDetectorTopology) {
-														case DetectorTopology::ReturnToZero:
-															x = processFeedForwardReturnToZero(input);
-															break;
-														case DetectorTopology::ReturnToThreshold:
-															x = processFeedForwardReturnToThreshold(input);
-															break;
-														case DetectorTopology::AlternateReturnToThreshold:
-															x = processFeedForwardAlternateReturnToThreshold(input);
-															break;
-													}
-												}
-												break;
-			case ComputerTopology::FeedBack: {
-												 switch(mDetectorTopology) {
-													 case DetectorTopology::ReturnToZero:
-														 x = processFeedBackReturnToZero(input);
-														 break;
-													 case DetectorTopology::ReturnToThreshold:
-														 x =  processFeedBackReturnToThreshold(input);
-														 break;
-													 case DetectorTopology::AlternateReturnToThreshold:
-														 x = processFeedBackAlternateReturnToThreshold(input);
-														 break;
-												 }
-											 }
-											 break;
+			case ComputerTopology::FeedForward:
+				{
+					switch(mDetectorTopology) {
+						case DetectorTopology::ReturnToZero:
+							x = processFeedForwardReturnToZero(input);
+							break;
+						case DetectorTopology::ReturnToThreshold:
+							x = processFeedForwardReturnToThreshold(input);
+							break;
+						case DetectorTopology::AlternateReturnToThreshold:
+							x = processFeedForwardAlternateReturnToThreshold(input);
+							break;
+					}
+				}
+				break;
+			case ComputerTopology::FeedBack:
+				{
+					switch(mDetectorTopology) {
+						case DetectorTopology::ReturnToZero:
+							x = processFeedBackReturnToZero(input);
+							break;
+						case DetectorTopology::ReturnToThreshold:
+							x = processFeedBackReturnToThreshold(input);
+							break;
+						case DetectorTopology::AlternateReturnToThreshold:
+							x = processFeedBackAlternateReturnToThreshold(input);
+							break;
+					}
+				}
+				break;
 		}
 		return mGainReductionProcessor.adjustedGainReduction(x);
 	}
@@ -410,7 +419,8 @@ namespace apex::dsp {
 	/// @brief Sets the type of the `LevelDetector` to the given value
 	///
 	/// @param type - The type of the `LevelDetector`
-	auto Sidechain<double>::setLevelDetectorType(LevelDetector<double>::DetectorType type) noexcept -> void {
+	auto Sidechain<double>::setLevelDetectorType(LevelDetector<double>::DetectorType type) noexcept
+		-> void {
 		mDetectorType = type;
 		mLevelDetector = LevelDetector<double>(&mState, mDetectorType);
 	}
@@ -418,7 +428,8 @@ namespace apex::dsp {
 	/// @brief Returns the type of the `LevelDetector`
 	///
 	/// @return - The type of the `LevelDetector`
-	auto Sidechain<double>::getLevelDetectorType() const noexcept -> LevelDetector<double>::DetectorType {
+	auto Sidechain<double>::getLevelDetectorType() const noexcept
+		-> LevelDetector<double>::DetectorType {
 		return mDetectorType;
 	}
 
@@ -432,7 +443,8 @@ namespace apex::dsp {
 	/// @brief Returns the macro-level topology of the gain reduction computer
 	///
 	/// @return - The macro-level topology of the gain reduction computer
-	auto Sidechain<double>::getComputerTopology() const noexcept -> Sidechain<double>::ComputerTopology {
+	auto
+	Sidechain<double>::getComputerTopology() const noexcept -> Sidechain<double>::ComputerTopology {
 		return mComputerTopology;
 	}
 
@@ -446,7 +458,8 @@ namespace apex::dsp {
 	/// @brief Returns the macro-level topology of the level detector
 	///
 	/// @return - The macro-level topology of the level detector
-	auto Sidechain<double>::getDetectorTopology() const noexcept -> Sidechain<double>::DetectorTopology {
+	auto
+	Sidechain<double>::getDetectorTopology() const noexcept -> Sidechain<double>::DetectorTopology {
 		return mDetectorTopology;
 	}
 
@@ -454,8 +467,7 @@ namespace apex::dsp {
 	///
 	/// @param reduction - The new `GainReduction`
 	auto Sidechain<double>::setGainReductionProcessor(
-			GainReduction<double, double, double>&& reduction) noexcept -> void
-	{
+		GainReduction<double, double, double>&& reduction) noexcept -> void {
 		mGainReductionProcessor = std::move(reduction);
 	}
 
@@ -470,14 +482,15 @@ namespace apex::dsp {
 	auto Sidechain<double>::processFeedForwardReturnToThreshold(double input) noexcept -> double {
 		double rectified = math::fabs(input);
 		double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
-					rectified - thresholdLinear) + thresholdLinear);
+		double detectedDB = math::Decibels::linearToDecibels(
+			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		double outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
 
-	auto Sidechain<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept -> double {
+	auto Sidechain<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
+		-> double {
 		double rectified = math::fabs(input);
 		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
 		double gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
@@ -496,18 +509,19 @@ namespace apex::dsp {
 	auto Sidechain<double>::processFeedBackReturnToThreshold(double input) noexcept -> double {
 		double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
 		double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(
-					rectified - thresholdLinear) + thresholdLinear);
+		double detectedDB = math::Decibels::linearToDecibels(
+			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		double outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
 
-	auto Sidechain<double>::processFeedBackAlternateReturnToThreshold(double input) noexcept -> double {
+	auto
+	Sidechain<double>::processFeedBackAlternateReturnToThreshold(double input) noexcept -> double {
 		double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
 		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
 		double gainReduction = mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(gainReduction);
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp

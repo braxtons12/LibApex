@@ -4,36 +4,23 @@ namespace apex::dsp {
 	/// @brief Constructs a `LevelDetectorSSL` with the given shared state
 	///
 	/// @param state - The shared state
-	LevelDetectorSSL<float>::LevelDetectorSSL(DynamicsState* state) noexcept
-		: mState(state)
-		{
-			mState->setHasAutoRelease(true);
-			mState->registerCallback<SSLBusAttackTime, DynamicsState::Field::Attack>(
-					[this](SSLBusAttackTime attack) {
-					this->setAttackTime(attack);
-					}
-					);
-			mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
-					[this](SSLBusReleaseTime release) {
-					this->setReleaseTime(release);
-					}
-					);
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-					[this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					}
-					);
-			mState->registerCallback<bool, DynamicsState::Field::AutoRelease>(
-					[this](bool enabled) {
-					if(enabled) {
-					this->setReleaseTime(SSLBusReleaseTime::Auto);
-					}
-					else {
-					this->setReleaseTime(this->mState->getRelease());
-					}
-					}
-					);
-		}
+	LevelDetectorSSL<float>::LevelDetectorSSL(DynamicsState* state) noexcept : mState(state) {
+		mState->setHasAutoRelease(true);
+		mState->registerCallback<SSLBusAttackTime, DynamicsState::Field::Attack>(
+			[this](SSLBusAttackTime attack) { this->setAttackTime(attack); });
+		mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
+			[this](SSLBusReleaseTime release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>([this](bool enabled) {
+			if(enabled) {
+				this->setReleaseTime(SSLBusReleaseTime::Auto);
+			}
+			else {
+				this->setReleaseTime(this->mState->getRelease());
+			}
+		});
+	}
 
 	/// @brief Sets the attack time to the given value
 	///
@@ -71,9 +58,9 @@ namespace apex::dsp {
 		}
 		else {
 			float y1n = mY1N1 + mState->getAttackCoefficient1() * math::max(input - mYOut1, 0.0F)
-				- mState->getReleaseCoefficient1() * mY1N1;
+						- mState->getReleaseCoefficient1() * mY1N1;
 			float y2n = mY2N1 * mState->getAttackCoefficient2() * math::max(input - mYOut1, 0.0F)
-				- mState->getReleaseCoefficient2() * mY2N1;
+						- mState->getReleaseCoefficient2() * mY2N1;
 			float yn = y1n + y2n;
 			mY1N1 = y1n;
 			mY2N1 = y2n;
@@ -82,114 +69,81 @@ namespace apex::dsp {
 		}
 	}
 
-	auto LevelDetectorSSL<float>::calculateAttackCoefficients(
-			SSLBusAttackTime attack,
-			size_t sampleRate)
-		noexcept -> void
-		{
-			float attackSeconds = 0.0F;
-			switch(attack) {
-				case SSLBusAttackTime::PointOneMilliseconds:
-					attackSeconds = ATTACK_POINT_ONE_MS_S;
-					break;
-				case SSLBusAttackTime::PointThreeMilliseconds:
-					attackSeconds = ATTACK_POINT_THREE_MS_S;
-					break;
-				case SSLBusAttackTime::OneMilliseconds:
-					attackSeconds = ATTACK_ONE_MS_S;
-					break;
-				case SSLBusAttackTime::ThreeMilliseconds:
-					attackSeconds = ATTACK_THREE_MS_S;
-					break;
-				case SSLBusAttackTime::TenMilliseconds:
-					attackSeconds = ATTACK_TEN_MS_S;
-					break;
-				case SSLBusAttackTime::ThirtyMilliseconds:
-					attackSeconds = ATTACK_THIRTY_MS_S;
-					break;
-			}
-			mState->setAttackCoefficient1(
-					math::expf(-1.0F / (attackSeconds * static_cast<float>(sampleRate)))
-					);
-			if(mState->getRelease() == SSLBusReleaseTime::Auto) {
-				float attack2Seconds = attackSeconds * AUTO_RELEASE_ATTACK2_MULTIPLIER;
-				mState->setAttackCoefficient2(
-						math::expf(-1.0F / (attack2Seconds * static_cast<float>(sampleRate)))
-						);
-			}
-
+	auto LevelDetectorSSL<float>::calculateAttackCoefficients(SSLBusAttackTime attack,
+															  size_t sampleRate) noexcept -> void {
+		float attackSeconds = 0.0F;
+		switch(attack) {
+			case SSLBusAttackTime::PointOneMilliseconds:
+				attackSeconds = ATTACK_POINT_ONE_MS_S;
+				break;
+			case SSLBusAttackTime::PointThreeMilliseconds:
+				attackSeconds = ATTACK_POINT_THREE_MS_S;
+				break;
+			case SSLBusAttackTime::OneMilliseconds: attackSeconds = ATTACK_ONE_MS_S; break;
+			case SSLBusAttackTime::ThreeMilliseconds: attackSeconds = ATTACK_THREE_MS_S; break;
+			case SSLBusAttackTime::TenMilliseconds: attackSeconds = ATTACK_TEN_MS_S; break;
+			case SSLBusAttackTime::ThirtyMilliseconds: attackSeconds = ATTACK_THIRTY_MS_S; break;
 		}
-
-	auto LevelDetectorSSL<float>::calculateReleaseCoefficients(
-			SSLBusReleaseTime release,
-			size_t sampleRate)
-		noexcept -> void
-		{
-			if(release == SSLBusReleaseTime::Auto) {
-				float releaseSeconds = 0.0F;
-				switch(release) {
-					case SSLBusReleaseTime::PointOneSeconds:
-						releaseSeconds = RELEASE_POINT_ONE_S;
-						break;
-					case SSLBusReleaseTime::PointThreeSeconds:
-						releaseSeconds = RELEASE_POINT_THREE_S;
-						break;
-					case SSLBusReleaseTime::PointSixSeconds:
-						releaseSeconds = RELEASE_POINT_SIX_S;
-						break;
-					case SSLBusReleaseTime::OnePointTwoSeconds:
-						releaseSeconds = RELEASE_ONE_POINT_TWO_S;
-						break;
-					case SSLBusReleaseTime::Auto: break;
-				}
-				calculateAttackCoefficients(mState->getAttack(), sampleRate);
-				mState->setReleaseCoefficient1(
-						math::expf(-1.0F / (releaseSeconds * static_cast<float>(sampleRate)))
-						);
-			}
-			else {
-				mState->setReleaseCoefficient1(
-						math::expf(-1.0F / (AUTO_RELEASE1_S * static_cast<float>(sampleRate)))
-						);
-				mState->setReleaseCoefficient2(
-						math::expf(-1.0F / (AUTO_RELEASE2_S * static_cast<float>(sampleRate)))
-						);
-			}
+		mState->setAttackCoefficient1(
+			math::expf(-1.0F / (attackSeconds * static_cast<float>(sampleRate))));
+		if(mState->getRelease() == SSLBusReleaseTime::Auto) {
+			float attack2Seconds = attackSeconds * AUTO_RELEASE_ATTACK2_MULTIPLIER;
+			mState->setAttackCoefficient2(
+				math::expf(-1.0F / (attack2Seconds * static_cast<float>(sampleRate))));
 		}
+	}
+
+	auto LevelDetectorSSL<float>::calculateReleaseCoefficients(SSLBusReleaseTime release,
+															   size_t sampleRate) noexcept -> void {
+		if(release == SSLBusReleaseTime::Auto) {
+			float releaseSeconds = 0.0F;
+			switch(release) {
+				case SSLBusReleaseTime::PointOneSeconds:
+					releaseSeconds = RELEASE_POINT_ONE_S;
+					break;
+				case SSLBusReleaseTime::PointThreeSeconds:
+					releaseSeconds = RELEASE_POINT_THREE_S;
+					break;
+				case SSLBusReleaseTime::PointSixSeconds:
+					releaseSeconds = RELEASE_POINT_SIX_S;
+					break;
+				case SSLBusReleaseTime::OnePointTwoSeconds:
+					releaseSeconds = RELEASE_ONE_POINT_TWO_S;
+					break;
+				case SSLBusReleaseTime::Auto: break;
+			}
+			calculateAttackCoefficients(mState->getAttack(), sampleRate);
+			mState->setReleaseCoefficient1(
+				math::expf(-1.0F / (releaseSeconds * static_cast<float>(sampleRate))));
+		}
+		else {
+			mState->setReleaseCoefficient1(
+				math::expf(-1.0F / (AUTO_RELEASE1_S * static_cast<float>(sampleRate))));
+			mState->setReleaseCoefficient2(
+				math::expf(-1.0F / (AUTO_RELEASE2_S * static_cast<float>(sampleRate))));
+		}
+	}
 
 	/// @brief Constructs a `LevelDetectorSSL` with the given shared state
 	///
 	/// @param state - The shared state
-	LevelDetectorSSL<double>::LevelDetectorSSL(DynamicsState* state) noexcept
-		: mState(state)
-		{
-			mState->setHasAutoRelease(true);
-			mState->registerCallback<SSLBusAttackTime, DynamicsState::Field::Attack>(
-					[this](SSLBusAttackTime attack) {
-					this->setAttackTime(attack);
-					}
-					);
-			mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
-					[this](SSLBusReleaseTime release) {
-					this->setReleaseTime(release);
-					}
-					);
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-					[this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					}
-					);
-			mState->registerCallback<bool, DynamicsState::Field::AutoRelease>(
-					[this](bool enabled) {
-					if(enabled) {
-					this->setReleaseTime(SSLBusReleaseTime::Auto);
-					}
-					else {
-					this->setReleaseTime(this->mState->getRelease());
-					}
-					}
-					);
-		}
+	LevelDetectorSSL<double>::LevelDetectorSSL(DynamicsState* state) noexcept : mState(state) {
+		mState->setHasAutoRelease(true);
+		mState->registerCallback<SSLBusAttackTime, DynamicsState::Field::Attack>(
+			[this](SSLBusAttackTime attack) { this->setAttackTime(attack); });
+		mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
+			[this](SSLBusReleaseTime release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>([this](bool enabled) {
+			if(enabled) {
+				this->setReleaseTime(SSLBusReleaseTime::Auto);
+			}
+			else {
+				this->setReleaseTime(this->mState->getRelease());
+			}
+		});
+	}
 
 	/// @brief Sets the attack time to the given value
 	///
@@ -227,9 +181,9 @@ namespace apex::dsp {
 		}
 		else {
 			double y1n = mY1N1 + mState->getAttackCoefficient1() * math::max(input - mYOut1, 0.0)
-				- mState->getReleaseCoefficient1() * mY1N1;
+						 - mState->getReleaseCoefficient1() * mY1N1;
 			double y2n = mY2N1 * mState->getAttackCoefficient2() * math::max(input - mYOut1, 0.0)
-				- mState->getReleaseCoefficient2() * mY2N1;
+						 - mState->getReleaseCoefficient2() * mY2N1;
 			double yn = y1n + y2n;
 			mY1N1 = y1n;
 			mY2N1 = y2n;
@@ -238,78 +192,59 @@ namespace apex::dsp {
 		}
 	}
 
-	auto LevelDetectorSSL<double>::calculateAttackCoefficients(
-			SSLBusAttackTime attack,
-			size_t sampleRate)
-		noexcept -> void
-		{
-			double attackSeconds = 0.0;
-			switch(attack) {
-				case SSLBusAttackTime::PointOneMilliseconds:
-					attackSeconds = ATTACK_POINT_ONE_MS_S;
-					break;
-				case SSLBusAttackTime::PointThreeMilliseconds:
-					attackSeconds = ATTACK_POINT_THREE_MS_S;
-					break;
-				case SSLBusAttackTime::OneMilliseconds:
-					attackSeconds = ATTACK_ONE_MS_S;
-					break;
-				case SSLBusAttackTime::ThreeMilliseconds:
-					attackSeconds = ATTACK_THREE_MS_S;
-					break;
-				case SSLBusAttackTime::TenMilliseconds:
-					attackSeconds = ATTACK_TEN_MS_S;
-					break;
-				case SSLBusAttackTime::ThirtyMilliseconds:
-					attackSeconds = ATTACK_THIRTY_MS_S;
-					break;
-			}
-			mState->setAttackCoefficient1(
-					math::exp(-1.0 / (attackSeconds * static_cast<double>(sampleRate)))
-					);
-			if(mState->getRelease() == SSLBusReleaseTime::Auto) {
-				double attack2Seconds = attackSeconds * AUTO_RELEASE_ATTACK2_MULTIPLIER;
-				mState->setAttackCoefficient2(
-						math::exp(-1.0 / (attack2Seconds * static_cast<double>(sampleRate)))
-						);
-			}
-
+	auto LevelDetectorSSL<double>::calculateAttackCoefficients(SSLBusAttackTime attack,
+															   size_t sampleRate) noexcept -> void {
+		double attackSeconds = 0.0;
+		switch(attack) {
+			case SSLBusAttackTime::PointOneMilliseconds:
+				attackSeconds = ATTACK_POINT_ONE_MS_S;
+				break;
+			case SSLBusAttackTime::PointThreeMilliseconds:
+				attackSeconds = ATTACK_POINT_THREE_MS_S;
+				break;
+			case SSLBusAttackTime::OneMilliseconds: attackSeconds = ATTACK_ONE_MS_S; break;
+			case SSLBusAttackTime::ThreeMilliseconds: attackSeconds = ATTACK_THREE_MS_S; break;
+			case SSLBusAttackTime::TenMilliseconds: attackSeconds = ATTACK_TEN_MS_S; break;
+			case SSLBusAttackTime::ThirtyMilliseconds: attackSeconds = ATTACK_THIRTY_MS_S; break;
 		}
-
-	auto LevelDetectorSSL<double>::calculateReleaseCoefficients(
-			SSLBusReleaseTime release,
-			size_t sampleRate)
-		noexcept -> void
-		{
-			if(release == SSLBusReleaseTime::Auto) {
-				double releaseSeconds = 0.0;
-				switch(release) {
-					case SSLBusReleaseTime::PointOneSeconds:
-						releaseSeconds = RELEASE_POINT_ONE_S;
-						break;
-					case SSLBusReleaseTime::PointThreeSeconds:
-						releaseSeconds = RELEASE_POINT_THREE_S;
-						break;
-					case SSLBusReleaseTime::PointSixSeconds:
-						releaseSeconds = RELEASE_POINT_SIX_S;
-						break;
-					case SSLBusReleaseTime::OnePointTwoSeconds:
-						releaseSeconds = RELEASE_ONE_POINT_TWO_S;
-						break;
-					case SSLBusReleaseTime::Auto: break;
-				}
-				calculateAttackCoefficients(mState->getAttack(), sampleRate);
-				mState->setReleaseCoefficient1(
-						math::exp(-1.0 / (releaseSeconds * static_cast<double>(sampleRate)))
-						);
-			}
-			else {
-				mState->setReleaseCoefficient1(
-						math::exp(-1.0 / (AUTO_RELEASE1_S * static_cast<double>(sampleRate)))
-						);
-				mState->setReleaseCoefficient2(
-						math::exp(-1.0 / (AUTO_RELEASE2_S * static_cast<double>(sampleRate)))
-						);
-			}
+		mState->setAttackCoefficient1(
+			math::exp(-1.0 / (attackSeconds * static_cast<double>(sampleRate))));
+		if(mState->getRelease() == SSLBusReleaseTime::Auto) {
+			double attack2Seconds = attackSeconds * AUTO_RELEASE_ATTACK2_MULTIPLIER;
+			mState->setAttackCoefficient2(
+				math::exp(-1.0 / (attack2Seconds * static_cast<double>(sampleRate))));
 		}
-} //namespace apex::dsp
+	}
+
+	auto
+	LevelDetectorSSL<double>::calculateReleaseCoefficients(SSLBusReleaseTime release,
+														   size_t sampleRate) noexcept -> void {
+		if(release == SSLBusReleaseTime::Auto) {
+			double releaseSeconds = 0.0;
+			switch(release) {
+				case SSLBusReleaseTime::PointOneSeconds:
+					releaseSeconds = RELEASE_POINT_ONE_S;
+					break;
+				case SSLBusReleaseTime::PointThreeSeconds:
+					releaseSeconds = RELEASE_POINT_THREE_S;
+					break;
+				case SSLBusReleaseTime::PointSixSeconds:
+					releaseSeconds = RELEASE_POINT_SIX_S;
+					break;
+				case SSLBusReleaseTime::OnePointTwoSeconds:
+					releaseSeconds = RELEASE_ONE_POINT_TWO_S;
+					break;
+				case SSLBusReleaseTime::Auto: break;
+			}
+			calculateAttackCoefficients(mState->getAttack(), sampleRate);
+			mState->setReleaseCoefficient1(
+				math::exp(-1.0 / (releaseSeconds * static_cast<double>(sampleRate))));
+		}
+		else {
+			mState->setReleaseCoefficient1(
+				math::exp(-1.0 / (AUTO_RELEASE1_S * static_cast<double>(sampleRate))));
+			mState->setReleaseCoefficient2(
+				math::exp(-1.0 / (AUTO_RELEASE2_S * static_cast<double>(sampleRate))));
+		}
+	}
+} // namespace apex::dsp

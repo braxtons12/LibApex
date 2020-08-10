@@ -6,22 +6,15 @@ namespace apex::dsp {
 	///
 	/// @param state - The shared state
 	/// @param type - The detector type
-	LevelDetector<float>::LevelDetector(DynamicsState* state,
-			DetectorType type) noexcept
-		: mType(type),
-		mState(state)
-		{
-			mState->registerCallback<float, DynamicsState::Field::Attack>([this](float attack) {
-					this->setAttackTime(attack);
-					});
-			mState->registerCallback<float, DynamicsState::Field::Release>([this](float release) {
-					this->setReleaseTime(release);
-					});
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>([this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					});
-
-		}
+	LevelDetector<float>::LevelDetector(DynamicsState* state, DetectorType type) noexcept
+		: mType(type), mState(state) {
+		mState->registerCallback<float, DynamicsState::Field::Attack>(
+			[this](float attack) { this->setAttackTime(attack); });
+		mState->registerCallback<float, DynamicsState::Field::Release>(
+			[this](float release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+	}
 
 	/// @brief Generates the detected level from the given input
 	///
@@ -49,45 +42,43 @@ namespace apex::dsp {
 	///
 	/// @param attackSeconds - The new attack time, in seconds
 	inline auto LevelDetector<float>::setAttackTime(float attackSeconds) noexcept -> void {
-		mState->setAttackCoefficient1(math::expf(-1.0F /
-					(attackSeconds * static_cast<float>(mState->getSampleRate()))));
+		mState->setAttackCoefficient1(
+			math::expf(-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
 	}
 
 	/// @brief Sets the release time to the given value
 	///
 	/// @param releaseSeconds - The new release time, in seconds
 	inline auto LevelDetector<float>::setReleaseTime(float releaseSeconds) noexcept -> void {
-		mState->setReleaseCoefficient1(math::expf(-1.0F /
-					(releaseSeconds * static_cast<float>(mState->getSampleRate()))));
+		mState->setReleaseCoefficient1(
+			math::expf(-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
 	}
 
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
 	inline auto LevelDetector<float>::setSampleRate(size_t sampleRate) noexcept -> void {
-		mState->setAttackCoefficient1(math::expf(-1.0F /
-					(mState->getAttack() * static_cast<float>(sampleRate))));
-		mState->setReleaseCoefficient1(math::expf(-1.0F /
-					(mState->getRelease() * static_cast<float>(sampleRate))));
+		mState->setAttackCoefficient1(
+			math::expf(-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
+		mState->setReleaseCoefficient1(
+			math::expf(-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
 	}
 
 	auto LevelDetector<float>::processNonCorrected(float input) noexcept -> float {
-		//y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-		float yn = mState->getReleaseCoefficient1() * mYOut1 +
-			(1.0F - mState->getAttackCoefficient1()) *
-			math::max(input - mYOut1, 0.0F);
+		// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
+		float yn = mState->getReleaseCoefficient1() * mYOut1
+				   + (1.0F - mState->getAttackCoefficient1()) * math::max(input - mYOut1, 0.0F);
 		mYOut1 = yn;
 		return yn;
 	}
 
 	auto LevelDetector<float>::processBranching(float input) noexcept -> float {
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n], x[n] > y[n-1]
-		//y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
+		// y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 		//       {
-		float yn = (input > mYOut1 ?
-				(mState->getAttackCoefficient1() * mYOut1 +
-				 (1.0F - mState->getAttackCoefficient1()) * input)
-				: (mState->getReleaseCoefficient1() * mYOut1));
+		float yn = (input > mYOut1 ? (mState->getAttackCoefficient1() * mYOut1
+									  + (1.0F - mState->getAttackCoefficient1()) * input) :
+									   (mState->getReleaseCoefficient1() * mYOut1));
 		mYOut1 = yn;
 		return yn;
 	}
@@ -96,8 +87,8 @@ namespace apex::dsp {
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
 		float ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
-		float yn = mState->getAttackCoefficient1() * mYOut1 +
-			(1.0F - mState->getAttackCoefficient1()) * ytempn;
+		float yn = mState->getAttackCoefficient1() * mYOut1
+				   + (1.0F - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
 		mYOut1 = yn;
 		return yn;
@@ -105,13 +96,12 @@ namespace apex::dsp {
 
 	auto LevelDetector<float>::processBranchingSmooth(float input) noexcept -> float {
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n],   x[n] > y[n-1]
-		//y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
+		// y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 		//       {
-		float yn = (input > mYOut1 ?
-				(mState->getAttackCoefficient1() * mYOut1 +
-				 (1.0F - mState->getAttackCoefficient1()) * input)
-				: (mState->getReleaseCoefficient1() * mYOut1 +
-					(1.0F - mState->getReleaseCoefficient1()) * input));
+		float yn = (input > mYOut1 ? (mState->getAttackCoefficient1() * mYOut1
+									  + (1.0F - mState->getAttackCoefficient1()) * input) :
+									   (mState->getReleaseCoefficient1() * mYOut1
+									  + (1.0F - mState->getReleaseCoefficient1()) * input));
 		mYOut1 = yn;
 		return yn;
 	}
@@ -119,10 +109,11 @@ namespace apex::dsp {
 	auto LevelDetector<float>::processDecoupledSmooth(float input) noexcept -> float {
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		float ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1
-				+ (1.0F - mState->getReleaseCoefficient1()) * input);
-		float yn = mState->getAttackCoefficient1() * mYOut1 +
-			(1.0F - mState->getAttackCoefficient1()) * ytempn;
+		float ytempn = math::max(input,
+								 mState->getReleaseCoefficient1() * mYTempStage1
+									 + (1.0F - mState->getReleaseCoefficient1()) * input);
+		float yn = mState->getAttackCoefficient1() * mYOut1
+				   + (1.0F - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
 		mYOut1 = yn;
 		return yn;
@@ -133,21 +124,15 @@ namespace apex::dsp {
 	///
 	/// @param state - The shared state
 	/// @param type - The detector type
-	LevelDetector<double>::LevelDetector(DynamicsState* state,
-			DetectorType type) noexcept
-		: mType(type),
-		mState(state)
-		{
-			mState->registerCallback<double, DynamicsState::Field::Attack>([this](double attack) {
-					this->setAttackTime(attack);
-					});
-			mState->registerCallback<double, DynamicsState::Field::Release>([this](double release) {
-					this->setReleaseTime(release);
-					});
-			mState->registerCallback<size_t, DynamicsState::Field::SampleRate>([this](size_t sampleRate) {
-					this->setSampleRate(sampleRate);
-					});
-		}
+	LevelDetector<double>::LevelDetector(DynamicsState* state, DetectorType type) noexcept
+		: mType(type), mState(state) {
+		mState->registerCallback<double, DynamicsState::Field::Attack>(
+			[this](double attack) { this->setAttackTime(attack); });
+		mState->registerCallback<double, DynamicsState::Field::Release>(
+			[this](double release) { this->setReleaseTime(release); });
+		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
+			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+	}
 
 	/// @brief Generates the detected level from the given input
 	///
@@ -175,45 +160,43 @@ namespace apex::dsp {
 	///
 	/// @param attackSeconds - The new attack time, in seconds
 	inline auto LevelDetector<double>::setAttackTime(double attackSeconds) noexcept -> void {
-		mState->setAttackCoefficient1(math::exp(-1.0 /
-					(attackSeconds * static_cast<double>(mState->getSampleRate()))));
+		mState->setAttackCoefficient1(
+			math::exp(-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
 	}
 
 	/// @brief Sets the release time to the given value
 	///
 	/// @param releaseSeconds - The new release time, in seconds
 	inline auto LevelDetector<double>::setReleaseTime(double releaseSeconds) noexcept -> void {
-		mState->setReleaseCoefficient1(math::exp(-1.0 /
-					(releaseSeconds * static_cast<double>(mState->getSampleRate()))));
+		mState->setReleaseCoefficient1(
+			math::exp(-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
 	}
 
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
 	inline auto LevelDetector<double>::setSampleRate(size_t sampleRate) noexcept -> void {
-		mState->setAttackCoefficient1(math::exp(-1.0 /
-					(mState->getAttack() * static_cast<double>(sampleRate))));
-		mState->setReleaseCoefficient1(math::exp(-1.0 /
-					(mState->getRelease() * static_cast<double>(sampleRate))));
+		mState->setAttackCoefficient1(
+			math::exp(-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
+		mState->setReleaseCoefficient1(
+			math::exp(-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
 	}
 
 	auto LevelDetector<double>::processNonCorrected(double input) noexcept -> double {
-		//y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-		double yn = mState->getReleaseCoefficient1() * mYOut1 +
-			(1.0 - mState->getAttackCoefficient1()) *
-			math::max(input - mYOut1, 0.0);
+		// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
+		double yn = mState->getReleaseCoefficient1() * mYOut1
+					+ (1.0 - mState->getAttackCoefficient1()) * math::max(input - mYOut1, 0.0);
 		mYOut1 = yn;
 		return yn;
 	}
 
 	auto LevelDetector<double>::processBranching(double input) noexcept -> double {
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n], x[n] > y[n-1]
-		//y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
+		// y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 		//       {
-		double yn = (input > mYOut1 ?
-				(mState->getAttackCoefficient1() * mYOut1 +
-				 (1.0 - mState->getAttackCoefficient1()) * input)
-				: (mState->getReleaseCoefficient1() * mYOut1));
+		double yn = (input > mYOut1 ? (mState->getAttackCoefficient1() * mYOut1
+									   + (1.0 - mState->getAttackCoefficient1()) * input) :
+										(mState->getReleaseCoefficient1() * mYOut1));
 		mYOut1 = yn;
 		return yn;
 	}
@@ -222,8 +205,8 @@ namespace apex::dsp {
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
 		double ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
-		double yn = mState->getAttackCoefficient1() * mYOut1 +
-			(1.0 - mState->getAttackCoefficient1()) * ytempn;
+		double yn = mState->getAttackCoefficient1() * mYOut1
+					+ (1.0 - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
 		mYOut1 = yn;
 		return yn;
@@ -231,13 +214,12 @@ namespace apex::dsp {
 
 	auto LevelDetector<double>::processBranchingSmooth(double input) noexcept -> double {
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n],   x[n] > y[n-1]
-		//y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
+		// y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 		//       {
-		double yn = (input > mYOut1 ?
-				(mState->getAttackCoefficient1() * mYOut1 +
-				 (1.0 - mState->getAttackCoefficient1()) * input)
-				: (mState->getReleaseCoefficient1() * mYOut1 +
-					(1.0 - mState->getReleaseCoefficient1()) * input));
+		double yn = (input > mYOut1 ? (mState->getAttackCoefficient1() * mYOut1
+									   + (1.0 - mState->getAttackCoefficient1()) * input) :
+										(mState->getReleaseCoefficient1() * mYOut1
+									   + (1.0 - mState->getReleaseCoefficient1()) * input));
 		mYOut1 = yn;
 		return yn;
 	}
@@ -245,12 +227,13 @@ namespace apex::dsp {
 	auto LevelDetector<double>::processDecoupledSmooth(double input) noexcept -> double {
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		double ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1
-				+ (1.0 - mState->getReleaseCoefficient1()) * input);
-		double yn = mState->getAttackCoefficient1() * mYOut1 +
-			(1.0 - mState->getAttackCoefficient1()) * ytempn;
+		double ytempn = math::max(input,
+								  mState->getReleaseCoefficient1() * mYTempStage1
+									  + (1.0 - mState->getReleaseCoefficient1()) * input);
+		double yn = mState->getAttackCoefficient1() * mYOut1
+					+ (1.0 - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
 		mYOut1 = yn;
 		return yn;
 	}
-	} //namespace apex::dsp
+} // namespace apex::dsp

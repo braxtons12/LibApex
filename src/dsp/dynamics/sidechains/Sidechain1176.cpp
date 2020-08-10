@@ -67,43 +67,48 @@ namespace apex::dsp {
 	auto Sidechain1176<float>::setRatio(Ratio ratio) noexcept -> void {
 		mRatio = ratio;
 		switch(mRatio) {
-			case Ratio::FourToOne: {
-									   mState.setRatio(RATIO_4_TO_1);
-									   mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
-									   mState.setKneeWidth(KNEE_RATIO_4_TO_1);
-								   }
-								   break;
-			case Ratio::EightToOne: {
-										mState.setRatio(RATIO_8_TO_1);
-										mState.setThreshold(THRESHOLD_RATIO_8_TO_1);
-										mState.setKneeWidth(KNEE_RATIO_8_TO_1);
-									}
-									break;
-			case Ratio::TwelveToOne: {
-										 mState.setRatio(RATIO_12_TO_1);
-										 mState.setThreshold(THRESHOLD_RATIO_12_TO_1);
-										 mState.setKneeWidth(KNEE_RATIO_12_TO_1);
-									 }
-									 break;
-			case Ratio::TwentyToOne: {
-										 mState.setRatio(RATIO_20_TO_1);
-										 mState.setThreshold(THRESHOLD_RATIO_20_TO_1);
-										 mState.setKneeWidth(KNEE_RATIO_20_TO_1);
-									 }
-									 break;
-			case Ratio::AllButtonsIn: {
-										  mState.setRatio(RATIO_ALL_BUTTONS);
-										  mState.setThreshold(THRESHOLD_RATIO_ALL_BUTTONS);
-										  mState.setKneeWidth(KNEE_RATIO_ALL_BUTTONS);
-									  }
-									  break;
+			case Ratio::FourToOne:
+				{
+					mState.setRatio(RATIO_4_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_4_TO_1);
+				}
+				break;
+			case Ratio::EightToOne:
+				{
+					mState.setRatio(RATIO_8_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_8_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_8_TO_1);
+				}
+				break;
+			case Ratio::TwelveToOne:
+				{
+					mState.setRatio(RATIO_12_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_12_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_12_TO_1);
+				}
+				break;
+			case Ratio::TwentyToOne:
+				{
+					mState.setRatio(RATIO_20_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_20_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_20_TO_1);
+				}
+				break;
+			case Ratio::AllButtonsIn:
+				{
+					mState.setRatio(RATIO_ALL_BUTTONS);
+					mState.setThreshold(THRESHOLD_RATIO_ALL_BUTTONS);
+					mState.setKneeWidth(KNEE_RATIO_ALL_BUTTONS);
+				}
+				break;
 		}
 	}
 
 	/// @brief Sets the DynamicsType
 	///
 	/// @param type - The dynamics type
-	auto Sidechain1176<float>::setDynamicsType(DynamicsType type) noexcept -> void{
+	auto Sidechain1176<float>::setDynamicsType(DynamicsType type) noexcept -> void {
 		mDynamicsType = type;
 		if(mDynamicsType == DynamicsType::Compressor) {
 			mGainComputer = &mCompressorComputer;
@@ -187,36 +192,41 @@ namespace apex::dsp {
 	auto Sidechain1176<double>::setRatio(Ratio ratio) noexcept -> void {
 		mRatio = ratio;
 		switch(mRatio) {
-			case Ratio::FourToOne: {
-									   mState.setRatio(RATIO_4_TO_1);
-									   mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
-									   mState.setKneeWidth(KNEE_RATIO_4_TO_1);
-								   }
-								   break;
-			case Ratio::EightToOne: {
-										mState.setRatio(RATIO_8_TO_1);
-										mState.setThreshold(THRESHOLD_RATIO_8_TO_1);
-										mState.setKneeWidth(KNEE_RATIO_8_TO_1);
-									}
-									break;
-			case Ratio::TwelveToOne: {
-										 mState.setRatio(RATIO_12_TO_1);
-										 mState.setThreshold(THRESHOLD_RATIO_12_TO_1);
-										 mState.setKneeWidth(KNEE_RATIO_12_TO_1);
-									 }
-									 break;
-			case Ratio::TwentyToOne: {
-										 mState.setRatio(RATIO_20_TO_1);
-										 mState.setThreshold(THRESHOLD_RATIO_20_TO_1);
-										 mState.setKneeWidth(KNEE_RATIO_20_TO_1);
-									 }
-									 break;
-			case Ratio::AllButtonsIn: {
-										  mState.setRatio(RATIO_ALL_BUTTONS);
-										  mState.setThreshold(THRESHOLD_RATIO_ALL_BUTTONS);
-										  mState.setKneeWidth(KNEE_RATIO_ALL_BUTTONS);
-									  }
-									  break;
+			case Ratio::FourToOne:
+				{
+					mState.setRatio(RATIO_4_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_4_TO_1);
+				}
+				break;
+			case Ratio::EightToOne:
+				{
+					mState.setRatio(RATIO_8_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_8_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_8_TO_1);
+				}
+				break;
+			case Ratio::TwelveToOne:
+				{
+					mState.setRatio(RATIO_12_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_12_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_12_TO_1);
+				}
+				break;
+			case Ratio::TwentyToOne:
+				{
+					mState.setRatio(RATIO_20_TO_1);
+					mState.setThreshold(THRESHOLD_RATIO_20_TO_1);
+					mState.setKneeWidth(KNEE_RATIO_20_TO_1);
+				}
+				break;
+			case Ratio::AllButtonsIn:
+				{
+					mState.setRatio(RATIO_ALL_BUTTONS);
+					mState.setThreshold(THRESHOLD_RATIO_ALL_BUTTONS);
+					mState.setKneeWidth(KNEE_RATIO_ALL_BUTTONS);
+				}
+				break;
 		}
 	}
 
@@ -240,4 +250,4 @@ namespace apex::dsp {
 		mGainReductionDB = outputDB - detectedDB;
 		return math::Decibels::decibelsToLinear(mGainReductionDB);
 	}
-} //namespace apex::dsp
+} // namespace apex::dsp
