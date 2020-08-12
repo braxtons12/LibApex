@@ -1,102 +1,85 @@
 #include "ApexMeter.h"
 
-namespace apex {
-	namespace ui {
-		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
-							 std::function<double(double)> valueToProportionOfHeightFunc,
-							 double clipLevelProportional)
-			: juce::Component(), mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
-			  mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc), mUsesFilmStrip(false),
-			  mUsesMaxedImage(false), mClipLevelProportion(clipLevelProportional) {
-		}
+namespace apex::ui {
+	/// @brief Constructs an `ApexMeter` with the given parameters
+	///
+	/// @param proportionOfHeightToValueFunc - The function to convert the proportion of height
+	/// to the user/dsp facing value
+	/// @param valueToProportionOfHeightFunc - The function to convert the user/dsp facing value
+	/// to the proportion of height
+	/// @param clipLevelProportional - The proportion of the height for which "clipping"
+	/// indication should start
+	ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						 std::function<double(double)> valueToProportionOfHeightFunc,
+						 double clipLevelProportional) noexcept
+		: juce::Component(),
+		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
+		  mClipLevelProportion(clipLevelProportional) {
+	}
 
-		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
-							 std::function<double(double)> valueToProportionOfHeightFunc,
-							 double clipLevelProportional,
-							 size_t numSteps)
-			: juce::Component(), mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
-			  mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc), mUsesFilmStrip(false),
-			  mUsesMaxedImage(false), mNumSteps(numSteps),
-			  mClipLevelProportion(clipLevelProportional) {
-		}
+	/// @brief Constructs an `ApexMeter` with the given parameters
+	///
+	/// @param proportionOfHeightToValueFunc - The function to convert the proportion of height
+	/// to the user/dsp facing value
+	/// @param valueToProportionOfHeightFunc - The function to convert the user/dsp facing value
+	/// to the proportion of height
+	/// @param clipLevelProportional - The proportion of the height for which "clipping"
+	/// indication should start
+	/// @param numSteps - The number of equally spaced level "ticks" on the meter
+	ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						 std::function<double(double)> valueToProportionOfHeightFunc,
+						 double clipLevelProportional,
+						 size_t numSteps) noexcept
+		: juce::Component(),
+		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
+		  mNumSteps(numSteps), mClipLevelProportion(clipLevelProportional) {
+	}
 
-		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
-							 std::function<double(double)> valueToProportionOfHeightFunc,
-							 ApexFilmStrip filmStrip)
-			: juce::Component(), mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
-			  mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc), mFilmStrip(filmStrip),
-			  mUsesFilmStrip(true), mUsesMaxedImage(false) {
-		}
+	/// @brief Constructs an `ApexMeter` that uses a film strip image asset to draw itself
+	///
+	/// @param proportionOfFilmStripToValueFunc - The function to convert the proportion of the
+	/// number of film strip frames to the user/dsp facing value
+	/// @param valueToProportionOfFilmStripFunc - The function to convert the user/dsp facing
+	/// value to the proportion of the number of film strip frames
+	/// @param filmStrip - The film strip asset used to visually represent this
+	ApexMeter::ApexMeter(std::function<double(double)> proportionOfFilmStripToValueFunc,
+						 std::function<double(double)> valueToProportionOfFilmStripFunc,
+						 ApexFilmStrip filmStrip) noexcept
+		: juce::Component(),
+		  mProportionOfHeightToValueFunc(std::move(proportionOfFilmStripToValueFunc)),
+		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfFilmStripFunc)),
+		  mFilmStrip(std::move(filmStrip)), mUsesFilmStrip(true) {
+	}
 
-		ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
-							 std::function<double(double)> valueToProportionOfHeightFunc,
-							 juce::Image maxedMeterImage)
-			: juce::Component(), mProportionOfHeightToValueFunc(proportionOfHeightToValueFunc),
-			  mValueToProportionOfHeightFunc(valueToProportionOfHeightFunc), mUsesFilmStrip(false),
-			  mMaxedMeterImage(maxedMeterImage), mUsesMaxedImage(true) {
-		}
+	/// @brief Constructs an `ApexMeter` that uses an image of the meter at its max level to
+	/// draw itself
+	///
+	/// @param proportionOfHeightToValueFunc - The function to convert the proportion of the
+	/// meter height to the corresponding user/dsp facing value
+	/// @param valueToProportionOfHeightFunc - The function to convert the user/dsp facing value
+	/// to the corresponding proportion of meter height
+	/// @param maxedMeterImage - The image of the meter at its maximum level
+	ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
+						 std::function<double(double)> valueToProportionOfHeightFunc,
+						 juce::Image maxedMeterImage) noexcept
+		: juce::Component(),
+		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
+		  mMaxedMeterImage(std::move(maxedMeterImage)), mUsesMaxedImage(true) {
+	}
 
-		ApexMeter::~ApexMeter() {
+	/// @brief Draws this meter to the screen
+	///
+	/// @param g - The graphics context to use to draw this
+	auto ApexMeter::paint(juce::Graphics& g) noexcept -> void {
+		if(mLookAndFeel != nullptr) {
+			mLookAndFeel->drawApexMeter(g,
+										static_cast<float>(mLevel),
+										static_cast<float>(mClipLevelProportion),
+										mNumSteps,
+										*this);
 		}
-
-		double ApexMeter::getLevel() {
-			return mLevel;
-		}
-
-		void ApexMeter::setLevel(double level) {
-			mLevel = level;
-			repaint();
-		}
-
-		size_t ApexMeter::getNumSteps() {
-			return mNumSteps;
-		}
-
-		void ApexMeter::setNumSteps(size_t numSteps) {
-			mNumSteps = numSteps;
-			repaint();
-		}
-
-		double ApexMeter::getClipProportion() {
-			return mClipLevelProportion;
-		}
-
-		void ApexMeter::setClipProportion(double proportion) {
-			mClipLevelProportion = proportion;
-			repaint();
-		}
-
-		void ApexMeter::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
-			mLookAndFeel = lookNFeel;
-			juce::Component::setLookAndFeel(mLookAndFeel.get());
-			repaint();
-		}
-
-		double ApexMeter::getValueFromProportionOfHeight(double proportion) {
-			return mProportionOfHeightToValueFunc(proportion);
-		}
-
-		double ApexMeter::getProportionOfHeightFromValue(double value) {
-			return mValueToProportionOfHeightFunc(value);
-		}
-
-		Option<ApexFilmStrip> ApexMeter::getFilmStrip() {
-			return mUsesFilmStrip ? Option<ApexFilmStrip>::Some(mFilmStrip) :
-									  Option<ApexFilmStrip>::None();
-		}
-
-		Option<juce::Image> ApexMeter::getMaxedImage() {
-			return mUsesMaxedImage ? Option<juce::Image>::Some(mMaxedMeterImage) :
-									   Option<juce::Image>::None();
-		}
-
-		void ApexMeter::paint(juce::Graphics& g) {
-			if(mLookAndFeel != nullptr)
-				mLookAndFeel->drawApexMeter(g,
-											static_cast<float>(mLevel),
-											static_cast<float>(mClipLevelProportion),
-											mNumSteps,
-											*this);
-		}
-	} // namespace ui
-} // namespace apex
+	}
+} // namespace apex::ui

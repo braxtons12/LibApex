@@ -1,156 +1,177 @@
 #include "ApexFader.h"
 
-namespace apex {
-	namespace ui {
-		ApexFader::ApexFader(juce::Slider::SliderStyle style,
-							 std::function<double(double)> proportionToValueFunc,
-							 std::function<double(double)> valueToProportionFunc,
-							 ApexFilmStrip filmStrip)
-			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc, filmStrip),
-			  mUsesThumbImage(false), mIsThumbOnly(false) {
-		}
+namespace apex::ui {
+	/// @brief Constructs an `ApexFader` with the given parameters. This will use a film strip
+	/// based visual representation, provided by the given film strip
+	///
+	/// @param style - The `SliderStyle` of the fader, eg: linear horizontal, linear vertical,
+	/// etc
+	/// @param proportionToValueFunc - The function to use to convert the proportion of length
+	/// corresponding to the fader's current setting to its user and dsp facing value
+	/// @param valueToProportionFunc - The function to use to convert the user/dsp facing value
+	/// of the fader's current setting to the corresponding proportion of its length
+	/// @param strip - The film strip graphics asset containing the images(frames) for the
+	/// fader's values
+	ApexFader::ApexFader(juce::Slider::SliderStyle style,
+						 std::function<double(double)> proportionToValueFunc,
+						 std::function<double(double)> valueToProportionFunc,
+						 ApexFilmStrip filmStrip) noexcept
+		: ApexSlider(style,
+					 std::move(proportionToValueFunc),
+					 std::move(valueToProportionFunc),
+					 std::move(filmStrip)) {
+	}
 
-		ApexFader::ApexFader(juce::Slider::SliderStyle style,
-							 std::function<double(double)> proportionToValueFunc,
-							 std::function<double(double)> valueToProportionFunc,
-							 juce::Image thumbImage)
-			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
-			  mThumbImage(thumbImage), mUsesThumbImage(true), mIsThumbOnly(true) {
-			mThumbComponent.setImage(mThumbImage);
-			mThumbComponent.setImagePlacement(juce::RectanglePlacement(
-				juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
-			addAndMakeVisible(mThumbComponent);
-			mInitialThumbWidth = mThumbImage.getWidth();
-			mInitialThumbHeight = mThumbImage.getHeight();
-		}
+	/// @brief Constructs an `ApexFader` with the given parameters. This will use a "thumb only"
+	/// visual representation via the given thumb image
+	///
+	/// @param style - The `SliderStyle` of the fader, eg: linear horizontal, linear vertical,
+	/// etc
+	/// @param proportionToValueFunc - The function to use to convert the proportion of length
+	/// corresponding to the fader's current setting to its user and dsp facing value
+	/// @param valueToProportionFunc - The function to use to convert the user/dsp facing value
+	/// of the fader's current setting to the corresponding proportion of its length
+	/// @param thumbImage - The image to use as the fader's thumb (the cap, knob, handle,etc)
+	ApexFader::ApexFader(juce::Slider::SliderStyle style,
+						 std::function<double(double)> proportionToValueFunc,
+						 std::function<double(double)> valueToProportionFunc,
+						 juce::Image thumbImage) noexcept
+		: ApexSlider(style, std::move(proportionToValueFunc), std::move(valueToProportionFunc)),
+		  mThumbImage(std::move(thumbImage)), mUsesThumbImage(true), mIsThumbOnly(true) {
+		mThumbComponent.setImage(mThumbImage);
+		mThumbComponent.setImagePlacement(juce::RectanglePlacement(
+			juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
+		addAndMakeVisible(mThumbComponent);
+		mInitialThumbWidth = static_cast<size_t>(mThumbImage.getWidth());
+		mInitialThumbHeight = static_cast<size_t>(mThumbImage.getHeight());
+	}
 
-		ApexFader::ApexFader(juce::Slider::SliderStyle style,
-							 std::function<double(double)> proportionToValueFunc,
-							 std::function<double(double)> valueToProportionFunc,
-							 bool isThumbOnlySlider,
-							 int initialThumbWidth,
-							 int initialThumbHeight)
-			: ApexSlider(style, proportionToValueFunc, valueToProportionFunc),
-			  mUsesThumbImage(false), mIsThumbOnly(isThumbOnlySlider),
-			  mInitialThumbWidth(initialThumbWidth), mInitialThumbHeight(initialThumbHeight) {
-		}
+	/// @brief Constructs an `ApexFader` with the given parameters. This will use drawn graphics
+	/// for the visual representation, either using a "filled meter" style or "thumb only" style
+	/// depending on the value of `isThumbOnlySlider`
+	///
+	/// @param style - The `SliderStyle` of the fader, eg: linear horizontal, linear vertical,
+	/// etc
+	/// @param proportionToValueFunc - The function to use to convert the proportion of length
+	/// corresponding to the fader's current setting to its user and dsp facing value
+	/// @param valueToProportionFunc - The function to use to convert the user/dsp facing value
+	/// of the fader's current setting to the corresponding proportion of its length
+	/// @param isThumbOnlySlider - Whether the visual representation should only use a thumb
+	/// @param initialThumbWidth - The initial (typically the maximum) width of the thumb
+	/// @param initialThumbHeight - The initial (typically the maximum) height of the thumb
+	ApexFader::ApexFader(juce::Slider::SliderStyle style,
+						 std::function<double(double)> proportionToValueFunc,
+						 std::function<double(double)> valueToProportionFunc,
+						 bool isThumbOnlySlider,
+						 size_t initialThumbWidth,
+						 size_t initialThumbHeight) noexcept
+		: ApexSlider(style, std::move(proportionToValueFunc), std::move(valueToProportionFunc)),
+		  mIsThumbOnly(isThumbOnlySlider), mInitialThumbWidth(initialThumbWidth),
+		  mInitialThumbHeight(initialThumbHeight) {
+	}
 
-		ApexFader::~ApexFader() {
-		}
+	/// @brief Draws this component to the screen
+	///
+	/// @param g - The graphics context to draw with
+	auto ApexFader::paint(juce::Graphics& g) noexcept -> void {
+		double sliderPos = getProportionFromValue(getValue());
+		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-		juce::String ApexFader::getTextFromValue(double value) {
-			double val = getValueFromProportion(value);
-			juce::String temp = juce::String(val);
-			if(math::fabs(val) <= 0.010)
-				return juce::String("0.0");
-			else
-				return temp.dropLastCharacters(
-					temp.length() - (temp.upToFirstOccurrenceOf(".", true, true).length() + 2));
-		}
+		auto style = getSliderStyle();
 
-		double ApexFader::getValueFromText(const juce::String& text) {
-			return getProportionFromValue(text.getDoubleValue());
+		if(mUsesThumbImage) {
+			resizeThumb();
 		}
-
-		void
-		ApexFader::mouseWheelMove(const juce::MouseEvent& e, const juce::MouseWheelDetails& wheel) {
-			double reversed = wheel.isReversed ? -1.0 : 1.0;
-			double val = getValueFromProportion(getValue());
-			if(e.mods.isShiftDown()) {
-				setValue(getProportionFromValue(val + 1.0 * reversed), juce::sendNotificationAsync);
-			}
-			else {
-				setValue(getProportionFromValue(val + 3.0 * reversed), juce::sendNotificationAsync);
-			}
+		else if(mIsThumbOnly && mLookAndFeel != nullptr) {
+			mLookAndFeel->drawLinearApexSliderThumb(g,
+													getX(),
+													getY(),
+													getWidth(),
+													getHeight(),
+													static_cast<float>(sliderPos),
+													*this);
 		}
+		else if(mLookAndFeel != nullptr) {
+			mLookAndFeel->drawLinearApexSlider(g,
+											   getX(),
+											   getY(),
+											   getWidth(),
+											   getHeight(),
+											   static_cast<float>(sliderPos),
+											   style,
+											   *this);
+		}
+	}
 
-		void ApexFader::paint(juce::Graphics& g) {
+	/// @brief Resizes this's thumb to match its current bounds
+	auto ApexFader::resizeThumb() noexcept -> void {
+		double sliderPos = getProportionFromValue(getValue());
+		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
+
+		size_t thumbWidth = math::roundU(mInitialThumbWidth * mXScaleFactor);
+		size_t thumbHeight = math::roundU(mInitialThumbHeight * mYScaleFactor);
+
+		if(isHorizontal()) {
+			int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0F));
+			int thumbY = static_cast<int>(gsl::narrow_cast<float>(getHeight()) * 0.5F
+										  - (thumbHeight / 2.0F));
+			juce::Rectangle<int> bounds = {thumbX,
+										   thumbY,
+										   gsl::narrow_cast<int>(thumbWidth),
+										   gsl::narrow_cast<int>(thumbHeight)};
+			mThumbComponent.setBounds(bounds);
+		}
+		else {
+			int thumbX = static_cast<int>(gsl::narrow_cast<float>(getWidth()) * 0.5F
+										  - (thumbWidth / 2.0F));
+			int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0F));
+			juce::Rectangle<int> bounds = {thumbX,
+										   thumbY,
+										   gsl::narrow_cast<int>(thumbWidth),
+										   gsl::narrow_cast<int>(thumbHeight)};
+			mThumbComponent.setBounds(bounds);
+		}
+	}
+
+	/// @brief Returns whether the given point is within this component's bounds
+	///
+	/// @param p - The point in question
+	///
+	/// @return Whether the point is within this's bounds
+	auto ApexFader::isInBounds(juce::Point<int> p) const noexcept -> bool {
+		auto x = static_cast<size_t>(p.x);
+		auto y = static_cast<size_t>(p.y);
+
+		auto localX = static_cast<size_t>(getX());
+		auto localY = static_cast<size_t>(getY());
+		auto width = static_cast<size_t>(getWidth());
+		auto height = static_cast<size_t>(getHeight());
+		x += localX;
+		y += localY;
+
+		if(mIsThumbOnly) {
 			double sliderPos = getProportionFromValue(getValue());
 			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-			auto style = getSliderStyle();
-
-			if(mUsesThumbImage) {
-				resizeThumb();
-			}
-			else if(mIsThumbOnly && mLookAndFeel != nullptr) {
-				mLookAndFeel->drawLinearApexSliderThumb(g,
-														getX(),
-														getY(),
-														getWidth(),
-														getHeight(),
-														static_cast<float>(sliderPos),
-														*this);
-			}
-			else if(mLookAndFeel != nullptr) {
-				mLookAndFeel->drawLinearApexSlider(g,
-												   getX(),
-												   getY(),
-												   getWidth(),
-												   getHeight(),
-												   static_cast<float>(sliderPos),
-												   style,
-												   *this);
-			}
-		}
-
-		void ApexFader::resized() {
-			if(mUsesThumbImage) {
-				resizeThumb();
-			}
-		}
-
-		void ApexFader::resizeThumb() {
-			double sliderPos = getProportionFromValue(getValue());
-			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
-
-			int thumbWidth = static_cast<int>(mInitialThumbWidth * mXScaleFactor + 0.5f);
-			int thumbHeight = static_cast<int>(mInitialThumbHeight * mYScaleFactor + 0.5f);
-
+			size_t thumbWidth = math::roundU(mInitialThumbWidth * mXScaleFactor);
+			size_t thumbHeight = math::roundU(mInitialThumbHeight * mYScaleFactor);
+			size_t thumbX = 0;
+			size_t thumbY = 0;
 			if(isHorizontal()) {
-				int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
-				int thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
-				juce::Rectangle<int> bounds = {thumbX, thumbY, thumbWidth, thumbHeight};
-				mThumbComponent.setBounds(bounds);
+				thumbX = static_cast<size_t>(sliderPos * width - (thumbWidth / 2.0F));
+				thumbY = static_cast<size_t>(gsl::narrow_cast<float>(height) * 0.5F
+											 - (thumbHeight / 2.0F));
 			}
 			else {
-				int thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
-				int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
-				juce::Rectangle<int> bounds = {thumbX, thumbY, thumbWidth, thumbHeight};
-				mThumbComponent.setBounds(bounds);
+				thumbX = static_cast<size_t>(gsl::narrow_cast<float>(width) * 0.5F
+											 - (thumbWidth / 2.0F));
+				thumbY = static_cast<size_t>(sliderPos * height - (thumbHeight / 2.0F));
 			}
+			return (x >= thumbX && x <= thumbX + thumbWidth && y >= thumbY
+					&& y <= thumbY + thumbWidth);
 		}
-
-		bool ApexFader::isInBounds(juce::Point<int> p) {
-			int x = p.x;
-			int y = p.y;
-
-			x += getX();
-			y += getY();
-
-			if(mIsThumbOnly) {
-				double sliderPos = getProportionFromValue(getValue());
-				jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
-
-				int thumbWidth = static_cast<int>(mInitialThumbWidth * mXScaleFactor + 0.5f);
-				int thumbHeight = static_cast<int>(mInitialThumbHeight * mYScaleFactor + 0.5f);
-				int thumbX;
-				int thumbY;
-				if(isHorizontal()) {
-					thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0f));
-					thumbY = static_cast<int>(getHeight() * 0.5f - (thumbHeight / 2.0f));
-				}
-				else {
-					thumbX = static_cast<int>(getWidth() * 0.5f - (thumbWidth / 2.0f));
-					thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0f));
-				}
-				return (x >= thumbX && x <= thumbX + thumbWidth && y >= thumbY
-						&& y <= thumbY + thumbWidth);
-			}
-			else {
-				return (x >= getX() && x <= getX() + getWidth() && y >= getY()
-						&& y <= getY() + getHeight());
-			}
+		else {
+			return (x >= localX && x <= localY + width && y >= localY && y <= localY + height);
 		}
-	} // namespace ui
-} // namespace apex
+	}
+} // namespace apex::ui

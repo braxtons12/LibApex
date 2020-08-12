@@ -32,38 +32,6 @@ namespace apex::dsp {
 		return 0.0F;
 	}
 
-	/// @brief Resets this level detector to an initial state
-	inline auto LevelDetector<float>::reset() noexcept -> void {
-		mYOut1 = 0.0F;
-		mYTempStage1 = 0.0F;
-	}
-
-	/// @brief Sets the attack time to the given value
-	///
-	/// @param attackSeconds - The new attack time, in seconds
-	inline auto LevelDetector<float>::setAttackTime(float attackSeconds) noexcept -> void {
-		mState->setAttackCoefficient1(
-			math::expf(-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
-	}
-
-	/// @brief Sets the release time to the given value
-	///
-	/// @param releaseSeconds - The new release time, in seconds
-	inline auto LevelDetector<float>::setReleaseTime(float releaseSeconds) noexcept -> void {
-		mState->setReleaseCoefficient1(
-			math::expf(-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
-	}
-
-	/// @brief Sets the sample rate to the given value
-	///
-	/// @param sampleRate - The new sample rate, in Hertz
-	inline auto LevelDetector<float>::setSampleRate(size_t sampleRate) noexcept -> void {
-		mState->setAttackCoefficient1(
-			math::expf(-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
-		mState->setReleaseCoefficient1(
-			math::expf(-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
-	}
-
 	auto LevelDetector<float>::processNonCorrected(float input) noexcept -> float {
 		// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
 		float yn = mState->getReleaseCoefficient1() * mYOut1
@@ -148,38 +116,6 @@ namespace apex::dsp {
 			case DetectorType::DecoupledSmooth: return processDecoupledSmooth(input);
 		}
 		return 0.0F;
-	}
-
-	/// @brief Resets this level detector to an initial state
-	inline auto LevelDetector<double>::reset() noexcept -> void {
-		mYOut1 = 0.0F;
-		mYTempStage1 = 0.0F;
-	}
-
-	/// @brief Sets the attack time to the given value
-	///
-	/// @param attackSeconds - The new attack time, in seconds
-	inline auto LevelDetector<double>::setAttackTime(double attackSeconds) noexcept -> void {
-		mState->setAttackCoefficient1(
-			math::exp(-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
-	}
-
-	/// @brief Sets the release time to the given value
-	///
-	/// @param releaseSeconds - The new release time, in seconds
-	inline auto LevelDetector<double>::setReleaseTime(double releaseSeconds) noexcept -> void {
-		mState->setReleaseCoefficient1(
-			math::exp(-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
-	}
-
-	/// @brief Sets the sample rate to the given value
-	///
-	/// @param sampleRate - The new sample rate, in Hertz
-	inline auto LevelDetector<double>::setSampleRate(size_t sampleRate) noexcept -> void {
-		mState->setAttackCoefficient1(
-			math::exp(-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
-		mState->setReleaseCoefficient1(
-			math::exp(-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
 	}
 
 	auto LevelDetector<double>::processNonCorrected(double input) noexcept -> double {

@@ -15,4 +15,4 @@
                                                                    \
 	static auto operator delete[](void* obj) noexcept->void {      \
 		juce::ignoreUnused(obj);                                   \
-	}\
+	}

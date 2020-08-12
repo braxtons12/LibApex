@@ -1,62 +1,39 @@
 #include "ApexFilmStrip.h"
 
-namespace apex {
-	namespace ui {
+namespace apex::ui {
+	/// @brief Constructs an `ApexFilmStrip` with the given film strip image
+	///
+	/// @param image - The film strip image asset
+	/// @param frameSize - The size of a frame in the film strip
+	/// @param isHorizontal - Whether the film strip rolls horizontally or vertically
+	ApexFilmStrip::ApexFilmStrip(juce::Image image, size_t frameSize, bool isHorizontal) noexcept
+		: mFilmStrip(std::move(image)), mFrameSize(frameSize), mIsHorizontal(isHorizontal) {
 
-		ApexFilmStrip::ApexFilmStrip() {
+		mNumFrames = mIsHorizontal ? (size_t(mFilmStrip.getWidth()) / mFrameSize) :
+									   (size_t(mFilmStrip.getHeight()) / mFrameSize);
+	}
+
+	/// @brief Returns the frame at the given index
+	///
+	/// @param index - The index for the desired frame
+	///
+	/// @return - The frame corresponding to `index`
+	auto ApexFilmStrip::getFrame(size_t index) const noexcept -> juce::Image {
+		if(mIsHorizontal) {
+			auto height = static_cast<size_t>(mFilmStrip.getHeight());
+			return mFilmStrip.getClippedImage(
+				juce::Rectangle<int>(static_cast<int>(index * mFrameSize),
+									 0,
+									 static_cast<int>(mFrameSize),
+									 static_cast<int>(height)));
 		}
-
-		ApexFilmStrip::ApexFilmStrip(juce::Image image, size_t frameSize, bool isHorizontal) {
-
-			mFilmStrip = image;
-			mFrameSize = frameSize;
-			mIsHorizontal = isHorizontal;
-			mNumFrames = mIsHorizontal ? (size_t(mFilmStrip.getWidth()) / mFrameSize) :
-										   (size_t(mFilmStrip.getHeight()) / mFrameSize);
+		else {
+			auto width = static_cast<size_t>(mFilmStrip.getWidth());
+			return mFilmStrip.getClippedImage(
+				juce::Rectangle<int>(0,
+									 static_cast<int>(index * mFrameSize),
+									 static_cast<int>(width),
+									 static_cast<int>(mFrameSize)));
 		}
-
-		ApexFilmStrip::ApexFilmStrip(const ApexFilmStrip& strip) {
-			mFilmStrip = strip.mFilmStrip;
-			mFrameSize = strip.mFrameSize;
-			mIsHorizontal = strip.mIsHorizontal;
-			mNumFrames = strip.mNumFrames;
-		}
-
-		ApexFilmStrip::~ApexFilmStrip() {
-		}
-
-		size_t ApexFilmStrip::getNumFrames() {
-			return mNumFrames;
-		}
-
-		juce::Image ApexFilmStrip::getFrame(size_t index) {
-			if(mIsHorizontal) {
-				size_t height = size_t(mFilmStrip.getHeight());
-				return mFilmStrip.getClippedImage(
-					juce::Rectangle<int>(static_cast<int>(index * mFrameSize),
-										 0,
-										 static_cast<int>(mFrameSize),
-										 static_cast<int>(height)));
-			}
-			else {
-				size_t width = size_t(mFilmStrip.getWidth());
-				return mFilmStrip.getClippedImage(
-					juce::Rectangle<int>(0,
-										 static_cast<int>(index * mFrameSize),
-										 static_cast<int>(width),
-										 static_cast<int>(mFrameSize)));
-			}
-		}
-
-		juce::Image ApexFilmStrip::getFrameScaled(size_t index, size_t width, size_t height) {
-			return getFrame(index).rescaled(static_cast<int>(width),
-											static_cast<int>(height),
-											juce::Graphics::highResamplingQuality);
-		}
-
-		ApexFilmStrip ApexFilmStrip::operator=(const ApexFilmStrip& strip) {
-			return ApexFilmStrip(strip);
-		}
-
-	} // namespace ui
-} // namespace apex
+	}
+} // namespace apex::ui

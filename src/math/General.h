@@ -122,4 +122,20 @@ namespace apex::math {
 	[[nodiscard]] constexpr inline auto max(size_t x, size_t y) noexcept -> size_t {
 		return (x > y ? x : y);
 	}
+
+	[[nodiscard]] constexpr inline auto round(float x) noexcept -> int32_t {
+		return static_cast<int32_t>(x + 0.5F);
+	}
+
+	[[nodiscard]] constexpr inline auto round(double x) noexcept -> int32_t {
+		return static_cast<int32_t>(x + 0.5);
+	}
+
+	[[nodiscard]] constexpr inline auto roundU(float x) noexcept -> size_t {
+		return static_cast<size_t>(x + 0.5F);
+	}
+
+	[[nodiscard]] constexpr inline auto roundU(double x) noexcept -> size_t {
+		return static_cast<size_t>(x + 0.5);
+	}
 } // namespace apex::math

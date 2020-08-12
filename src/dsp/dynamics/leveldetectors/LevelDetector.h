@@ -69,22 +69,36 @@ namespace apex::dsp {
 		[[nodiscard]] virtual auto process(float input) noexcept -> float;
 
 		/// @brief Resets this level detector to an initial state
-		virtual auto reset() noexcept -> void;
+		virtual inline auto reset() noexcept -> void {
+			mYOut1 = 0.0F;
+			mYTempStage1 = 0.0F;
+		}
 
 		/// @brief Sets the attack time to the given value
 		///
 		/// @param attackSeconds - The new attack time, in seconds
-		virtual auto setAttackTime(float attackSeconds) noexcept -> void;
+		virtual inline auto setAttackTime(float attackSeconds) noexcept -> void {
+			mState->setAttackCoefficient1(
+				math::expf(-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
+		}
 
 		/// @brief Sets the release time to the given value
 		///
 		/// @param releaseSeconds - The new release time, in seconds
-		virtual auto setReleaseTime(float releaseSeconds) noexcept -> void;
+		virtual inline auto setReleaseTime(float releaseSeconds) noexcept -> void {
+			mState->setReleaseCoefficient1(
+				math::expf(-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
+		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		virtual auto setSampleRate(size_t sampleRate) noexcept -> void;
+		virtual inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+			mState->setAttackCoefficient1(
+				math::expf(-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
+			mState->setReleaseCoefficient1(
+				math::expf(-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
+		}
 
 		auto operator=(LevelDetector<float>&& detector) noexcept -> LevelDetector<float>& = default;
 
@@ -151,22 +165,36 @@ namespace apex::dsp {
 		[[nodiscard]] virtual auto process(double input) noexcept -> double;
 
 		/// @brief Resets this level detector to an initial state
-		virtual auto reset() noexcept -> void;
+		virtual inline auto reset() noexcept -> void {
+			mYOut1 = 0.0;
+			mYTempStage1 = 0.0;
+		}
 
 		/// @brief Sets the attack time to the given value
 		///
 		/// @param attackSeconds - The new attack time, in seconds
-		virtual auto setAttackTime(double attackSeconds) noexcept -> void;
+		virtual inline auto setAttackTime(double attackSeconds) noexcept -> void {
+			mState->setAttackCoefficient1(
+				math::exp(-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
+		}
 
 		/// @brief Sets the release time to the given value
 		///
 		/// @param releaseSeconds - The new release time, in seconds
-		virtual auto setReleaseTime(double releaseSeconds) noexcept -> void;
+		virtual inline auto setReleaseTime(double releaseSeconds) noexcept -> void {
+			mState->setReleaseCoefficient1(
+				math::exp(-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
+		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		virtual auto setSampleRate(size_t sampleRate) noexcept -> void;
+		virtual inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+			mState->setAttackCoefficient1(
+				math::exp(-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
+			mState->setReleaseCoefficient1(
+				math::exp(-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
+		}
 
 		auto
 		operator=(LevelDetector<double>&& detector) noexcept -> LevelDetector<double>& = default;

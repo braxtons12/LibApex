@@ -26,7 +26,6 @@ namespace apex::utils {
 	template<typename T, bool copyable = std::is_copy_constructible_v<T> && !std::is_pointer_v<T>>
 	class [[nodiscard]] Option {
 	  public:
-		Option(Option<T, copyable>& option) = default;
 		Option(const Option<T, copyable>& option) = default;
 		Option(Option<T, copyable>&& option) noexcept = default;
 		~Option() noexcept = default;
@@ -257,19 +256,13 @@ namespace apex::utils {
 			}
 		}
 
-		auto operator=(Option<T, copyable> option) -> Option<T, copyable>& {
-			if(option.mIsSome) {
-				mSome = option.mSome;
-			}
-			mIsSome = option.mIsSome;
-		}
 		auto operator=(const Option<T, copyable>& option) -> Option<T, copyable>& = default;
 		auto operator=(Option<T, copyable>&& option) noexcept -> Option<T, copyable>& = default;
 
 	  private:
 		explicit Option(T some) noexcept : mSome(some), mIsSome(true) {
 		}
-		Option() noexcept = default;
+		Option() = default;
 
 		/// The contained value
 		T mSome;

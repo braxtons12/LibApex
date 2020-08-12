@@ -1,60 +1,48 @@
 #include "ApexToggleButton.h"
 
-namespace apex {
-	namespace ui {
-		ApexToggleButton::ApexToggleButton(ApexFilmStrip filmStrip)
-			: juce::ToggleButton(), mFilmStrip(filmStrip), mUsesFilmStrip(true),
-			  mUsesImages(false) {
-		}
+namespace apex::ui {
+	/// @brief Constructs an `ApexToggleButton` with that uses the given film strip image asset
+	/// for drawing
+	///
+	/// @param filmStrip - The film strip asset to use to draw this button
+	ApexToggleButton::ApexToggleButton(ApexFilmStrip filmStrip) noexcept
+		: juce::ToggleButton(), mFilmStrip(std::move(filmStrip)), mUsesFilmStrip(true) {
+	}
 
-		ApexToggleButton::ApexToggleButton(juce::Image buttonToggled,
-										   juce::Image buttonHovered,
-										   juce::Image buttonNormal)
-			: juce::ToggleButton(), mToggledImage(buttonToggled), mHoveredImage(buttonHovered),
-			  mNormalImage(buttonNormal), mUsesFilmStrip(false), mUsesImages(true) {
-		}
+	/// @brief Constructs an `ApexToggleButton` with the given text label
+	///
+	/// @param text - The text label
+	ApexToggleButton::ApexToggleButton(const juce::String& text) noexcept
+		: juce::ToggleButton(text) {
+	}
 
-		ApexToggleButton::ApexToggleButton(const juce::String& text)
-			: juce::ToggleButton(text), mUsesFilmStrip(false), mUsesImages(false) {
-		}
+	/// @brief Constructs an `ApexToggleButton` that uses the given image assets to draw it
+	///
+	/// @param buttonToggled - The image to use when the button is toggled
+	/// @param buttonHovered - The image to use when the button is hovered
+	/// @param buttonNormal - The image to use when the button is in its normal state
+	ApexToggleButton::ApexToggleButton(juce::Image buttonToggled,
+									   juce::Image buttonHovered,
+									   juce::Image buttonNormal) noexcept
+		: juce::ToggleButton(), mToggledImage(std::move(buttonToggled)),
+		  mHoveredImage(std::move(buttonHovered)), mNormalImage(std::move(buttonNormal)),
+		  mUsesImages(true) {
+	}
 
-		ApexToggleButton::~ApexToggleButton() {
+	/// @brief Draws this button to the screen
+	///
+	/// @param g - The graphics context to use to draw this
+	/// @param shouldDrawButtonAsHighlighted - Whether the button should be drawn as hovered
+	/// @param shouldDrawButtonAsDown - Whether the button should be drawn as pressed
+	auto ApexToggleButton::paintButton(juce::Graphics& g,
+									   bool shouldDrawButtonAsHighlighted,
+									   bool shouldDrawButtonAsDown) noexcept -> void {
+		juce::ignoreUnused(shouldDrawButtonAsDown);
+		if(mLookAndFeel != nullptr) {
+			mLookAndFeel->drawApexToggleButton(g,
+											   *this,
+											   shouldDrawButtonAsHighlighted,
+											   getToggleState());
 		}
-
-		Option<ApexFilmStrip> ApexToggleButton::getFilmStrip() {
-			return mUsesFilmStrip ? Option<ApexFilmStrip>::Some(mFilmStrip) :
-									  Option<ApexFilmStrip>::None();
-		}
-
-		Option<juce::Image> ApexToggleButton::getToggledImage() {
-			return mUsesImages ? Option<juce::Image>::Some(mToggledImage) :
-								   Option<juce::Image>::None();
-		}
-
-		Option<juce::Image> ApexToggleButton::getHoveredImage() {
-			return mUsesImages ? Option<juce::Image>::Some(mHoveredImage) :
-								   Option<juce::Image>::None();
-		}
-
-		Option<juce::Image> ApexToggleButton::getNormalImage() {
-			return mUsesImages ? Option<juce::Image>::Some(mNormalImage) :
-								   Option<juce::Image>::None();
-		}
-
-		void ApexToggleButton::setLookAndFeel(std::shared_ptr<ApexLookAndFeel> lookNFeel) {
-			mLookAndFeel = lookNFeel;
-			juce::Component::setLookAndFeel(mLookAndFeel.get());
-		}
-
-		void ApexToggleButton::paintButton(juce::Graphics& g,
-										   bool shouldDrawButtonAsHighlighted,
-										   bool shouldDrawButtonAsDown) {
-			juce::ignoreUnused(shouldDrawButtonAsDown);
-			if(mLookAndFeel != nullptr)
-				mLookAndFeel->drawApexToggleButton(g,
-												   *this,
-												   shouldDrawButtonAsHighlighted,
-												   getToggleState());
-		}
-	} // namespace ui
-} // namespace apex
+	}
+} // namespace apex::ui
