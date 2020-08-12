@@ -214,7 +214,7 @@ set(MATH
 	"${CMAKE_SOURCE_DIR}/src/math/Decibels.h"
 	"${CMAKE_SOURCE_DIR}/src/math/Exponentials.h"
 	"${CMAKE_SOURCE_DIR}/src/math/TrigFuncs.h"
-	"${CMAKE_SOURCE_DIR}/src/math/Random.cpp"
+	"${CMAKE_SOURCE_DIR}/src/math/Random.h"
 	)
 
 set(UTILS
