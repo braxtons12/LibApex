@@ -212,6 +212,10 @@ namespace apex::math {
 			return *this;
 		}
 
+		friend constexpr inline auto operator-(const Decibels& lhs) noexcept -> Decibels {
+			return Decibels(-lhs.mValue);
+		}
+
 		friend constexpr inline auto operator*(const Decibels& lhs, float x) noexcept -> Decibels {
 			return Decibels(lhs.mValue * x);
 		}
@@ -294,6 +298,10 @@ namespace apex::math {
 	};
 
 	constexpr inline auto operator"" _dB(long double x) noexcept -> Decibels {
+		return Decibels(gsl::narrow_cast<double>(x));
+	}
+
+	constexpr inline auto operator""_dB(unsigned long long x) noexcept -> Decibels {
 		return Decibels(gsl::narrow_cast<double>(x));
 	}
 } // namespace apex::math

@@ -55,9 +55,9 @@ namespace apex::dsp {
 		DynamicsState(AttackKind attack,
 					  ReleaseKind release,
 					  T ratio,
-					  T threshold,
-					  T kneeWidth,
-					  size_t sampleRate) noexcept
+					  Decibels threshold,
+					  Decibels kneeWidth,
+					  Hertz sampleRate) noexcept
 			: mAttack(attack), mRelease(release), mRatio(ratio), mThreshold(threshold),
 			  mKneeWidth(kneeWidth), mSampleRate(sampleRate) {
 		}
@@ -126,7 +126,7 @@ namespace apex::dsp {
 		/// @brief Sets the threshold to the given value
 		///
 		/// @param threshold - The new threshold, in Decibels
-		inline auto setThreshold(T threshold) noexcept -> void {
+		inline auto setThreshold(Decibels threshold) noexcept -> void {
 			mThreshold = threshold;
 
 			for(const auto& callback : mThresholdCallbacks) {
@@ -137,14 +137,14 @@ namespace apex::dsp {
 		/// @brief Returns the current threshold
 		///
 		/// @return - The threshold, in Decibels
-		[[nodiscard]] inline auto getThreshold() const noexcept -> T {
+		[[nodiscard]] inline auto getThreshold() const noexcept -> Decibels {
 			return mThreshold;
 		}
 
 		/// @brief Sets the knee width to the given value
 		///
 		/// @param kneeWidth - The new knee width, in Decibels
-		inline auto setKneeWidth(T kneeWidth) noexcept -> void {
+		inline auto setKneeWidth(Decibels kneeWidth) noexcept -> void {
 			mKneeWidth = kneeWidth;
 
 			for(const auto& callback : mKneeWidthCallbacks) {
@@ -155,14 +155,14 @@ namespace apex::dsp {
 		/// @brief Returns the current knee width
 		///
 		/// @return - The knee width, in Decibels
-		[[nodiscard]] inline auto getKneeWidth() const noexcept -> T {
+		[[nodiscard]] inline auto getKneeWidth() const noexcept -> Decibels {
 			return mKneeWidth;
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+		inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mSampleRate = sampleRate;
 
 			for(const auto& callback : mSampleRateCallbacks) {
@@ -173,7 +173,7 @@ namespace apex::dsp {
 		/// @brief Returns the current sample rate
 		///
 		/// @return - The sample rate, in Hertz
-		[[nodiscard]] inline auto getSampleRate() const noexcept -> size_t {
+		[[nodiscard]] inline auto getSampleRate() const noexcept -> Hertz {
 			return mSampleRate;
 		}
 
@@ -350,8 +350,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<T, Field::Threshold>(const std::function<void(T)>& callback) noexcept
-			-> void {
+		inline auto registerCallback<Decibels, Field::Threshold>(
+			const std::function<void(Decibels)>& callback) noexcept -> void {
 			callback(mThreshold);
 			mThresholdCallbacks.push_back(callback);
 		}
@@ -359,8 +359,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<T, Field::KneeWidth>(const std::function<void(T)>& callback) noexcept
-			-> void {
+		inline auto registerCallback<Decibels, Field::KneeWidth>(
+			const std::function<void(Decibels)>& callback) noexcept -> void {
 			callback(mKneeWidth);
 			mKneeWidthCallbacks.push_back(callback);
 		}
@@ -368,8 +368,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<size_t, Field::SampleRate>(
-			const std::function<void(size_t)>& callback) noexcept -> void {
+		inline auto registerCallback<Hertz, Field::SampleRate>(
+			const std::function<void(Hertz)>& callback) noexcept -> void {
 			callback(mSampleRate);
 			mSampleRateCallbacks.push_back(callback);
 		}
@@ -396,9 +396,9 @@ namespace apex::dsp {
 		/// The ratio, `float` or `double`
 		T mRatio = static_cast<T>(1.1);
 		/// The threshold in Decibels, `float` or `double`
-		T mThreshold = static_cast<T>(-12.0);
+		Decibels mThreshold = -12.0_dB;
 		/// The knee width in Decibels, `float` or `double`
-		T mKneeWidth = static_cast<T>(6.0);
+		Decibels mKneeWidth = 6.0_dB;
 		/// The first attack coefficient, `float` or `double`
 		T mAttackCoefficient1 = static_cast<T>(0.0);
 		/// The second attack coefficient, `float` or `double`
@@ -408,7 +408,7 @@ namespace apex::dsp {
 		/// The second release coefficient, `float` or `double`
 		T mReleaseCoefficient2 = static_cast<T>(0.0);
 		/// The sample rate in Hertz
-		size_t mSampleRate = 44100;
+		Hertz mSampleRate = 44100_Hz;
 		bool mHasAutoRelease = false;
 		bool mAutoReleaseEnabled = false;
 
@@ -421,11 +421,11 @@ namespace apex::dsp {
 		/// Ratio callbacks
 		std::vector<std::function<void(T)>> mRatioCallbacks;
 		/// Threshold callbacks
-		std::vector<std::function<void(T)>> mThresholdCallbacks;
+		std::vector<std::function<void(Decibels)>> mThresholdCallbacks;
 		/// Knee width callbacks
-		std::vector<std::function<void(T)>> mKneeWidthCallbacks;
+		std::vector<std::function<void(Decibels)>> mKneeWidthCallbacks;
 		/// Sample rate callbacks
-		std::vector<std::function<void(size_t)>> mSampleRateCallbacks;
+		std::vector<std::function<void(Hertz)>> mSampleRateCallbacks;
 		/// AutoRelease callbacks
 		std::vector<std::function<void(bool)>> mAutoReleaseCallbacks;
 
