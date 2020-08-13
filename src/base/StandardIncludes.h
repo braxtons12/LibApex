@@ -5,6 +5,7 @@
 #include "../math/Constants.h"
 #include "../math/Decibels.h"
 #include "../math/Exponentials.h"
+#include "../math/Frequency.h"
 #include "../math/General.h"
 #include "../math/Random.h"
 #include "../math/TrigFuncs.h"
@@ -37,5 +38,9 @@ namespace apex {
 	using apex::utils::Result;
 
 	using apex::math::Decibels;
+	using apex::math::Hertz;
+	using apex::math::Radians;
 	using apex::math::operator""_dB;
+	using apex::math::operator""_Hz;
+	using apex::math::operator""_rad;
 } // namespace apex
