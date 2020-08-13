@@ -17,23 +17,6 @@ namespace apex::dsp {
 		updateState();
 	}
 
-	/// @brief Sets the bit-depth of this `Dither` to the given value
-	///
-	/// @param numBits - The new bit-depth to use
-	auto Dither<float>::setNumBits(size_t numBits) noexcept -> void {
-		jassert(numBits <= 24);
-		mNumBits = numBits;
-		updateState();
-	}
-
-	/// @brief Sets the noise shaping to use to the given value
-	///
-	/// @param noiseShaping - The noise shaping to use
-	auto Dither<float>::setNoiseShaping(float noiseShaping) noexcept -> void {
-		mNoiseShaping = noiseShaping;
-		updateState();
-	}
-
 	/// @brief Dithers and bit-depth reduces the input based on this `Dither`'s parameters
 	///
 	/// @param input - The input to dither
@@ -86,23 +69,6 @@ namespace apex::dsp {
 	Dither<double>::Dither(size_t numBits, double noiseShaping) noexcept
 		: mNumBits(numBits), mNoiseShaping(noiseShaping) {
 		jassert(numBits <= 48);
-		updateState();
-	}
-
-	/// @brief Sets the bit-depth of this `Dither` to the given value
-	///
-	/// @param numBits - The new bit-depth to use
-	auto Dither<double>::setNumBits(size_t numBits) noexcept -> void {
-		jassert(numBits <= 48);
-		mNumBits = numBits;
-		updateState();
-	}
-
-	/// @brief Sets the noise shaping to use to the given value
-	///
-	/// @param noiseShaping - The noise shaping to use
-	auto Dither<double>::setNoiseShaping(double noiseShaping) noexcept -> void {
-		mNoiseShaping = noiseShaping;
 		updateState();
 	}
 
