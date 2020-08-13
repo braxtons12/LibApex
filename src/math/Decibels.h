@@ -15,6 +15,7 @@ namespace apex::math {
 		}
 		constexpr Decibels(const Decibels& decibels) noexcept = default;
 		constexpr Decibels(Decibels&& decibels) noexcept = default;
+		~Decibels() noexcept = default;
 
 		/// @brief Converts the given linear value to the corresponding Decibel value
 		///
