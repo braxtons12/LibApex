@@ -16,8 +16,6 @@
 #include "src/dsp/dynamics/sidechains/SidechainModernBus.cpp"
 #include "src/dsp/dynamics/sidechains/SidechainSSL.cpp"
 #include "src/dsp/filters/BiQuadFilter.cpp"
-#include "src/dsp/gainstages/GainStageFET.cpp"
-#include "src/dsp/gainstages/GainStageVCA.cpp"
 #include "src/dsp/processors/EQBand.cpp"
 #include "src/dsp/processors/Gain.cpp"
 #include "src/dsp/processors/ParallelEQBand.cpp"

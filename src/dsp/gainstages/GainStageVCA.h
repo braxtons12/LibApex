@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "../../base/StandardIncludes.h"
+#include "../WaveShaper.h"
 #include "GainStage.h"
 
 namespace apex::dsp {
@@ -37,7 +38,9 @@ namespace apex::dsp {
 		/// @param input - The input to process
 		///
 		/// @return - The processed output
-		auto process(float input) noexcept -> float override;
+		[[nodiscard]] inline auto process(float input) noexcept -> float override {
+			return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
+		}
 
 		auto operator=(GainStageVCA<float>&& stage) noexcept -> GainStageVCA<float>& = default;
 
@@ -66,7 +69,9 @@ namespace apex::dsp {
 		/// @param input - The input to process
 		///
 		/// @return - The processed output
-		auto process(double input) noexcept -> double override;
+		[[nodiscard]] inline auto process(double input) noexcept -> double override {
+			return waveshapers::softSaturation(input, SATURATION_AMOUNT, SATURATION_SLOPE);
+		}
 
 		auto operator=(GainStageVCA<double>&& stage) noexcept -> GainStageVCA<double>& = default;
 
