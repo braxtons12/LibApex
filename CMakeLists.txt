@@ -206,7 +206,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/EQBand.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/ParallelEQBand.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/Gain.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.h"
 	)
 
 set(MATH
