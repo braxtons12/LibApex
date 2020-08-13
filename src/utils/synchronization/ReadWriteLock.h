@@ -85,7 +85,7 @@ namespace apex::utils::synchronization {
 		///
 		/// @return `ScopedLockGuard<T>` - The lock guard for the data
 		[[nodiscard]] inline auto lock() noexcept -> ScopedLockGuard<T> {
-			while(mLocked) {
+			while(*mLocked) {
 			}
 			*mLocked = true;
 			return ScopedLockGuard<T>(mData, [this]() { this->unlock(); });
