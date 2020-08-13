@@ -1,14 +1,14 @@
 #include "Error.h"
 
 namespace apex::utils {
+	Error::Error(juce::String message) noexcept : mMessage(std::move(message)) {
+	}
+
 	Error::~Error() noexcept {
 		if(mHasSource) {
 			delete mSource;
 			mSource = nullptr;
 		}
-	}
-
-	Error::Error(juce::String message) noexcept : mMessage(std::move(message)) {
 	}
 
 	/// @brief Constructs an `Error` with the given message and source.

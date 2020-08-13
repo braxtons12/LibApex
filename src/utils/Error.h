@@ -50,6 +50,18 @@ namespace apex::utils {
 
 		auto operator=(const Error& error) -> Error& = default;
 		auto operator=(Error&& error) noexcept -> Error& = default;
+		auto operator new(std::size_t size) noexcept -> gsl::owner<void*> {
+			gsl::owner<void*> pointer = std::malloc(size);
+			if(pointer != nullptr) {
+				return pointer;
+			}
+			else {
+				return nullptr;
+			}
+		}
+		auto operator delete(void* pointer) noexcept -> void {
+			std::free(gsl::owner<void*>(pointer));
+		}
 
 	  protected:
 		Error() noexcept = default;
@@ -59,8 +71,5 @@ namespace apex::utils {
 		gsl::owner<Error*> mSource = nullptr;
 		/// the error message
 		juce::String mMessage = "";
-
-	  private:
-		APEX_DECLARE_NON_HEAP_ALLOCATABLE()
 	};
 } // namespace apex::utils

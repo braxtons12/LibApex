@@ -222,6 +222,8 @@ set(UTILS
 	"${CMAKE_SOURCE_DIR}/src/utils/Result.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Error.cpp"
 	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ScopedLockGuard.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ReadWriteLock.h"
 	)
 
 target_sources(Apex PUBLIC
