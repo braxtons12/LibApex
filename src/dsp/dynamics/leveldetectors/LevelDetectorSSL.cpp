@@ -10,8 +10,8 @@ namespace apex::dsp {
 			[this](SSLBusAttackTime attack) { this->setAttackTime(attack); });
 		mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
 			[this](SSLBusReleaseTime release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>([this](bool enabled) {
 			if(enabled) {
 				this->setReleaseTime(SSLBusReleaseTime::Auto);
@@ -42,7 +42,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorSSL<float>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorSSL<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		calculateAttackCoefficients(mState->getAttack(), sampleRate);
 		calculateReleaseCoefficients(mState->getRelease(), sampleRate);
 	}
@@ -70,7 +70,7 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetectorSSL<float>::calculateAttackCoefficients(SSLBusAttackTime attack,
-															  size_t sampleRate) noexcept -> void {
+															  Hertz sampleRate) noexcept -> void {
 		float attackSeconds = 0.0F;
 		switch(attack) {
 			case SSLBusAttackTime::PointOneMilliseconds:
@@ -94,7 +94,7 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetectorSSL<float>::calculateReleaseCoefficients(SSLBusReleaseTime release,
-															   size_t sampleRate) noexcept -> void {
+															   Hertz sampleRate) noexcept -> void {
 		if(release == SSLBusReleaseTime::Auto) {
 			float releaseSeconds = 0.0F;
 			switch(release) {
@@ -133,8 +133,8 @@ namespace apex::dsp {
 			[this](SSLBusAttackTime attack) { this->setAttackTime(attack); });
 		mState->registerCallback<SSLBusReleaseTime, DynamicsState::Field::Release>(
 			[this](SSLBusReleaseTime release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>([this](bool enabled) {
 			if(enabled) {
 				this->setReleaseTime(SSLBusReleaseTime::Auto);
@@ -165,7 +165,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorSSL<double>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorSSL<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		calculateAttackCoefficients(mState->getAttack(), sampleRate);
 		calculateReleaseCoefficients(mState->getRelease(), sampleRate);
 	}
@@ -193,7 +193,7 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetectorSSL<double>::calculateAttackCoefficients(SSLBusAttackTime attack,
-															   size_t sampleRate) noexcept -> void {
+															   Hertz sampleRate) noexcept -> void {
 		double attackSeconds = 0.0;
 		switch(attack) {
 			case SSLBusAttackTime::PointOneMilliseconds:
@@ -218,7 +218,7 @@ namespace apex::dsp {
 
 	auto
 	LevelDetectorSSL<double>::calculateReleaseCoefficients(SSLBusReleaseTime release,
-														   size_t sampleRate) noexcept -> void {
+														   Hertz sampleRate) noexcept -> void {
 		if(release == SSLBusReleaseTime::Auto) {
 			double releaseSeconds = 0.0;
 			switch(release) {

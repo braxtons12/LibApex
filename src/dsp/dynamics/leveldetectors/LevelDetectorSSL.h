@@ -78,7 +78,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		/// @brief Generates the detected level from the given input
 		///
@@ -118,9 +118,9 @@ namespace apex::dsp {
 		static const constexpr float AUTO_RELEASE2_S = 5.1F;
 
 		auto
-		calculateAttackCoefficients(SSLBusAttackTime attack, size_t sampleRate) noexcept -> void;
+		calculateAttackCoefficients(SSLBusAttackTime attack, Hertz sampleRate) noexcept -> void;
 		auto
-		calculateReleaseCoefficients(SSLBusReleaseTime release, size_t sampleRate) noexcept -> void;
+		calculateReleaseCoefficients(SSLBusReleaseTime release, Hertz sampleRate) noexcept -> void;
 
 		/// @deprecated DO NOT USE, USE `setAttackTime(SSLBusAttackTime)`
 		[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]] auto
@@ -175,7 +175,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		/// @brief Generates the detected level from the given input
 		///
@@ -215,9 +215,9 @@ namespace apex::dsp {
 		static const constexpr double AUTO_RELEASE2_S = 5.1;
 
 		auto
-		calculateAttackCoefficients(SSLBusAttackTime attack, size_t sampleRate) noexcept -> void;
+		calculateAttackCoefficients(SSLBusAttackTime attack, Hertz sampleRate) noexcept -> void;
 		auto
-		calculateReleaseCoefficients(SSLBusReleaseTime release, size_t sampleRate) noexcept -> void;
+		calculateReleaseCoefficients(SSLBusReleaseTime release, Hertz sampleRate) noexcept -> void;
 
 		/// @deprecated DO NOT USE, USE `setAttackTime(SSLBusAttackTime)`
 		[[deprecated("Use `setAttackType` for this specific `LevelDetector`")]] auto

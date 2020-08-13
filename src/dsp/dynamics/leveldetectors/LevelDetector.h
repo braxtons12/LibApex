@@ -93,7 +93,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		virtual inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mState->setAttackCoefficient1(
 				math::expf(-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
 			mState->setReleaseCoefficient1(
@@ -189,7 +189,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		virtual inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mState->setAttackCoefficient1(
 				math::exp(-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
 			mState->setReleaseCoefficient1(

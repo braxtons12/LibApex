@@ -13,8 +13,8 @@ namespace apex::dsp {
 			[this](float attack) { this->setAttackTime(attack); });
 		mState->registerCallback<float, DynamicsState::Field::Release>(
 			[this](float release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 	}
 
 	/// @brief Generates the detected level from the given input
@@ -55,7 +55,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorRMS<float>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorRMS<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		LevelDetector<float>::setSampleRate(sampleRate);
 		mRMSCoeff = math::expf(-1.0F / (mRMSSeconds * static_cast<float>(sampleRate)));
 	}
@@ -72,8 +72,8 @@ namespace apex::dsp {
 			[this](double attack) { this->setAttackTime(attack); });
 		mState->registerCallback<double, DynamicsState::Field::Release>(
 			[this](double release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 	}
 
 	/// @brief Generates the detected level from the given input
@@ -114,7 +114,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorRMS<double>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorRMS<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		LevelDetector<double>::setSampleRate(sampleRate);
 		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds * static_cast<double>(sampleRate)));
 	}

@@ -17,7 +17,13 @@ namespace apex::math {
 		/// @brief Constructs a `Decibels` with the given decibel value
 		///
 		/// @param decibels - The decibel value
-		explicit constexpr Decibels(double decibels) noexcept : mValue(decibels) {
+		constexpr Decibels(float decibels) noexcept : mValue(decibels) {
+		}
+
+		/// @brief Constructs a `Decibels` with the given decibel value
+		///
+		/// @param decibels - The decibel value
+		constexpr Decibels(double decibels) noexcept : mValue(decibels) {
 		}
 
 		/// @brief Copy constructs a `Decibels` from the given one
@@ -373,12 +379,12 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
-		constexpr inline auto operator=(float x) noexcept -> Decibels& {
+		constexpr inline auto operator=(const float& x) noexcept -> Decibels& {
 			mValue = x;
 			return *this;
 		}
 
-		constexpr inline auto operator=(double x) noexcept -> Decibels& {
+		constexpr inline auto operator=(const double& x) noexcept -> Decibels& {
 			mValue = x;
 			return *this;
 		}

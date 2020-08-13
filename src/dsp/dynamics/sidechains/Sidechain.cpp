@@ -6,8 +6,8 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto Sidechain<float>::process(float input) noexcept -> float {
-		float x = 0.0F;
+	auto Sidechain<float>::process(float input) noexcept -> Decibels {
+		Decibels x = Decibels::MINUS_INFINITY_DB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
 				{
@@ -40,7 +40,7 @@ namespace apex::dsp {
 				}
 				break;
 		}
-		return mGainReductionProcessor.adjustedGainReduction(x);
+		return mGainReductionProcessor.adjustedGainReduction(Decibels(x));
 	}
 
 	/// @brief Sets the attack to the given value
@@ -88,28 +88,28 @@ namespace apex::dsp {
 	/// @brief Sets the Threshold
 	///
 	/// @param threshold - The threshold, in decibels
-	auto Sidechain<float>::setThreshold(float threshold) noexcept -> void {
+	auto Sidechain<float>::setThreshold(Decibels threshold) noexcept -> void {
 		mState.setThreshold(threshold);
 	}
 
 	/// @brief Returns the Threshold
 	///
 	/// @return - The threshold, in decibels
-	auto Sidechain<float>::getThreshold() const noexcept -> float {
+	auto Sidechain<float>::getThreshold() const noexcept -> Decibels {
 		return mState.getThreshold();
 	}
 
 	/// @brief Sets the KneeWidth
 	///
 	/// @param kneeWidth - The knee width, in decibels
-	auto Sidechain<float>::setKneeWidth(float kneeWidth) noexcept -> void {
+	auto Sidechain<float>::setKneeWidth(Decibels kneeWidth) noexcept -> void {
 		mState.setKneeWidth(kneeWidth);
 	}
 
 	/// @brief Returns the KneeWidth
 	///
 	/// @return - The knee width, in decibels
-	auto Sidechain<float>::getKneeWidth() const noexcept -> float {
+	auto Sidechain<float>::getKneeWidth() const noexcept -> Decibels {
 		return mState.getKneeWidth();
 	}
 
@@ -136,21 +136,21 @@ namespace apex::dsp {
 	/// @brief Sets the SampleRate
 	///
 	/// @param sampleRate - The sample rate, in Hertz
-	auto Sidechain<float>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto Sidechain<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		mState.setSampleRate(sampleRate);
 	}
 
 	/// @brief Returns the SampleRate
 	///
 	/// @return - The sample rate, in Hertz
-	auto Sidechain<float>::getSampleRate() const noexcept -> size_t {
+	auto Sidechain<float>::getSampleRate() const noexcept -> Hertz {
 		return mState.getSampleRate();
 	}
 
 	/// @brief Returns the most recently calculated gain reduction value
 	///
 	/// @return - The most recently calculated gain reduction value (linear)
-	auto Sidechain<float>::getCurrentGainReduction() const noexcept -> float {
+	auto Sidechain<float>::getCurrentGainReduction() const noexcept -> Decibels {
 		return mGainReductionDB;
 	}
 
@@ -209,58 +209,62 @@ namespace apex::dsp {
 		mGainReductionProcessor = std::move(reduction);
 	}
 
-	auto Sidechain<float>::processFeedForwardReturnToZero(float input) noexcept -> float {
+	auto Sidechain<float>::processFeedForwardReturnToZero(float input) noexcept -> Decibels {
 		float rectified = math::fabsf(input);
-		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		float outputDB = mGainComputer->process(detectedDB);
+		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
-	auto Sidechain<float>::processFeedForwardReturnToThreshold(float input) noexcept -> float {
+	auto Sidechain<float>::processFeedForwardReturnToThreshold(float input) noexcept -> Decibels {
 		float rectified = math::fabsf(input);
-		float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		float detectedDB = math::Decibels::linearToDecibels(
+		auto thresholdLinear = gsl::narrow_cast<float>(mState.getThreshold().getLinear());
+		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
-		float outputDB = mGainComputer->process(detectedDB);
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
+	}
+
+	auto Sidechain<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept
+		-> Decibels {
+		float rectified = math::fabsf(input);
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(gsl::narrow_cast<float>(gainReduction));
+		return mGainReductionDB;
+	}
+
+	auto Sidechain<float>::processFeedBackReturnToZero(float input) noexcept -> Decibels {
+		float rectified
+			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
+		mGainReductionDB += outputDB - detectedDB;
+		return mGainReductionDB;
+	}
+
+	auto Sidechain<float>::processFeedBackReturnToThreshold(float input) noexcept -> Decibels {
+		float rectified
+			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+		auto thresholdLinear = gsl::narrow_cast<float>(mState.getThreshold().getLinear());
+		Decibels detectedDB = Decibels::fromLinear(
+			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
+		Decibels outputDB = mGainComputer->process(detectedDB);
+		mGainReductionDB += outputDB - detectedDB;
+		return mGainReductionDB;
 	}
 
 	auto
-	Sidechain<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept -> float {
-		float rectified = math::fabsf(input);
-		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		float gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
-	}
-
-	auto Sidechain<float>::processFeedBackReturnToZero(float input) noexcept -> float {
-		float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		float outputDB = mGainComputer->process(detectedDB);
-		mGainReductionDB += outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
-	}
-
-	auto Sidechain<float>::processFeedBackReturnToThreshold(float input) noexcept -> float {
-		float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		float thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		float detectedDB = math::Decibels::linearToDecibels(
-			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
-		float outputDB = mGainComputer->process(detectedDB);
-		mGainReductionDB += outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
-	}
-
-	auto
-	Sidechain<float>::processFeedBackAlternateReturnToThreshold(float input) noexcept -> float {
-		float rectified = math::fabsf(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		float gainReduction = mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+	Sidechain<float>::processFeedBackAlternateReturnToThreshold(float input) noexcept -> Decibels {
+		float rectified
+			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction
+			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(gsl::narrow_cast<float>(gainReduction));
+		return mGainReductionDB;
 	}
 
 	/// @brief Calculates the target gain reduction to apply to the input value
@@ -268,8 +272,8 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto Sidechain<double>::process(double input) noexcept -> double {
-		double x = 0.0;
+	auto Sidechain<double>::process(double input) noexcept -> Decibels {
+		Decibels x = Decibels::MINUS_INFINITY_DB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
 				{
@@ -350,28 +354,28 @@ namespace apex::dsp {
 	/// @brief Sets the Threshold
 	///
 	/// @param threshold - The threshold, in decibels
-	auto Sidechain<double>::setThreshold(double threshold) noexcept -> void {
+	auto Sidechain<double>::setThreshold(Decibels threshold) noexcept -> void {
 		mState.setThreshold(threshold);
 	}
 
 	/// @brief Returns the Threshold
 	///
 	/// @return - The threshold, in decibels
-	auto Sidechain<double>::getThreshold() const noexcept -> double {
+	auto Sidechain<double>::getThreshold() const noexcept -> Decibels {
 		return mState.getThreshold();
 	}
 
 	/// @brief Sets the KneeWidth
 	///
 	/// @param kneeWidth - The knee width, in decibels
-	auto Sidechain<double>::setKneeWidth(double kneeWidth) noexcept -> void {
+	auto Sidechain<double>::setKneeWidth(Decibels kneeWidth) noexcept -> void {
 		mState.setKneeWidth(kneeWidth);
 	}
 
 	/// @brief Returns the KneeWidth
 	///
 	/// @return - The knee width, in decibels
-	auto Sidechain<double>::getKneeWidth() const noexcept -> double {
+	auto Sidechain<double>::getKneeWidth() const noexcept -> Decibels {
 		return mState.getKneeWidth();
 	}
 
@@ -398,21 +402,21 @@ namespace apex::dsp {
 	/// @brief Sets the SampleRate
 	///
 	/// @param sampleRate - The sample rate, in Hertz
-	auto Sidechain<double>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto Sidechain<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		mState.setSampleRate(sampleRate);
 	}
 
 	/// @brief Returns the SampleRate
 	///
 	/// @return - The sample rate, in Hertz
-	auto Sidechain<double>::getSampleRate() const noexcept -> size_t {
+	auto Sidechain<double>::getSampleRate() const noexcept -> Hertz {
 		return mState.getSampleRate();
 	}
 
 	/// @brief Returns the most recently calculated gain reduction value
 	///
 	/// @return - The most recently calculated gain reduction value (linear)
-	auto Sidechain<double>::getCurrentGainReduction() const noexcept -> double {
+	auto Sidechain<double>::getCurrentGainReduction() const noexcept -> Decibels {
 		return mGainReductionDB;
 	}
 
@@ -471,57 +475,58 @@ namespace apex::dsp {
 		mGainReductionProcessor = std::move(reduction);
 	}
 
-	auto Sidechain<double>::processFeedForwardReturnToZero(double input) noexcept -> double {
+	auto Sidechain<double>::processFeedForwardReturnToZero(double input) noexcept -> Decibels {
 		double rectified = math::fabs(input);
-		double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		double outputDB = mGainComputer->process(detectedDB);
+		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
-	auto Sidechain<double>::processFeedForwardReturnToThreshold(double input) noexcept -> double {
+	auto Sidechain<double>::processFeedForwardReturnToThreshold(double input) noexcept -> Decibels {
 		double rectified = math::fabs(input);
-		double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		double detectedDB = math::Decibels::linearToDecibels(
+		double thresholdLinear = mState.getThreshold().getLinear();
+		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
-		double outputDB = mGainComputer->process(detectedDB);
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
 	auto Sidechain<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
-		-> double {
+		-> Decibels {
 		double rectified = math::fabs(input);
-		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		double gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
+		return mGainReductionDB;
 	}
 
-	auto Sidechain<double>::processFeedBackReturnToZero(double input) noexcept -> double {
-		double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		double outputDB = mGainComputer->process(detectedDB);
+	auto Sidechain<double>::processFeedBackReturnToZero(double input) noexcept -> Decibels {
+		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+		Decibels detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
-	auto Sidechain<double>::processFeedBackReturnToThreshold(double input) noexcept -> double {
-		double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		double thresholdLinear = math::Decibels::decibelsToLinear(mState.getThreshold());
-		double detectedDB = math::Decibels::linearToDecibels(
+	auto Sidechain<double>::processFeedBackReturnToThreshold(double input) noexcept -> Decibels {
+		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+		double thresholdLinear = mState.getThreshold().getLinear();
+		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
-		double outputDB = mGainComputer->process(detectedDB);
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
-	auto
-	Sidechain<double>::processFeedBackAlternateReturnToThreshold(double input) noexcept -> double {
-		double rectified = math::fabs(input) * math::Decibels::decibelsToLinear(mGainReductionDB);
-		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		double gainReduction = mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+	auto Sidechain<double>::processFeedBackAlternateReturnToThreshold(double input) noexcept
+		-> Decibels {
+		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction
+			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
+		return mGainReductionDB;
 	}
 } // namespace apex::dsp

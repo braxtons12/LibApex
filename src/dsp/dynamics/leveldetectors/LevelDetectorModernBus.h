@@ -59,7 +59,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		/// @brief Generates the detected level from the given input
 		///
@@ -123,7 +123,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		/// @brief Generates the detected level from the given input
 		///

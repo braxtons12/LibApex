@@ -17,9 +17,13 @@ namespace apex::math {
 		/// @brief Constructs a `Hertz` with the given frequency in Hertz
 		///
 		/// @param hertz - The frequency in Hertz
+		constexpr Hertz(float hertz) noexcept : mValue(hertz) {
+		}
+
+		/// @brief Constructs a `Hertz` with the given frequency in Hertz
 		///
-		/// @return
-		explicit constexpr Hertz(double hertz) noexcept : mValue(hertz) {
+		/// @param hertz - The frequency in Hertz
+		constexpr Hertz(double hertz) noexcept : mValue(hertz) {
 		}
 
 		/// @brief Copy constructs a `Hertz` from the given one
@@ -367,12 +371,13 @@ namespace apex::math {
 		operator>=(const Hertz& lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
-		constexpr inline auto operator=(float x) noexcept -> Hertz& {
+
+		constexpr inline auto operator=(const float& x) noexcept -> Hertz& {
 			mValue = x;
 			return *this;
 		}
 
-		constexpr inline auto operator=(double x) noexcept -> Hertz& {
+		constexpr inline auto operator=(const double& x) noexcept -> Hertz& {
 			mValue = x;
 			return *this;
 		}
@@ -408,7 +413,13 @@ namespace apex::math {
 		/// @brief Constructs a `Radians` with the given frequency in Radians
 		///
 		/// @param radians - The frequency in Radians
-		explicit constexpr Radians(double radians) noexcept : mValue(radians) {
+		constexpr Radians(float radians) noexcept : mValue(radians) {
+		}
+
+		/// @brief Constructs a `Radians` with the given frequency in Radians
+		///
+		/// @param radians - The frequency in Radians
+		constexpr Radians(double radians) noexcept : mValue(radians) {
 		}
 
 		/// @brief Copy constructs a `Radians` from the given one
@@ -766,12 +777,12 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
-		constexpr inline auto operator=(float x) noexcept -> Radians& {
+		constexpr inline auto operator=(const float& x) noexcept -> Radians& {
 			mValue = x;
 			return *this;
 		}
 
-		constexpr inline auto operator=(double x) noexcept -> Radians& {
+		constexpr inline auto operator=(const double& x) noexcept -> Radians& {
 			mValue = x;
 			return *this;
 		}

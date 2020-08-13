@@ -12,8 +12,8 @@ namespace apex::dsp {
 			[this](float attack) { this->setAttackTime(attack); });
 		mState->registerCallback<float, DynamicsState::Field::Release>(
 			[this](float release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 	}
 
 	/// @brief Generates the detected level from the given input
@@ -98,8 +98,8 @@ namespace apex::dsp {
 			[this](double attack) { this->setAttackTime(attack); });
 		mState->registerCallback<double, DynamicsState::Field::Release>(
 			[this](double release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 	}
 
 	/// @brief Generates the detected level from the given input

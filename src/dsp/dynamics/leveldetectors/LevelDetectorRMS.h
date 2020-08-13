@@ -74,7 +74,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		auto operator=(LevelDetectorRMS<float>&& detector) noexcept
 			-> LevelDetectorRMS<float>& = default;
@@ -139,7 +139,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		auto setSampleRate(size_t sampleRate) noexcept -> void override;
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override;
 
 		auto operator=(LevelDetectorRMS<double>&& detector) noexcept
 			-> LevelDetectorRMS<double>& = default;

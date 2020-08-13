@@ -78,7 +78,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		virtual auto process(float input) noexcept -> float;
+		virtual auto process(float input) noexcept -> Decibels;
 
 		/// @brief Sets the attack to the given value
 		///
@@ -113,22 +113,22 @@ namespace apex::dsp {
 		/// @brief Sets the Threshold
 		///
 		/// @param threshold - The threshold, in decibels
-		virtual auto setThreshold(float threshold) noexcept -> void;
+		virtual auto setThreshold(Decibels threshold) noexcept -> void;
 
 		/// @brief Returns the Threshold
 		///
 		/// @return - The threshold, in decibels
-		[[nodiscard]] virtual auto getThreshold() const noexcept -> float;
+		[[nodiscard]] virtual auto getThreshold() const noexcept -> Decibels;
 
 		/// @brief Sets the KneeWidth
 		///
 		/// @param kneeWidth - The knee width, in decibels
-		virtual auto setKneeWidth(float kneeWidth) noexcept -> void;
+		virtual auto setKneeWidth(Decibels kneeWidth) noexcept -> void;
 
 		/// @brief Returns the KneeWidth
 		///
 		/// @return - The knee width, in decibels
-		[[nodiscard]] virtual auto getKneeWidth() const noexcept -> float;
+		[[nodiscard]] virtual auto getKneeWidth() const noexcept -> Decibels;
 
 		/// @brief Sets the DynamicsType
 		///
@@ -143,17 +143,17 @@ namespace apex::dsp {
 		/// @brief Sets the SampleRate
 		///
 		/// @param sampleRate - The sample rate, in Hertz
-		virtual auto setSampleRate(size_t sampleRate) noexcept -> void;
+		virtual auto setSampleRate(Hertz sampleRate) noexcept -> void;
 
 		/// @brief Returns the SampleRate
 		///
 		/// @return - The sample rate, in Hertz
-		[[nodiscard]] virtual auto getSampleRate() const noexcept -> size_t;
+		[[nodiscard]] virtual auto getSampleRate() const noexcept -> Hertz;
 
 		/// @brief Returns the most recently calculated gain reduction value
 		///
 		/// @return - The most recently calculated gain reduction value (linear)
-		[[nodiscard]] virtual auto getCurrentGainReduction() const noexcept -> float;
+		[[nodiscard]] virtual auto getCurrentGainReduction() const noexcept -> Decibels;
 
 		/// @brief Sets the type of the `LevelDetector` to the given value
 		///
@@ -196,10 +196,10 @@ namespace apex::dsp {
 
 		static const constexpr float DEFAULT_ATTACK_SECONDS = 0.01F;
 		static const constexpr float DEFAULT_RELEASE_SECONDS = 0.05F;
-		static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
+		static const constexpr Hertz DEFAULT_SAMPLE_RATE = 44100_Hz;
 		static const constexpr float DEFAULT_RATIO = 1.1F;
-		static const constexpr float DEFAULT_THRESHOLD = -12.0F;
-		static const constexpr float DEFAULT_KNEE_WIDTH = 6.0F;
+		static const constexpr Decibels DEFAULT_THRESHOLD = -12.0_dB;
+		static const constexpr Decibels DEFAULT_KNEE_WIDTH = 6.0_dB;
 
 	  protected:
 		static const constexpr float MS_TO_SECS_MULT = 0.001F;
@@ -209,7 +209,7 @@ namespace apex::dsp {
 											 DEFAULT_THRESHOLD,
 											 DEFAULT_KNEE_WIDTH,
 											 DEFAULT_SAMPLE_RATE);
-		float mGainReductionDB = 0.0F;
+		Decibels mGainReductionDB = 0.0_dB;
 
 		DynamicsType mDynamicsType = DynamicsType::Compressor;
 		ComputerTopology mComputerTopology = ComputerTopology::FeedBack;
@@ -217,13 +217,13 @@ namespace apex::dsp {
 		LevelDetector<float>::DetectorType mDetectorType
 			= LevelDetector<float>::DetectorType::Decoupled;
 
-		virtual auto processFeedForwardReturnToZero(float input) noexcept -> float;
-		virtual auto processFeedForwardReturnToThreshold(float input) noexcept -> float;
-		virtual auto processFeedForwardAlternateReturnToThreshold(float input) noexcept -> float;
+		virtual auto processFeedForwardReturnToZero(float input) noexcept -> Decibels;
+		virtual auto processFeedForwardReturnToThreshold(float input) noexcept -> Decibels;
+		virtual auto processFeedForwardAlternateReturnToThreshold(float input) noexcept -> Decibels;
 
-		virtual auto processFeedBackReturnToZero(float input) noexcept -> float;
-		virtual auto processFeedBackReturnToThreshold(float input) noexcept -> float;
-		virtual auto processFeedBackAlternateReturnToThreshold(float input) noexcept -> float;
+		virtual auto processFeedBackReturnToZero(float input) noexcept -> Decibels;
+		virtual auto processFeedBackReturnToThreshold(float input) noexcept -> Decibels;
+		virtual auto processFeedBackAlternateReturnToThreshold(float input) noexcept -> Decibels;
 
 	  private:
 		LevelDetector<float> mLevelDetector = LevelDetector<float>(&mState, mDetectorType);
@@ -291,7 +291,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		virtual auto process(double input) noexcept -> double;
+		virtual auto process(double input) noexcept -> Decibels;
 
 		/// @brief Sets the attack to the given value
 		///
@@ -326,22 +326,22 @@ namespace apex::dsp {
 		/// @brief Sets the Threshold
 		///
 		/// @param threshold - The threshold, in decibels
-		virtual auto setThreshold(double threshold) noexcept -> void;
+		virtual auto setThreshold(Decibels threshold) noexcept -> void;
 
 		/// @brief Returns the Threshold
 		///
 		/// @return - The threshold, in decibels
-		[[nodiscard]] virtual auto getThreshold() const noexcept -> double;
+		[[nodiscard]] virtual auto getThreshold() const noexcept -> Decibels;
 
 		/// @brief Sets the KneeWidth
 		///
 		/// @param kneeWidth - The knee width, in decibels
-		virtual auto setKneeWidth(double kneeWidth) noexcept -> void;
+		virtual auto setKneeWidth(Decibels kneeWidth) noexcept -> void;
 
 		/// @brief Returns the KneeWidth
 		///
 		/// @return - The knee width, in decibels
-		[[nodiscard]] virtual auto getKneeWidth() const noexcept -> double;
+		[[nodiscard]] virtual auto getKneeWidth() const noexcept -> Decibels;
 
 		/// @brief Sets the DynamicsType
 		///
@@ -356,17 +356,17 @@ namespace apex::dsp {
 		/// @brief Sets the SampleRate
 		///
 		/// @param sampleRate - The sample rate, in Hertz
-		virtual auto setSampleRate(size_t sampleRate) noexcept -> void;
+		virtual auto setSampleRate(Hertz sampleRate) noexcept -> void;
 
 		/// @brief Returns the SampleRate
 		///
 		/// @return - The sample rate, in Hertz
-		[[nodiscard]] virtual auto getSampleRate() const noexcept -> size_t;
+		[[nodiscard]] virtual auto getSampleRate() const noexcept -> Hertz;
 
 		/// @brief Returns the most recently calculated gain reduction value
 		///
 		/// @return - The most recently calculated gain reduction value (linear)
-		[[nodiscard]] virtual auto getCurrentGainReduction() const noexcept -> double;
+		[[nodiscard]] virtual auto getCurrentGainReduction() const noexcept -> Decibels;
 
 		/// @brief Sets the type of the `LevelDetector` to the given value
 		///
@@ -410,10 +410,10 @@ namespace apex::dsp {
 
 		static const constexpr double DEFAULT_ATTACK_SECONDS = 0.01;
 		static const constexpr double DEFAULT_RELEASE_SECONDS = 0.05;
-		static const constexpr size_t DEFAULT_SAMPLE_RATE = 44100;
+		static const constexpr Hertz DEFAULT_SAMPLE_RATE = 44100_Hz;
 		static const constexpr double DEFAULT_RATIO = 1.1;
-		static const constexpr double DEFAULT_THRESHOLD = -12.0;
-		static const constexpr double DEFAULT_KNEE_WIDTH = 6.0;
+		static const constexpr Decibels DEFAULT_THRESHOLD = -12.0_dB;
+		static const constexpr Decibels DEFAULT_KNEE_WIDTH = 6.0_dB;
 
 	  protected:
 		static const constexpr double MS_TO_SECS_MULT = 0.001;
@@ -423,7 +423,7 @@ namespace apex::dsp {
 											 DEFAULT_THRESHOLD,
 											 DEFAULT_KNEE_WIDTH,
 											 DEFAULT_SAMPLE_RATE);
-		double mGainReductionDB = 0.0;
+		Decibels mGainReductionDB = 0.0_dB;
 
 		DynamicsType mDynamicsType = DynamicsType::Compressor;
 		ComputerTopology mComputerTopology = ComputerTopology::FeedBack;
@@ -431,13 +431,14 @@ namespace apex::dsp {
 		LevelDetector<double>::DetectorType mDetectorType
 			= LevelDetector<double>::DetectorType::Decoupled;
 
-		virtual auto processFeedForwardReturnToZero(double input) noexcept -> double;
-		virtual auto processFeedForwardReturnToThreshold(double input) noexcept -> double;
-		virtual auto processFeedForwardAlternateReturnToThreshold(double input) noexcept -> double;
+		virtual auto processFeedForwardReturnToZero(double input) noexcept -> Decibels;
+		virtual auto processFeedForwardReturnToThreshold(double input) noexcept -> Decibels;
+		virtual auto
+		processFeedForwardAlternateReturnToThreshold(double input) noexcept -> Decibels;
 
-		virtual auto processFeedBackReturnToZero(double input) noexcept -> double;
-		virtual auto processFeedBackReturnToThreshold(double input) noexcept -> double;
-		virtual auto processFeedBackAlternateReturnToThreshold(double input) noexcept -> double;
+		virtual auto processFeedBackReturnToZero(double input) noexcept -> Decibels;
+		virtual auto processFeedBackReturnToThreshold(double input) noexcept -> Decibels;
+		virtual auto processFeedBackAlternateReturnToThreshold(double input) noexcept -> Decibels;
 
 	  private:
 		LevelDetector<double> mLevelDetector = LevelDetector<double>(&mState, mDetectorType);

@@ -11,8 +11,8 @@ namespace apex::dsp {
 			[this](float attack) { this->setAttackTime(attack); });
 		mState->registerCallback<float, DynamicsState::Field::Release>(
 			[this](float release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>(
 			[this](bool enabled) { this->setAutoRelease(enabled); });
 	}
@@ -70,7 +70,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorModernBus<float>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorModernBus<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		mState->setAttackCoefficient1(math::expf(
 			-1.0F / (mState->getAttack() * static_cast<float>(mState->getSampleRate()))));
 		if(mState->getAutoReleaseEnabled()) {
@@ -121,8 +121,8 @@ namespace apex::dsp {
 			[this](double attack) { this->setAttackTime(attack); });
 		mState->registerCallback<double, DynamicsState::Field::Release>(
 			[this](double release) { this->setReleaseTime(release); });
-		mState->registerCallback<size_t, DynamicsState::Field::SampleRate>(
-			[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+		mState->registerCallback<Hertz, DynamicsState::Field::SampleRate>(
+			[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		mState->registerCallback<bool, DynamicsState::Field::AutoRelease>(
 			[this](bool enabled) { this->setAutoRelease(enabled); });
 	}
@@ -180,7 +180,7 @@ namespace apex::dsp {
 	/// @brief Sets the sample rate to the given value
 	///
 	/// @param sampleRate - The new sample rate, in Hertz
-	auto LevelDetectorModernBus<double>::setSampleRate(size_t sampleRate) noexcept -> void {
+	auto LevelDetectorModernBus<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		mState->setAttackCoefficient1(
 			math::exp(-1.0 / (mState->getAttack() * static_cast<double>(mState->getSampleRate()))));
 		if(mState->getAutoReleaseEnabled()) {
