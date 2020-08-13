@@ -69,7 +69,7 @@ namespace apex::utils::synchronization {
 		/// @brief Tries to lock this for mutable access. Nonblocking. If locking is successful,
 		/// returns an `Ok(ScopedLockGuard<T>)`, otherwise, returns an `Err`
 		///
-		/// @return - Ok`(ScopedLockGuard<T>)` if successful, otherwise, `Err(ReadWriteLockError)`
+		/// @return - `Ok(ScopedLockGuard<T>)` if successful, otherwise, `Err(ReadWriteLockError)`
 		[[nodiscard]] inline auto try_lock() noexcept -> LockResult {
 			if(!*mLocked) {
 				*mLocked = true;
