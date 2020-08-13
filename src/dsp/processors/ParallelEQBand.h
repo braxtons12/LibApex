@@ -55,7 +55,9 @@ namespace apex::dsp {
 		/// @brief Returns the gain of this `ParallelEQBand`
 		///
 		/// @return - The current gain, in Decibels
-		[[nodiscard]] auto getGainDB() const noexcept -> float override;
+		[[nodiscard]] inline auto getGainDB() const noexcept -> float override {
+			return mGainActual;
+		}
 
 		/// @brief Applies this `ParallelEQBand` to the given input value
 		///
@@ -82,27 +84,41 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
 		///
 		/// @return - The magnitude response at the given frequency
-		[[nodiscard]] auto
-		getDecibelMagnitudeForFrequency(float frequency) const noexcept -> float override;
+		[[nodiscard]] inline auto
+		getDecibelMagnitudeForFrequency(float frequency) const noexcept -> float override {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
 
 		/// @brief Calculates the linear magnitude response of this filter for the given array of
 		/// frequencies and stores them in `magnitudes`
 		///
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		auto
+		inline auto
 		getMagnitudesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
 									gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept
-			-> void override;
+			-> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(magnitudes, frequency)
+					= getMagnitudeForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the decibel magnitude response of this filter for the given array of
 		/// frequencies and stores them in `magnitudes`
 		///
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		auto getDecibelMagnitudesForFrequencies(
+		inline auto getDecibelMagnitudesForFrequencies(
 			gsl::span<float, gsl::dynamic_extent> frequencies,
-			gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept -> void override;
+			gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept -> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(magnitudes, frequency)
+					= getDecibelMagnitudeForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the phase response of this filter for the given frequency
 		///
@@ -116,27 +132,41 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calculate the phase response for, in Hertz
 		///
 		/// @return - The phase response, in degrees, at the given frequency
-		[[nodiscard]] auto
-		getDegreesPhaseForFrequency(float frequency) const noexcept -> float override;
+		[[nodiscard]] inline auto
+		getDegreesPhaseForFrequency(float frequency) const noexcept -> float override {
+			return getPhaseForFrequency(frequency) * 180.0F / math::pif;
+		}
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
-		auto getPhasesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
-									 gsl::span<float, gsl::dynamic_extent> phases) const noexcept
-			-> void override;
+		inline auto
+		getPhasesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
+								gsl::span<float, gsl::dynamic_extent> phases) const noexcept
+			-> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
-		auto
+		inline auto
 		getDegreesPhasesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
 									   gsl::span<float, gsl::dynamic_extent> phases) const noexcept
-			-> void override;
+			-> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(phases, frequency)
+					= getDegreesPhaseForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		auto operator=(ParallelEQBand<float>&& band) noexcept -> ParallelEQBand<float>& = default;
 
@@ -184,7 +214,9 @@ namespace apex::dsp {
 		/// @brief Returns the gain of this `ParallelEQBand`
 		///
 		/// @return - The current gain, in Decibels
-		[[nodiscard]] auto getGainDB() const noexcept -> double override;
+		[[nodiscard]] inline auto getGainDB() const noexcept -> double override {
+			return mGainActual;
+		}
 
 		/// @brief Applies this `ParallelEQBand` to the given input value
 		///
@@ -211,26 +243,40 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calcualte the magnitude response for, in Hertz
 		///
 		/// @return - The magnitude response at the given frequency
-		[[nodiscard]] auto
-		getDecibelMagnitudeForFrequency(double frequency) const noexcept -> double override;
+		[[nodiscard]] inline auto
+		getDecibelMagnitudeForFrequency(double frequency) const noexcept -> double override {
+			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		}
 
 		/// @brief Calculates the linear magnitude response of this filter for the given array of
 		/// frequencies and stores them in `magnitudes`
 		///
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		auto getMagnitudesForFrequencies(
+		inline auto getMagnitudesForFrequencies(
 			gsl::span<double, gsl::dynamic_extent> frequencies,
-			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void override;
+			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(magnitudes, frequency)
+					= getMagnitudeForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the decibel magnitude response of this filter for the given array of
 		/// frequencies and stores them in `magnitudes`
 		///
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		auto getDecibelMagnitudesForFrequencies(
+		inline auto getDecibelMagnitudesForFrequencies(
 			gsl::span<double, gsl::dynamic_extent> frequencies,
-			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void override;
+			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(magnitudes, frequency)
+					= getDecibelMagnitudeForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the phase response of this filter for the given frequency
 		///
@@ -244,27 +290,41 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calculate the phase response for, in Hertz
 		///
 		/// @return - The phase response, in degrees, at the given frequency
-		[[nodiscard]] auto
-		getDegreesPhaseForFrequency(double frequency) const noexcept -> double override;
+		[[nodiscard]] inline auto
+		getDegreesPhaseForFrequency(double frequency) const noexcept -> double override {
+			return getPhaseForFrequency(frequency) * 180.0 / math::pi;
+		}
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
-		auto getPhasesForFrequencies(gsl::span<double, gsl::dynamic_extent> frequencies,
-									 gsl::span<double, gsl::dynamic_extent> phases) const noexcept
-			-> void override;
+		inline auto
+		getPhasesForFrequencies(gsl::span<double, gsl::dynamic_extent> frequencies,
+								gsl::span<double, gsl::dynamic_extent> phases) const noexcept
+			-> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
-		auto
+		inline auto
 		getDegreesPhasesForFrequencies(gsl::span<double, gsl::dynamic_extent> frequencies,
 									   gsl::span<double, gsl::dynamic_extent> phases) const noexcept
-			-> void override;
+			-> void override {
+			auto size = static_cast<gsl::index>(frequencies.size());
+			for(gsl::index frequency = 0; frequency < size; ++frequency) {
+				gsl::at(phases, frequency)
+					= getDegreesPhaseForFrequency(gsl::at(frequencies, frequency));
+			}
+		}
 
 		auto operator=(ParallelEQBand<double>&& band) noexcept -> ParallelEQBand<double>& = default;
 
