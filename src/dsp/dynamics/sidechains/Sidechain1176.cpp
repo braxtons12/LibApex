@@ -21,7 +21,7 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto Sidechain1176<float>::process(float input) noexcept -> float {
+	auto Sidechain1176<float>::process(float input) noexcept -> Decibels {
 		return processFeedForwardReturnToZero(input);
 	}
 
@@ -118,12 +118,12 @@ namespace apex::dsp {
 		}
 	}
 
-	auto Sidechain1176<float>::processFeedForwardReturnToZero(float input) noexcept -> float {
+	auto Sidechain1176<float>::processFeedForwardReturnToZero(float input) noexcept -> Decibels {
 		float rectified = math::fabsf(input);
-		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		float outputDB = mGainComputer->process(detectedDB);
+		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 
 	/// @brief Constructs a `Sidechain1176` with the following defaults:
@@ -146,7 +146,7 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto Sidechain1176<double>::process(double input) noexcept -> double {
+	auto Sidechain1176<double>::process(double input) noexcept -> Decibels {
 		return processFeedForwardReturnToZero(input);
 	}
 
@@ -243,11 +243,11 @@ namespace apex::dsp {
 		}
 	}
 
-	auto Sidechain1176<double>::processFeedForwardReturnToZero(double input) noexcept -> double {
+	auto Sidechain1176<double>::processFeedForwardReturnToZero(double input) noexcept -> Decibels {
 		double rectified = math::fabs(input);
-		double detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
-		double outputDB = mGainComputer->process(detectedDB);
+		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
+		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		return mGainReductionDB;
 	}
 } // namespace apex::dsp

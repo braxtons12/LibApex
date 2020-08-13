@@ -60,7 +60,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(float input) noexcept -> float override;
+		auto process(float input) noexcept -> Decibels override;
 
 		/// @brief Sets the attack to the given value
 		/// Valid values are in [20uS (20 microseconds), 800uS (800 microseconds)]
@@ -135,7 +135,7 @@ namespace apex::dsp {
 			= GainComputerCompressor<float, float, float>(&mState);
 		GainComputer<float, float, float>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardReturnToZero(float input) noexcept -> float override;
+		auto processFeedForwardReturnToZero(float input) noexcept -> Decibels override;
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
@@ -145,13 +145,13 @@ namespace apex::dsp {
 
 		/// @deprecated DO NOT USE, threshold is fixed for this `Sidechain`
 		[[deprecated("Don't use, threshold is fixed for this `Sidechain`")]] auto
-		setThreshold(float threshold) noexcept -> void override {
+		setThreshold(Decibels threshold) noexcept -> void override {
 			juce::ignoreUnused(threshold);
 		}
 
 		/// @deprecated DO NOT USE, knee width is fixed for this `Sidechain`
 		[[deprecated("Don't use, knee width is fixed for this `Sidechain`")]] auto
-		setKneeWidth(float kneeWidth) noexcept -> void override {
+		setKneeWidth(Decibels kneeWidth) noexcept -> void override {
 			juce::ignoreUnused(kneeWidth);
 		}
 
@@ -205,7 +205,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(double input) noexcept -> double override;
+		auto process(double input) noexcept -> Decibels override;
 
 		/// @brief Sets the attack to the given value
 		/// Valid values are in [20uS (20 microseconds), 800uS (800 microseconds)]
@@ -280,7 +280,7 @@ namespace apex::dsp {
 			= GainComputerCompressor<double, double, double>(&mState);
 		GainComputer<double, double, double>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardReturnToZero(double input) noexcept -> double override;
+		auto processFeedForwardReturnToZero(double input) noexcept -> Decibels override;
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
@@ -290,13 +290,13 @@ namespace apex::dsp {
 
 		/// @deprecated DO NOT USE, threshold is fixed for this `Sidechain`
 		[[deprecated("Don't use, threshold is fixed for this `Sidechain`")]] auto
-		setThreshold(double threshold) noexcept -> void override {
+		setThreshold(Decibels threshold) noexcept -> void override {
 			juce::ignoreUnused(threshold);
 		}
 
 		/// @deprecated DO NOT USE, knee width is fixed for this `Sidechain`
 		[[deprecated("Don't use, knee width is fixed for this `Sidechain`")]] auto
-		setKneeWidth(double kneeWidth) noexcept -> void override {
+		setKneeWidth(Decibels kneeWidth) noexcept -> void override {
 			juce::ignoreUnused(kneeWidth);
 		}
 

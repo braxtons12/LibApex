@@ -53,7 +53,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(float input) noexcept -> float override;
+		auto process(float input) noexcept -> Decibels override;
 
 		/// @brief Sets the DynamicsType
 		///
@@ -73,7 +73,8 @@ namespace apex::dsp {
 			= GainComputerCompressor<float, float, float>(&mState);
 		GainComputer<float, float, float>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardAlternateReturnToThreshold(float input) noexcept -> float override;
+		auto
+		processFeedForwardAlternateReturnToThreshold(float input) noexcept -> Decibels override;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SidechainModernBus)
 	};
@@ -106,7 +107,7 @@ namespace apex::dsp {
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(double input) noexcept -> double override;
+		auto process(double input) noexcept -> Decibels override;
 
 		/// @brief Sets the DynamicsType
 		///
@@ -126,7 +127,8 @@ namespace apex::dsp {
 			= GainComputerCompressor<double, double, double>(&mState);
 		GainComputer<double, double, double>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardAlternateReturnToThreshold(double input) noexcept -> double override;
+		auto
+		processFeedForwardAlternateReturnToThreshold(double input) noexcept -> Decibels override;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SidechainModernBus)
 	};

@@ -6,7 +6,7 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto SidechainModernBus<float>::process(float input) noexcept -> float {
+	auto SidechainModernBus<float>::process(float input) noexcept -> Decibels {
 		return processFeedForwardAlternateReturnToThreshold(input);
 	}
 
@@ -25,12 +25,12 @@ namespace apex::dsp {
 
 	auto
 	SidechainModernBus<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept
-		-> float {
+		-> Decibels {
 		float rectified = math::fabsf(input);
-		float rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		float gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(static_cast<float>(gainReduction));
+		return mGainReductionDB;
 	}
 
 	/// @brief Calculates the target gain reduction to apply to the input value
@@ -38,7 +38,7 @@ namespace apex::dsp {
 	/// @param input - The input value to calculate gain reduction for
 	///
 	/// @return - The target gain reduction
-	auto SidechainModernBus<double>::process(double input) noexcept -> double {
+	auto SidechainModernBus<double>::process(double input) noexcept -> Decibels {
 		return processFeedForwardAlternateReturnToThreshold(input);
 	}
 
@@ -57,11 +57,11 @@ namespace apex::dsp {
 
 	auto
 	SidechainModernBus<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
-		-> double {
+		-> Decibels {
 		double rectified = math::fabs(input);
-		double rectifiedDB = math::Decibels::linearToDecibels(rectified);
-		double gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
-		mGainReductionDB = mLevelDetector.process(gainReduction);
-		return math::Decibels::decibelsToLinear(mGainReductionDB);
+		Decibels rectifiedDB = Decibels::fromLinear(rectified);
+		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
+		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
+		return mGainReductionDB;
 	}
 } // namespace apex::dsp
