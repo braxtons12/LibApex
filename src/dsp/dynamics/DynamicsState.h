@@ -62,6 +62,11 @@ namespace apex::dsp {
 			  mKneeWidth(kneeWidth), mSampleRate(sampleRate) {
 		}
 
+		/// @brief Copy onstructs a `DynamicsState` from the given one
+		///
+		/// @param state - The `DynamicsState` to copy
+		DynamicsState(const DynamicsState<T, AttackKind, ReleaseKind>& state) noexcept = default;
+
 		/// @brief Move constructs the given `DynamicsState`
 		///
 		/// @param state - The `DynamicsState` to move
@@ -383,6 +388,8 @@ namespace apex::dsp {
 			mAutoReleaseCallbacks.push_back(callback);
 		}
 
+		auto operator=(const DynamicsState<T, AttackKind, ReleaseKind>& state) noexcept
+			-> DynamicsState<T, AttackKind, ReleaseKind>& = default;
 		auto operator=(DynamicsState<T, AttackKind, ReleaseKind>&& state) noexcept
 			-> DynamicsState<T, AttackKind, ReleaseKind>& = default;
 
@@ -428,8 +435,6 @@ namespace apex::dsp {
 		std::vector<std::function<void(Hertz)>> mSampleRateCallbacks;
 		/// AutoRelease callbacks
 		std::vector<std::function<void(bool)>> mAutoReleaseCallbacks;
-
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DynamicsState)
 	};
 } // namespace apex::dsp
 
