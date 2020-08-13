@@ -62,7 +62,7 @@ namespace apex::utils::synchronization {
 		/// most recent unlock, but will not reflect changes made by an active locked access
 		///
 		/// @return - The current data
-		[[nodiscard]] auto read() const noexcept -> T {
+		[[nodiscard]] inline auto read() const noexcept -> T {
 			return mCached;
 		}
 
@@ -70,7 +70,7 @@ namespace apex::utils::synchronization {
 		/// returns an `Ok(ScopedLockGuard<T>)`, otherwise, returns an `Err`
 		///
 		/// @return - Ok`(ScopedLockGuard<T>)` if successful, otherwise, `Err(ReadWriteLockError)`
-		[[nodiscard]] auto try_lock() noexcept -> LockResult {
+		[[nodiscard]] inline auto try_lock() noexcept -> LockResult {
 			if(!*mLocked) {
 				*mLocked = true;
 				return LockResult::Ok(ScopedLockGuard<T>(mData, [this]() { this->unlock(); }));
@@ -84,7 +84,7 @@ namespace apex::utils::synchronization {
 		/// until it is unlocked, then return a scoped lock guard
 		///
 		/// @return `ScopedLockGuard<T>` - The lock guard for the data
-		[[nodiscard]] auto lock() noexcept -> ScopedLockGuard<T> {
+		[[nodiscard]] inline auto lock() noexcept -> ScopedLockGuard<T> {
 			while(mLocked) {
 			}
 			*mLocked = true;
@@ -98,7 +98,7 @@ namespace apex::utils::synchronization {
 		/// @brief Called by the scoped lock guard to update the data and unlock this
 		///
 		/// @param newVal - The new data value
-		auto unlock() noexcept -> void {
+		inline auto unlock() noexcept -> void {
 			mCached = *mData;
 			*mLocked = false;
 		}

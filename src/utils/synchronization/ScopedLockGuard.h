@@ -32,14 +32,14 @@ namespace apex::utils::synchronization {
 		/// @brief Writes the given value to the data
 		///
 		/// @param newValue - The new value to write to the data
-		auto write(T newValue) noexcept -> void {
+		inline auto write(T newValue) noexcept -> void {
 			*mData = newValue;
 		}
 
 		/// @brief Returns the current value of the data
 		///
 		/// @return - The current data
-		[[nodiscard]] auto read() const noexcept -> T {
+		[[nodiscard]] inline auto read() const noexcept -> T {
 			return *mData;
 		}
 
