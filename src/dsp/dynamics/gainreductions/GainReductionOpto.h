@@ -62,9 +62,10 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		[[nodiscard]] auto adjustedGainReduction(T gainReduction) noexcept -> T override {
-			T oldGainReduction = this->mCurrentGainReduction;
-			T coefficient = gainReduction;
+		[[nodiscard]] auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
+			Decibels oldGainReduction = this->mCurrentGainReduction;
+			Decibels coefficient = gainReduction;
 			auto coefficientIndex
 				= static_cast<size_t>(coefficient * static_cast<T>(NUM_COEFFICIENTS_PER_STEP));
 
@@ -93,10 +94,12 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to use for calculations to the given value
 		///
 		/// @param sampleRate - The new sample rate to use
-		auto setSampleRate(size_t sampleRate) noexcept -> void override {
+		auto setSampleRate(Hertz sampleRate) noexcept -> void override {
 			for(size_t coefficient = 0; coefficient < NUM_COEFFICIENTS; ++coefficient) {
-				T decibel = static_cast<T>(coefficient) / static_cast<T>(NUM_COEFFICIENTS_PER_STEP);
-				T resistance = static_cast<T>(510.0) / (static_cast<T>(3.0) + decibel);
+				Decibels decibel
+					= static_cast<T>(coefficient) / static_cast<T>(NUM_COEFFICIENTS_PER_STEP);
+				T resistance
+					= static_cast<T>(510.0) / static_cast<T>(static_cast<T>(3.0) + decibel);
 				T attackSeconds = (resistance / static_cast<T>(10.0)) / static_cast<T>(1000.0);
 				T releaseSeconds = resistance / static_cast<T>(1000.0);
 

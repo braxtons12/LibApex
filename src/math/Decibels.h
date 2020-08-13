@@ -268,6 +268,111 @@ namespace apex::math {
 			return *this;
 		}
 
+		friend constexpr inline auto operator<(const Decibels& lhs, float rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
+		friend constexpr inline auto operator<(const Decibels& lhs, double rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
+		friend constexpr inline auto operator<(float lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto
+		operator<(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs.mValue < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(const Decibels& lhs, float rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
+		friend constexpr inline auto operator>(const Decibels& lhs, double rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
+		friend constexpr inline auto operator>(float lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto
+		operator>(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs.mValue > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(const Decibels& lhs, float rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
+		friend constexpr inline auto operator==(const Decibels& lhs, double rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
+		friend constexpr inline auto operator==(float lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto
+		operator==(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs.mValue == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<=(const Decibels& lhs, float rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(const Decibels& lhs, double rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(float lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto
+		operator<=(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(const Decibels& lhs, float rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(const Decibels& lhs, double rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(float lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto
+		operator>=(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
 		constexpr inline auto operator=(float x) noexcept -> Decibels& {
 			mValue = x;
 			return *this;

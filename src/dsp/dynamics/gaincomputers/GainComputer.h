@@ -52,7 +52,7 @@ namespace apex::dsp {
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] virtual auto process(T input) noexcept -> T = 0;
+		[[nodiscard]] virtual auto process(Decibels input) noexcept -> Decibels = 0;
 
 		auto operator=(GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept
 			-> GainComputer<T, AttackKind, ReleaseKind>& = default;

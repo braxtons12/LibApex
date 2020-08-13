@@ -64,7 +64,8 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		[[nodiscard]] auto adjustedGainReduction(T gainReduction) noexcept -> T override {
+		[[nodiscard]] auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
 			T samplesToTransition = static_cast<T>(this->mNumSamplesToTransitionGain);
 
 			if(gainReduction < this->mCurrentGainReduction) {

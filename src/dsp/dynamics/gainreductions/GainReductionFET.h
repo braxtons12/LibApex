@@ -64,16 +64,18 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return  - The adjusted gain reduction
-		[[nodiscard]] auto adjustedGainReduction(T gainReduction) noexcept -> T override {
+		[[nodiscard]] auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
 			if(this->mCurrentSample > this->mNumSamplesToTransitionGain) {
 				this->mCurrentSample = 0;
 			}
 
-			T gainReductionStep
+			Decibels gainReductionStep
 				= (gainReduction - this->mCurrentGainReduction)
 				  / static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
 
-			if(math::fabs(gainReductionStep) - static_cast<T>(0.001) > static_cast<T>(0.0)) {
+			if(math::fabs(static_cast<double>(gainReductionStep)) - static_cast<T>(0.001)
+			   > static_cast<T>(0.0)) {
 				gainReductionStep = waveshapers::softSaturation(
 					this->mCurrentGainReduction
 						+ (gainReductionStep > static_cast<T>(0.0) ? -SLEW_RATE_OFFSET :

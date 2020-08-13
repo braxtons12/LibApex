@@ -42,8 +42,8 @@ namespace apex::dsp {
 		/// @param riseTimeSeconds - The rise time, in seconds
 		explicit GainReduction(DynamicsState* state, T riseTimeSeconds = 0) noexcept
 			: mState(state), mRiseTimeSeconds(riseTimeSeconds) {
-			mState->template registerCallback<size_t, Field::SampleRate>(
-				[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+			mState->template registerCallback<Hertz, Field::SampleRate>(
+				[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		}
 
 		/// @brief Move constructs the given `GainReduction`
@@ -57,13 +57,14 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return The adjusted gain reduction
-		[[nodiscard]] virtual auto adjustedGainReduction(T gainReduction) noexcept -> T {
+		[[nodiscard]] virtual auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels {
 			if(mCurrentSample > mNumSamplesToTransitionGain) {
 				mCurrentSample = 0;
 			}
 
 			if(mNumSamplesToTransitionGain != 0) {
-				T gainReductionStep
+				Decibels gainReductionStep
 					= (gainReduction - mCurrentGainReduction)
 					  / static_cast<T>(mNumSamplesToTransitionGain - mCurrentSample);
 				mCurrentGainReduction += gainReductionStep;
@@ -86,7 +87,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to use for calculations to the given value
 		///
 		/// @param sampleRate - The new sample rate to use
-		inline virtual auto setSampleRate(size_t sampleRate) noexcept -> void {
+		inline virtual auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mNumSamplesToTransitionGain
 				= static_cast<size_t>(sampleRate * mRiseTimeSeconds + static_cast<T>(0.5));
 		}
@@ -120,7 +121,7 @@ namespace apex::dsp {
 		/// The number of samples the slew takes to complete
 		size_t mNumSamplesToTransitionGain = 0;
 		/// The current gain reduction value
-		T mCurrentGainReduction = static_cast<T>(0.0);
+		Decibels mCurrentGainReduction = static_cast<T>(0.0);
 		/// The slew rate
 		T mRiseTimeSeconds = static_cast<T>(0.0);
 

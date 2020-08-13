@@ -56,7 +56,7 @@ namespace apex::dsp {
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] auto process(T input) noexcept -> T override;
+		[[nodiscard]] auto process(Decibels input) noexcept -> Decibels override;
 
 		auto operator=(GainComputerCompressor<T, AttackKind, ReleaseKind>&& computer) noexcept
 			-> GainComputerCompressor<T, AttackKind, ReleaseKind>& = default;
@@ -105,22 +105,24 @@ namespace apex::dsp {
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] auto process(float input) noexcept -> float override {
-			float threshold = this->mState->getThreshold();
+		[[nodiscard]] auto process(Decibels input) noexcept -> Decibels override {
+			Decibels threshold = this->mState->getThreshold();
 			float ratio = this->mState->getRatio();
-			float kneeWidth = this->mState->getKneeWidth();
+			Decibels kneeWidth = this->mState->getKneeWidth();
 
 			float twoXMinusT = 2.0F * (input - this->mState->getThreshold());
 			if(twoXMinusT < -kneeWidth) {
-				return input;
+				return Decibels(input);
 			}
 			else if(twoXMinusT > kneeWidth) {
 				return threshold + (input - threshold) / ratio;
 			}
 			else {
-				return input
-					   + ((1.0F / ratio) - 1.0F) * math::pow2f(input - threshold + kneeWidth / 2.0F)
-							 / (2.0F * kneeWidth);
+				return Decibels(input
+								+ ((1.0F / ratio) - 1.0F)
+									  * math::pow2f(gsl::narrow_cast<float>(input - threshold
+																			+ kneeWidth / 2.0F))
+									  / (2.0F * kneeWidth));
 			}
 		}
 
@@ -171,10 +173,10 @@ namespace apex::dsp {
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] auto process(double input) noexcept -> double override {
-			double threshold = this->mState->getThreshold();
+		[[nodiscard]] auto process(Decibels input) noexcept -> Decibels override {
+			Decibels threshold = this->mState->getThreshold();
 			double ratio = this->mState->getRatio();
-			double kneeWidth = this->mState->getKneeWidth();
+			Decibels kneeWidth = this->mState->getKneeWidth();
 
 			double twoXMinusT = 2.0 * (input - this->mState->getThreshold());
 			if(twoXMinusT < -kneeWidth) {
@@ -185,7 +187,8 @@ namespace apex::dsp {
 			}
 			else {
 				return input
-					   + ((1.0 / ratio) - 1.0) * math::pow2(input - threshold + kneeWidth / 2.0)
+					   + ((1.0 / ratio) - 1.0)
+							 * math::pow2(static_cast<double>(input - threshold + kneeWidth / 2.0))
 							 / (2.0 * kneeWidth);
 			}
 		}
