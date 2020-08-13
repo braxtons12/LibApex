@@ -323,7 +323,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<AttackKind, Field::Attack>(
+		inline auto registerCallback<AttackKind, Field::Attack>(
 			const std::function<void(AttackKind)>& callback) noexcept -> void {
 			callback(mAttack);
 			mAttackCallbacks.push_back(callback);
@@ -332,7 +332,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<ReleaseKind, Field::Release>(
+		inline auto registerCallback<ReleaseKind, Field::Release>(
 			const std::function<void(ReleaseKind)>& callback) noexcept -> void {
 			callback(mRelease);
 			mReleaseCallbacks.push_back(callback);
@@ -341,7 +341,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto
+		inline auto
 		registerCallback<T, Field::Ratio>(const std::function<void(T)>& callback) noexcept -> void {
 			callback(mRatio);
 			mRatioCallbacks.push_back(callback);
@@ -350,7 +350,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<T, Field::Threshold>(const std::function<void(T)>& callback) noexcept
+		inline auto registerCallback<T, Field::Threshold>(const std::function<void(T)>& callback) noexcept
 			-> void {
 			callback(mThreshold);
 			mThresholdCallbacks.push_back(callback);
@@ -359,7 +359,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<T, Field::KneeWidth>(const std::function<void(T)>& callback) noexcept
+		inline auto registerCallback<T, Field::KneeWidth>(const std::function<void(T)>& callback) noexcept
 			-> void {
 			callback(mKneeWidth);
 			mKneeWidthCallbacks.push_back(callback);
@@ -368,7 +368,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<size_t, Field::SampleRate>(
+		inline auto registerCallback<size_t, Field::SampleRate>(
 			const std::function<void(size_t)>& callback) noexcept -> void {
 			callback(mSampleRate);
 			mSampleRateCallbacks.push_back(callback);
@@ -377,7 +377,7 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		auto registerCallback<bool, Field::AutoRelease>(
+		inline auto registerCallback<bool, Field::AutoRelease>(
 			const std::function<void(bool)>& callback) noexcept -> void {
 			callback(mAutoReleaseEnabled);
 			mAutoReleaseCallbacks.push_back(callback);
