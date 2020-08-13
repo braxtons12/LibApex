@@ -26,6 +26,9 @@ namespace apex::utils::synchronization {
 		~ReadWriteLockError() noexcept final = default;
 	};
 
+	/// @brief Basic Read/Write Lock for synchronizing a single piece of data
+	///
+	/// @tparam T - The type of the value to be guarded/synchronized
 	template<typename T>
 	class ReadWriteLock {
 	  public:
