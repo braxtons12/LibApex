@@ -35,4 +35,6 @@ namespace apex {
 	using apex::utils::Error;
 	using apex::utils::Option;
 	using apex::utils::Result;
+
+	using apex::math::Decibels;
 } // namespace apex
