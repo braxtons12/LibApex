@@ -99,10 +99,12 @@ namespace apex::ui {
 			double reversed = wheel.isReversed ? -1.0 : 1.0;
 			double val = getValueFromProportion(getValue());
 			if(e.mods.isShiftDown()) {
-				setValue(getProportionFromValue(val + 1.0 * reversed), juce::sendNotificationAsync);
+				setValue(getProportionFromValue(val + 1.0_dB * reversed),
+						 juce::sendNotificationAsync);
 			}
 			else {
-				setValue(getProportionFromValue(val + 3.0 * reversed), juce::sendNotificationAsync);
+				setValue(getProportionFromValue(val + 3.0_dB * reversed),
+						 juce::sendNotificationAsync);
 			}
 		}
 

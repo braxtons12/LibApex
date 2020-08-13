@@ -37,4 +37,5 @@ namespace apex {
 	using apex::utils::Result;
 
 	using apex::math::Decibels;
+	using apex::math::operator""_dB;
 } // namespace apex
