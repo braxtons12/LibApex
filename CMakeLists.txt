@@ -198,7 +198,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/Sidechain.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/Sidechain1176.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainModernBus.cpp"
-	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainSSL.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainSSL.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageFET.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/gainstages/GainStageVCA.h"

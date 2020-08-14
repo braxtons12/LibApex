@@ -14,7 +14,6 @@
 #include "src/dsp/dynamics/sidechains/Sidechain.cpp"
 #include "src/dsp/dynamics/sidechains/Sidechain1176.cpp"
 #include "src/dsp/dynamics/sidechains/SidechainModernBus.cpp"
-#include "src/dsp/dynamics/sidechains/SidechainSSL.cpp"
 #include "src/dsp/filters/BiQuadFilter.cpp"
 #include "src/dsp/processors/EQBand.cpp"
 #include "src/dsp/processors/Gain.cpp"

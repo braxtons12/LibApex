@@ -127,7 +127,7 @@ namespace apex::dsp {
 
 		Ratio mRatio = Ratio::FourToOne;
 		LevelDetector1176<float> mLevelDetector = LevelDetector1176<float>(&mState);
-		GainReductionFET<float, float, float> mGainReduction
+		GainReductionFET<float, float, float> mGainReductionProcessor
 			= GainReductionFET<float, float, float>(&mState);
 		GainComputerExpander<float, float, float> mExpanderComputer
 			= GainComputerExpander<float, float, float>(&mState);
@@ -272,7 +272,7 @@ namespace apex::dsp {
 
 		Ratio mRatio = Ratio::FourToOne;
 		LevelDetector1176<double> mLevelDetector = LevelDetector1176<double>(&mState);
-		GainReductionFET<double, double, double> mGainReduction
+		GainReductionFET<double, double, double> mGainReductionProcessor
 			= GainReductionFET<double, double, double>(&mState);
 		GainComputerExpander<double, double, double> mExpanderComputer
 			= GainComputerExpander<double, double, double>(&mState);

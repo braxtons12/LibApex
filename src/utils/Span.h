@@ -49,7 +49,7 @@ namespace apex::utils {
 		/// @param index - The index of the desired element
 		/// @return - The element at `index`
 		[[nodiscard]] constexpr inline auto at(size_t index) noexcept -> T& {
-			return gsl::at(mSpanInternal, index);
+			return gsl::at(mSpanInternal, static_cast<gsl::index>(index));
 		}
 
 		/// @brief Returns the first `Count` elements in the `Span`
@@ -114,7 +114,8 @@ namespace apex::utils {
 		/// @param count - The number of elements to get in the subspan
 		/// @return - The subspan starting at `offset` of size `count`
 		[[nodiscard]] constexpr inline auto
-		subspan(size_t offset, size_t count = gsl::dynamic_extent) const noexcept -> Span<T, gsl::dynamic_extent> {
+		subspan(size_t offset, size_t count = gsl::dynamic_extent) const noexcept
+			-> Span<T, gsl::dynamic_extent> {
 			return Span(mSpanInternal.subspan(offset, count));
 		}
 

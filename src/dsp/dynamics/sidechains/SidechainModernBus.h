@@ -65,7 +65,7 @@ namespace apex::dsp {
 
 	  private:
 		LevelDetectorModernBus<float> mLevelDetector = LevelDetectorModernBus<float>(&mState);
-		GainReduction<float, float, float> mGainReduction
+		GainReduction<float, float, float> mGainReductionProcessor
 			= GainReduction<float, float, float>(&mState);
 		GainComputerExpander<float, float, float> mExpanderComputer
 			= GainComputerExpander<float, float, float>(&mState);
@@ -119,7 +119,7 @@ namespace apex::dsp {
 
 	  private:
 		LevelDetectorModernBus<double> mLevelDetector = LevelDetectorModernBus<double>(&mState);
-		GainReduction<double, double, double> mGainReduction
+		GainReduction<double, double, double> mGainReductionProcessor
 			= GainReduction<double, double, double>(&mState);
 		GainComputerExpander<double, double, double> mExpanderComputer
 			= GainComputerExpander<double, double, double>(&mState);

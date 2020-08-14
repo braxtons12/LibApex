@@ -214,6 +214,7 @@ namespace apex::dsp {
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -224,6 +225,7 @@ namespace apex::dsp {
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -233,6 +235,7 @@ namespace apex::dsp {
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(gsl::narrow_cast<float>(gainReduction));
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -242,6 +245,7 @@ namespace apex::dsp {
 		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -253,6 +257,7 @@ namespace apex::dsp {
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -264,6 +269,7 @@ namespace apex::dsp {
 		Decibels gainReduction
 			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(gsl::narrow_cast<float>(gainReduction));
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -480,6 +486,7 @@ namespace apex::dsp {
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -490,6 +497,7 @@ namespace apex::dsp {
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -499,6 +507,7 @@ namespace apex::dsp {
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -507,6 +516,7 @@ namespace apex::dsp {
 		Decibels detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -517,6 +527,7 @@ namespace apex::dsp {
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 
@@ -527,6 +538,7 @@ namespace apex::dsp {
 		Decibels gainReduction
 			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
+		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
 		return mGainReductionDB;
 	}
 } // namespace apex::dsp
