@@ -13,6 +13,7 @@
 #include "../utils/MiscMacros.h"
 #include "../utils/Option.h"
 #include "../utils/Result.h"
+#include "../utils/Span.h"
 #include "juce_dsp/juce_dsp.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_gui_extra/juce_gui_extra.h"
@@ -36,6 +37,7 @@ namespace apex {
 	using apex::utils::Error;
 	using apex::utils::Option;
 	using apex::utils::Result;
+	using apex::utils::Span;
 
 	using apex::math::Decibels;
 	using apex::math::Hertz;
