@@ -6,9 +6,12 @@
 
 #include "../../base/StandardIncludes.h"
 #include "../filters/BiQuadFilter.h"
+#include "juce_core/system/juce_PlatformDefs.h"
 
 namespace apex::dsp {
-	template<typename T, T OverSampleRate = static_cast<T>(2.0)>
+	template<typename T,
+			 size_t OverSampleRate = 2,
+			 typename Enabled = std::enable_if_t<OverSampleRate % 2 == 0, int>>
 	class OverSampler {
 	  public:
 		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
@@ -16,7 +19,8 @@ namespace apex::dsp {
 		constexpr OverSampler() noexcept = default;
 		constexpr explicit OverSampler(Hertz sampleRate) noexcept : mSampleRate(sampleRate) {
 		}
-		constexpr OverSampler(OverSampler<T, OverSampleRate>&& overSampler) noexcept = default;
+		constexpr OverSampler(
+			OverSampler<T, OverSampleRate, Enabled>&& overSampler) noexcept = default;
 
 		[[nodiscard]] constexpr inline auto getSampleRate() const noexcept -> Hertz {
 			return mSampleRate;
@@ -50,8 +54,8 @@ namespace apex::dsp {
 		[[nodiscard]] constexpr inline auto overSample(Span<T> input) noexcept -> Span<T> {
 			mOverSampled.at(0) = input.at(0);
 			for(size_t index = 1; index < mOverSampled.size(); ++index) {
-				if(index % 2 == 0) {
-					mOverSampled.at(index) = input.at(index / 2);
+				if(index % OverSampleRate == 0) {
+					mOverSampled.at(index) = input.at(index / OverSampleRate);
 				}
 				else {
 					mOverSampled.at(index) = static_cast<T>(0.0);
@@ -69,14 +73,14 @@ namespace apex::dsp {
 			mPostAntiAliasFilter.process(input);
 			mDownSampled.at(0) = input.at(0);
 			for(size_t index = 1; index < input.size(); ++index) {
-				if(index % 2 == 0) {
-					output.at(index / 2) = input.at(index);
+				if(index % OverSampleRate == 0) {
+					output.at(index / OverSampleRate) = input.at(index);
 				}
 			}
 		}
 
-		constexpr inline auto operator=(OverSampler<T, OverSampleRate>&& overSampler) noexcept
-			-> OverSampler<T, OverSampleRate>& = default;
+		constexpr inline auto operator=(OverSampler<T, OverSampleRate, Enabled>&& overSampler) noexcept
+			-> OverSampler<T, OverSampleRate, Enabled>& = default;
 
 	  private:
 		Hertz mSampleRate = 44100_Hz;
@@ -86,5 +90,7 @@ namespace apex::dsp {
 			= BiQuadFilter<T>::MakeLowpass(mSampleRate / 2.0, mSampleRate* OverSampleRate);
 		std::vector<T> mOverSampled = std::vector<T>(mSampleRate * OverSampleRate);
 		std::vector<T> mDownSampled = std::vector<T>(mSampleRate);
+
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OverSampler)
 	};
 } // namespace apex::dsp

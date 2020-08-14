@@ -43,7 +43,7 @@ namespace apex::math {
 		/// @return - The Decibel value
 		[[nodiscard]] static inline constexpr auto
 		linearToDecibels(float linear) noexcept -> float {
-			return 20.0F * log10f(linear);
+			return 20.0F * math::log10f(linear);
 		}
 
 		/// @brief Converts the given Decibel value to the corresponding linear value
@@ -52,7 +52,7 @@ namespace apex::math {
 		/// @return - The linear value
 		[[nodiscard]] static inline constexpr auto
 		decibelsToLinear(float decibels) noexcept -> float {
-			return pow10f(decibels / 20.0F);
+			return math::pow10f(decibels / 20.0F);
 		}
 
 		/// @brief Converts the given linear value to the corresponding Decibel value
@@ -61,7 +61,7 @@ namespace apex::math {
 		/// @return - The Decibel value
 		[[nodiscard]] static inline constexpr auto
 		linearToDecibels(double linear) noexcept -> double {
-			return 20.0 * log10(linear);
+			return 20.0 * math::log10(linear);
 		}
 
 		/// @brief Converts the given Decibel value to the corresponding linear value
@@ -70,7 +70,7 @@ namespace apex::math {
 		/// @return - The linear value
 		[[nodiscard]] static inline constexpr auto
 		decibelsToLinear(double decibels) noexcept -> double {
-			return pow10(decibels / 20.0);
+			return math::pow10(decibels / 20.0);
 		}
 
 		/// @brief Converts the given decibels to a linear value
@@ -78,7 +78,7 @@ namespace apex::math {
 		/// @param decibels - The decibel value to convert
 		/// @return - The corresponding linear value
 		[[nodiscard]] static inline constexpr auto toLinear(Decibels decibels) noexcept -> double {
-			return pow10(decibels.mValue / 20.0);
+			return math::pow10(decibels.mValue / 20.0);
 		}
 
 		/// @brief Converts the given linear value to a decibel value
@@ -86,7 +86,7 @@ namespace apex::math {
 		/// @param linear - The linear value to convert
 		/// @return - The corresponding decibel value
 		[[nodiscard]] static inline constexpr auto fromLinear(float linear) noexcept -> Decibels {
-			return Decibels(20.0F * log10f(linear));
+			return Decibels(20.0F * math::log10f(linear));
 		}
 
 		/// @brief Converts the given linear value to a decibel value
@@ -94,7 +94,7 @@ namespace apex::math {
 		/// @param linear - The linear value to convert
 		/// @return - The corresponding decibel value
 		[[nodiscard]] static inline constexpr auto fromLinear(double linear) noexcept -> Decibels {
-			return Decibels(20.0 * log10(linear));
+			return Decibels(20.0 * math::log10(linear));
 		}
 
 		/// @brief Returns the decibel value of this
@@ -129,37 +129,61 @@ namespace apex::math {
 		///
 		/// @return - The linear value of this
 		[[nodiscard]] constexpr inline auto getLinear() const noexcept -> double {
-			return pow10(mValue / 20.0);
+			return math::pow10(mValue / 20.0);
 		}
 
 		/// @brief Sets the this to the given linear value
 		///
 		/// @param linear - The linear value to set this to
 		constexpr inline auto setFromLinear(double linear) noexcept -> void {
-			mValue = 20.0 * log10(linear);
+			mValue = 20.0 * math::log10(linear);
 		}
 
 		/// @brief Sets the this to the given linear value
 		///
 		/// @param linear - The linear value to set this to
 		constexpr inline auto setFromLinear(float linear) noexcept -> void {
-			mValue = 20.0F * log10f(linear);
+			mValue = 20.0F * math::log10f(linear);
 		}
 
-		friend constexpr inline auto operator+(const Decibels& lhs, float x) noexcept -> Decibels {
-			return Decibels(lhs.mValue + x);
+		friend constexpr inline auto
+		operator+(const Decibels& lhs, float rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(const Decibels& lhs, double x) noexcept -> Decibels {
-			return Decibels(lhs.mValue + x);
+		friend constexpr inline auto
+		operator+(const Decibels& lhs, double rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(float x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x + rhs.mValue);
+		friend constexpr inline auto
+		operator+(const Decibels& lhs, int64_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(double x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x + rhs.mValue);
+		friend constexpr inline auto
+		operator+(const Decibels& lhs, size_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue + rhs);
+		}
+
+		friend constexpr inline auto
+		operator+(float lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator+(double lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator+(int64_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator+(size_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs + rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -167,13 +191,23 @@ namespace apex::math {
 			return Decibels(lhs.mValue + rhs.mValue);
 		}
 
-		constexpr inline auto operator+=(float x) noexcept -> Decibels& {
-			mValue += x;
+		constexpr inline auto operator+=(float rhs) noexcept -> Decibels& {
+			mValue += rhs;
 			return *this;
 		}
 
-		constexpr inline auto operator+=(double x) noexcept -> Decibels& {
-			mValue += x;
+		constexpr inline auto operator+=(double rhs) noexcept -> Decibels& {
+			mValue += rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator+=(int64_t rhs) noexcept -> Decibels {
+			mValue += rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator+=(size_t rhs) noexcept -> Decibels {
+			mValue += rhs;
 			return *this;
 		}
 
@@ -182,20 +216,44 @@ namespace apex::math {
 			return *this;
 		}
 
-		friend constexpr inline auto operator-(const Decibels& lhs, float x) noexcept -> Decibels {
-			return Decibels(lhs.mValue - x);
+		friend constexpr inline auto
+		operator-(const Decibels& lhs, float rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(const Decibels& lhs, double x) noexcept -> Decibels {
-			return Decibels(lhs.mValue - x);
+		friend constexpr inline auto
+		operator-(const Decibels& lhs, double rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(float x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x - rhs.mValue);
+		friend constexpr inline auto
+		operator-(const Decibels& lhs, int64_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(double x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x - rhs.mValue);
+		friend constexpr inline auto
+		operator-(const Decibels& lhs, size_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue - rhs);
+		}
+
+		friend constexpr inline auto
+		operator-(float lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator-(double lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator-(int64_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator-(size_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs - rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -203,13 +261,23 @@ namespace apex::math {
 			return Decibels(lhs.mValue - rhs.mValue);
 		}
 
-		constexpr inline auto operator-=(float x) noexcept -> Decibels& {
-			mValue -= x;
+		constexpr inline auto operator-=(float rhs) noexcept -> Decibels& {
+			mValue -= rhs;
 			return *this;
 		}
 
-		constexpr inline auto operator-=(double x) noexcept -> Decibels& {
-			mValue -= x;
+		constexpr inline auto operator-=(double rhs) noexcept -> Decibels& {
+			mValue -= rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator-=(int64_t rhs) noexcept -> Decibels& {
+			mValue -= rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator-=(size_t rhs) noexcept -> Decibels& {
+			mValue -= rhs;
 			return *this;
 		}
 
@@ -222,55 +290,120 @@ namespace apex::math {
 			return Decibels(-lhs.mValue);
 		}
 
-		friend constexpr inline auto operator*(const Decibels& lhs, float x) noexcept -> Decibels {
-			return Decibels(lhs.mValue * x);
+		friend constexpr inline auto
+		operator*(const Decibels& lhs, float rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(const Decibels& lhs, double x) noexcept -> Decibels {
-			return Decibels(lhs.mValue * x);
+		friend constexpr inline auto
+		operator*(const Decibels& lhs, double rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(float x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x * rhs.mValue);
+		friend constexpr inline auto
+		operator*(const Decibels& lhs, int64_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(double x, const Decibels& rhs) noexcept -> Decibels {
-			return Decibels(x * rhs.mValue);
+		friend constexpr inline auto
+		operator*(const Decibels& lhs, size_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue * rhs);
 		}
 
-		constexpr inline auto operator*=(float x) noexcept -> Decibels& {
-			mValue *= x;
+		friend constexpr inline auto
+		operator*(float lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator*(double lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator*(int64_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator*(size_t lhs, const Decibels& rhs) noexcept -> Decibels {
+			return Decibels(lhs * rhs.mValue);
+		}
+
+		constexpr inline auto operator*=(float rhs) noexcept -> Decibels& {
+			mValue *= rhs;
 			return *this;
 		}
 
-		constexpr inline auto operator*=(double x) noexcept -> Decibels& {
-			mValue *= x;
+		constexpr inline auto operator*=(double rhs) noexcept -> Decibels& {
+			mValue *= rhs;
 			return *this;
 		}
 
-		friend constexpr inline auto operator/(const Decibels& lhs, float x) noexcept -> Decibels {
-			return Decibels(lhs.mValue / x);
-		}
-
-		friend constexpr inline auto operator/(const Decibels& lhs, double x) noexcept -> Decibels {
-			return Decibels(lhs.mValue / x);
-		}
-
-		friend constexpr inline auto operator/(float x, const Decibels& rhs) noexcept -> float {
-			return gsl::narrow_cast<float>(x / rhs.mValue);
-		}
-
-		friend constexpr inline auto operator/(double x, const Decibels& rhs) noexcept -> double {
-			return x / rhs.mValue;
-		}
-
-		constexpr inline auto operator/=(float x) noexcept -> Decibels& {
-			mValue /= x;
+		constexpr inline auto operator*=(int64_t rhs) noexcept -> Decibels& {
+			mValue *= rhs;
 			return *this;
 		}
 
-		constexpr inline auto operator/=(double x) noexcept -> Decibels& {
-			mValue /= x;
+		constexpr inline auto operator*=(size_t rhs) noexcept -> Decibels& {
+			mValue *= rhs;
+			return *this;
+		}
+
+		friend constexpr inline auto
+		operator/(const Decibels& lhs, float rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto
+		operator/(const Decibels& lhs, double rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto
+		operator/(const Decibels& lhs, int64_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto
+		operator/(const Decibels& lhs, size_t rhs) noexcept -> Decibels {
+			return Decibels(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(float lhs, const Decibels& rhs) noexcept -> float {
+			return gsl::narrow_cast<float>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(double lhs, const Decibels& rhs) noexcept -> double {
+			return lhs / rhs.mValue;
+		}
+
+		friend constexpr inline auto
+		operator/(int64_t lhs, const Decibels& rhs) noexcept -> int64_t {
+			return static_cast<int64_t>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(size_t lhs, const Decibels& rhs) noexcept -> size_t {
+			return static_cast<size_t>(lhs / rhs.mValue);
+		}
+
+		constexpr inline auto operator/=(float rhs) noexcept -> Decibels& {
+			mValue /= rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator/=(double rhs) noexcept -> Decibels& {
+			mValue /= rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator/=(int64_t rhs) noexcept -> Decibels& {
+			mValue /= rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator/=(size_t rhs) noexcept -> Decibels& {
+			mValue /= rhs;
 			return *this;
 		}
 
@@ -282,11 +415,27 @@ namespace apex::math {
 			return lhs.mValue < rhs;
 		}
 
+		friend constexpr inline auto operator<(const Decibels& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
+		friend constexpr inline auto operator<(const Decibels& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
 		friend constexpr inline auto operator<(float lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
 		friend constexpr inline auto operator<(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(int64_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(size_t lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
@@ -303,11 +452,27 @@ namespace apex::math {
 			return lhs.mValue > rhs;
 		}
 
+		friend constexpr inline auto operator>(const Decibels& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
+		friend constexpr inline auto operator>(const Decibels& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
 		friend constexpr inline auto operator>(float lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
 		friend constexpr inline auto operator>(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(int64_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(size_t lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
@@ -324,11 +489,27 @@ namespace apex::math {
 			return lhs.mValue == rhs;
 		}
 
+		friend constexpr inline auto operator==(const Decibels& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
+		friend constexpr inline auto operator==(const Decibels& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
 		friend constexpr inline auto operator==(float lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
 		friend constexpr inline auto operator==(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(int64_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(size_t lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
@@ -345,11 +526,27 @@ namespace apex::math {
 			return lhs < rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator<=(const Decibels& lhs, int64_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(const Decibels& lhs, size_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator<=(float lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
 		friend constexpr inline auto operator<=(double lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(int64_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(size_t lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
@@ -366,6 +563,14 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator>=(const Decibels& lhs, int64_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(const Decibels& lhs, size_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator>=(float lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
@@ -374,18 +579,36 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator>=(int64_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(size_t lhs, const Decibels& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto
 		operator>=(const Decibels& lhs, const Decibels& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
 
-		constexpr inline auto operator=(const float& x) noexcept -> Decibels& {
-			mValue = x;
+		constexpr inline auto operator=(const float& rhs) noexcept -> Decibels& {
+			mValue = rhs;
 			return *this;
 		}
 
-		constexpr inline auto operator=(const double& x) noexcept -> Decibels& {
-			mValue = x;
+		constexpr inline auto operator=(const double& rhs) noexcept -> Decibels& {
+			mValue = rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator=(const int64_t& rhs) noexcept -> Decibels& {
+			mValue = rhs;
+			return *this;
+		}
+
+		constexpr inline auto operator=(const size_t& rhs) noexcept -> Decibels& {
+			mValue = rhs;
 			return *this;
 		}
 
@@ -404,15 +627,23 @@ namespace apex::math {
 			return gsl::narrow_cast<int>(mValue);
 		}
 
+		explicit constexpr inline operator int64_t() const noexcept {
+			return gsl::narrow_cast<int64_t>(mValue);
+		}
+
+		explicit constexpr inline operator size_t() const noexcept {
+			return gsl::narrow_cast<size_t>(mValue);
+		}
+
 	  private:
 		double mValue = MINUS_INFINITY_DB;
 	};
 
-	constexpr inline auto operator"" _dB(long double x) noexcept -> Decibels {
-		return Decibels(gsl::narrow_cast<double>(x));
+	constexpr inline auto operator"" _dB(long double rhs) noexcept -> Decibels {
+		return Decibels(gsl::narrow_cast<double>(rhs));
 	}
 
-	constexpr inline auto operator""_dB(unsigned long long x) noexcept -> Decibels {
-		return Decibels(gsl::narrow_cast<double>(x));
+	constexpr inline auto operator""_dB(unsigned long long rhs) noexcept -> Decibels {
+		return Decibels(gsl::narrow_cast<double>(rhs));
 	}
 } // namespace apex::math

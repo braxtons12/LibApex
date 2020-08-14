@@ -139,20 +139,36 @@ namespace apex::math {
 		/// @param radians - The new value, in Radians
 		constexpr inline auto setFromRadians(Radians radians) noexcept -> void;
 
-		friend constexpr inline auto operator+(const Hertz& lhs, float x) noexcept -> Hertz {
-			return Hertz(lhs.mValue + x);
+		friend constexpr inline auto operator+(const Hertz& lhs, float rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(const Hertz& lhs, double x) noexcept -> Hertz {
-			return Hertz(lhs.mValue + x);
+		friend constexpr inline auto operator+(const Hertz& lhs, double rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(float x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x + rhs.mValue);
+		friend constexpr inline auto operator+(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(double x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x + rhs.mValue);
+		friend constexpr inline auto operator+(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue + rhs);
+		}
+
+		friend constexpr inline auto operator+(float lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto operator+(double lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto operator+(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto operator+(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs + rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -170,25 +186,51 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator+=(int64_t x) noexcept -> Hertz& {
+			mValue += x;
+			return *this;
+		}
+
+		constexpr inline auto operator+=(size_t x) noexcept -> Hertz& {
+			mValue += x;
+			return *this;
+		}
+
 		constexpr inline auto operator+=(const Hertz& rhs) noexcept -> Hertz& {
 			mValue += rhs.mValue;
 			return *this;
 		}
 
-		friend constexpr inline auto operator-(const Hertz& lhs, float x) noexcept -> Hertz {
-			return Hertz(lhs.mValue - x);
+		friend constexpr inline auto operator-(const Hertz& lhs, float rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(const Hertz& lhs, double x) noexcept -> Hertz {
-			return Hertz(lhs.mValue - x);
+		friend constexpr inline auto operator-(const Hertz& lhs, double rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(float x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x - rhs.mValue);
+		friend constexpr inline auto operator-(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(double x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x - rhs.mValue);
+		friend constexpr inline auto operator-(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue - rhs);
+		}
+
+		friend constexpr inline auto operator-(float lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto operator-(double lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto operator-(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto operator-(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs - rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -206,6 +248,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator-=(int64_t x) noexcept -> Hertz& {
+			mValue -= x;
+			return *this;
+		}
+
+		constexpr inline auto operator-=(size_t x) noexcept -> Hertz& {
+			mValue -= x;
+			return *this;
+		}
+
 		constexpr inline auto operator-=(const Hertz& rhs) noexcept -> Hertz& {
 			mValue -= rhs.mValue;
 			return *this;
@@ -215,20 +267,36 @@ namespace apex::math {
 			return Hertz(-lhs.mValue);
 		}
 
-		friend constexpr inline auto operator*(const Hertz& lhs, float x) noexcept -> Hertz {
-			return Hertz(lhs.mValue * x);
+		friend constexpr inline auto operator*(const Hertz& lhs, float rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(const Hertz& lhs, double x) noexcept -> Hertz {
-			return Hertz(lhs.mValue * x);
+		friend constexpr inline auto operator*(const Hertz& lhs, double rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(float x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x * rhs.mValue);
+		friend constexpr inline auto operator*(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(double x, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(x * rhs.mValue);
+		friend constexpr inline auto operator*(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue * rhs);
+		}
+
+		friend constexpr inline auto operator*(float lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto operator*(double lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto operator*(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs * rhs.mValue);
+		}
+
+		friend constexpr inline auto operator*(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
+			return Hertz(lhs * rhs.mValue);
 		}
 
 		constexpr inline auto operator*=(float x) noexcept -> Hertz& {
@@ -241,20 +309,46 @@ namespace apex::math {
 			return *this;
 		}
 
-		friend constexpr inline auto operator/(const Hertz& lhs, float x) noexcept -> Hertz {
-			return Hertz(lhs.mValue / x);
+		constexpr inline auto operator*=(int64_t x) noexcept -> Hertz& {
+			mValue *= x;
+			return *this;
 		}
 
-		friend constexpr inline auto operator/(const Hertz& lhs, double x) noexcept -> Hertz {
-			return Hertz(lhs.mValue / x);
+		constexpr inline auto operator*=(size_t x) noexcept -> Hertz& {
+			mValue *= x;
+			return *this;
 		}
 
-		friend constexpr inline auto operator/(float x, const Hertz& rhs) noexcept -> float {
-			return gsl::narrow_cast<float>(x / rhs.mValue);
+		friend constexpr inline auto operator/(const Hertz& lhs, float rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue / rhs);
 		}
 
-		friend constexpr inline auto operator/(double x, const Hertz& rhs) noexcept -> double {
-			return x / rhs.mValue;
+		friend constexpr inline auto operator/(const Hertz& lhs, double rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
+			return Hertz(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(float lhs, const Hertz& rhs) noexcept -> float {
+			return gsl::narrow_cast<float>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(double lhs, const Hertz& rhs) noexcept -> double {
+			return lhs / rhs.mValue;
+		}
+
+		friend constexpr inline auto operator/(int64_t lhs, const Hertz& rhs) noexcept -> int64_t {
+			return static_cast<int64_t>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(size_t lhs, const Hertz& rhs) noexcept -> size_t {
+			return static_cast<size_t>(lhs / rhs.mValue);
 		}
 
 		constexpr inline auto operator/=(float x) noexcept -> Hertz& {
@@ -267,6 +361,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator/=(int64_t x) noexcept -> Hertz& {
+			mValue /= x;
+			return *this;
+		}
+
+		constexpr inline auto operator/=(size_t x) noexcept -> Hertz& {
+			mValue /= x;
+			return *this;
+		}
+
 		friend constexpr inline auto operator<(const Hertz& lhs, float rhs) noexcept -> bool {
 			return lhs.mValue < rhs;
 		}
@@ -275,11 +379,27 @@ namespace apex::math {
 			return lhs.mValue < rhs;
 		}
 
+		friend constexpr inline auto operator<(const Hertz& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
+		friend constexpr inline auto operator<(const Hertz& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
 		friend constexpr inline auto operator<(float lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
 		friend constexpr inline auto operator<(double lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(int64_t lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(size_t lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
@@ -296,11 +416,27 @@ namespace apex::math {
 			return lhs.mValue > rhs;
 		}
 
+		friend constexpr inline auto operator>(const Hertz& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
+		friend constexpr inline auto operator>(const Hertz& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
 		friend constexpr inline auto operator>(float lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
 		friend constexpr inline auto operator>(double lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(int64_t lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(size_t lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
@@ -317,11 +453,27 @@ namespace apex::math {
 			return lhs.mValue == rhs;
 		}
 
+		friend constexpr inline auto operator==(const Hertz& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
+		friend constexpr inline auto operator==(const Hertz& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
 		friend constexpr inline auto operator==(float lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
 		friend constexpr inline auto operator==(double lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(int64_t lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(size_t lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
@@ -338,11 +490,27 @@ namespace apex::math {
 			return lhs < rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator<=(const Hertz& lhs, int64_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(const Hertz& lhs, size_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator<=(float lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
 		friend constexpr inline auto operator<=(double lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(int64_t lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(size_t lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
@@ -359,11 +527,27 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator>=(const Hertz& lhs, int64_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(const Hertz& lhs, size_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator>=(float lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
 
 		friend constexpr inline auto operator>=(double lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(int64_t lhs, const Hertz& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(size_t lhs, const Hertz& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
 
@@ -382,6 +566,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator=(const int64_t& x) noexcept -> Hertz& {
+			mValue = x;
+			return *this;
+		}
+
+		constexpr inline auto operator=(const size_t& x) noexcept -> Hertz& {
+			mValue = x;
+			return *this;
+		}
+
 		constexpr inline auto operator=(const Hertz& rhs) noexcept -> Hertz& = default;
 		constexpr inline auto operator=(Hertz&& rhs) noexcept -> Hertz& = default;
 
@@ -395,6 +589,14 @@ namespace apex::math {
 
 		explicit constexpr inline operator int() const noexcept {
 			return gsl::narrow_cast<int>(mValue);
+		}
+
+		explicit constexpr inline operator int64_t() const noexcept {
+			return gsl::narrow_cast<int64_t>(mValue);
+		}
+
+		explicit constexpr inline operator size_t() const noexcept {
+			return gsl::narrow_cast<size_t>(mValue);
 		}
 
 		explicit constexpr inline operator Radians() const noexcept;
@@ -544,20 +746,38 @@ namespace apex::math {
 			mValue = static_cast<double>(hertz / math::twoPi);
 		}
 
-		friend constexpr inline auto operator+(const Radians& lhs, float x) noexcept -> Radians {
-			return Radians(lhs.mValue + x);
+		friend constexpr inline auto operator+(const Radians& lhs, float rhs) noexcept -> Radians {
+			return Radians(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(const Radians& lhs, double x) noexcept -> Radians {
-			return Radians(lhs.mValue + x);
+		friend constexpr inline auto operator+(const Radians& lhs, double rhs) noexcept -> Radians {
+			return Radians(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(float x, const Radians& rhs) noexcept -> Radians {
-			return Radians(x + rhs.mValue);
+		friend constexpr inline auto
+		operator+(const Radians& lhs, int64_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue + rhs);
 		}
 
-		friend constexpr inline auto operator+(double x, const Radians& rhs) noexcept -> Radians {
-			return Radians(x + rhs.mValue);
+		friend constexpr inline auto operator+(const Radians& lhs, size_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue + rhs);
+		}
+
+		friend constexpr inline auto operator+(float lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto operator+(double lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator+(int64_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs + rhs.mValue);
+		}
+
+		friend constexpr inline auto operator+(size_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs + rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -575,25 +795,53 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator+=(int64_t x) noexcept -> Radians& {
+			mValue += x;
+			return *this;
+		}
+
+		constexpr inline auto operator+=(size_t x) noexcept -> Radians& {
+			mValue += x;
+			return *this;
+		}
+
 		constexpr inline auto operator+=(const Radians& rhs) noexcept -> Radians& {
 			mValue += rhs.mValue;
 			return *this;
 		}
 
-		friend constexpr inline auto operator-(const Radians& lhs, float x) noexcept -> Radians {
-			return Radians(lhs.mValue - x);
+		friend constexpr inline auto operator-(const Radians& lhs, float rhs) noexcept -> Radians {
+			return Radians(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(const Radians& lhs, double x) noexcept -> Radians {
-			return Radians(lhs.mValue - x);
+		friend constexpr inline auto operator-(const Radians& lhs, double rhs) noexcept -> Radians {
+			return Radians(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(float x, const Radians& rhs) noexcept -> Radians {
-			return Radians(x - rhs.mValue);
+		friend constexpr inline auto
+		operator-(const Radians& lhs, int64_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue - rhs);
 		}
 
-		friend constexpr inline auto operator-(double x, const Radians& rhs) noexcept -> Radians {
-			return Radians(x - rhs.mValue);
+		friend constexpr inline auto operator-(const Radians& lhs, size_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue - rhs);
+		}
+
+		friend constexpr inline auto operator-(float lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto operator-(double lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto
+		operator-(int64_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs - rhs.mValue);
+		}
+
+		friend constexpr inline auto operator-(size_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(lhs - rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -611,6 +859,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator-=(int64_t x) noexcept -> Radians& {
+			mValue -= x;
+			return *this;
+		}
+
+		constexpr inline auto operator-=(size_t x) noexcept -> Radians& {
+			mValue -= x;
+			return *this;
+		}
+
 		constexpr inline auto operator-=(const Radians& rhs) noexcept -> Radians& {
 			mValue -= rhs.mValue;
 			return *this;
@@ -620,20 +878,38 @@ namespace apex::math {
 			return Radians(-lhs.mValue);
 		}
 
-		friend constexpr inline auto operator*(const Radians& lhs, float x) noexcept -> Radians {
-			return Radians(lhs.mValue * x);
+		friend constexpr inline auto operator*(const Radians& lhs, float rhs) noexcept -> Radians {
+			return Radians(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(const Radians& lhs, double x) noexcept -> Radians {
-			return Radians(lhs.mValue * x);
+		friend constexpr inline auto operator*(const Radians& lhs, double rhs) noexcept -> Radians {
+			return Radians(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(float x, const Radians& rhs) noexcept -> Radians {
-			return Radians(rhs.mValue * x);
+		friend constexpr inline auto
+		operator*(const Radians& lhs, int64_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue * rhs);
 		}
 
-		friend constexpr inline auto operator*(double x, const Radians& rhs) noexcept -> Radians {
-			return Radians(rhs.mValue * x);
+		friend constexpr inline auto operator*(const Radians& lhs, size_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue * rhs);
+		}
+
+		friend constexpr inline auto operator*(float lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(rhs.mValue * lhs);
+		}
+
+		friend constexpr inline auto operator*(double lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(rhs.mValue * lhs);
+		}
+
+		friend constexpr inline auto
+		operator*(int64_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(rhs.mValue * lhs);
+		}
+
+		friend constexpr inline auto operator*(size_t lhs, const Radians& rhs) noexcept -> Radians {
+			return Radians(rhs.mValue * lhs);
 		}
 
 		constexpr inline auto operator*=(float x) noexcept -> Radians& {
@@ -646,20 +922,48 @@ namespace apex::math {
 			return *this;
 		}
 
-		friend constexpr inline auto operator/(const Radians& lhs, float x) noexcept -> Radians {
-			return Radians(lhs.mValue / x);
+		constexpr inline auto operator*=(int64_t x) noexcept -> Radians& {
+			mValue *= x;
+			return *this;
 		}
 
-		friend constexpr inline auto operator/(const Radians& lhs, double x) noexcept -> Radians {
-			return Radians(lhs.mValue / x);
+		constexpr inline auto operator*=(size_t x) noexcept -> Radians& {
+			mValue *= x;
+			return *this;
 		}
 
-		friend constexpr inline auto operator/(float x, const Radians& rhs) noexcept -> float {
-			return gsl::narrow_cast<float>(x / rhs.mValue);
+		friend constexpr inline auto operator/(const Radians& lhs, float rhs) noexcept -> Radians {
+			return Radians(lhs.mValue / rhs);
 		}
 
-		friend constexpr inline auto operator/(double x, const Radians& rhs) noexcept -> double {
-			return x / rhs.mValue;
+		friend constexpr inline auto operator/(const Radians& lhs, double rhs) noexcept -> Radians {
+			return Radians(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto
+		operator/(const Radians& lhs, int64_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(const Radians& lhs, size_t rhs) noexcept -> Radians {
+			return Radians(lhs.mValue / rhs);
+		}
+
+		friend constexpr inline auto operator/(float lhs, const Radians& rhs) noexcept -> float {
+			return gsl::narrow_cast<float>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(double lhs, const Radians& rhs) noexcept -> double {
+			return lhs / rhs.mValue;
+		}
+
+		friend constexpr inline auto
+		operator/(int64_t lhs, const Radians& rhs) noexcept -> int64_t {
+			return static_cast<int64_t>(lhs / rhs.mValue);
+		}
+
+		friend constexpr inline auto operator/(size_t lhs, const Radians& rhs) noexcept -> size_t {
+			return static_cast<size_t>(lhs / rhs.mValue);
 		}
 
 		constexpr inline auto operator/=(float x) noexcept -> Radians& {
@@ -672,6 +976,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator/=(int64_t x) noexcept -> Radians& {
+			mValue /= x;
+			return *this;
+		}
+
+		constexpr inline auto operator/=(size_t x) noexcept -> Radians& {
+			mValue /= x;
+			return *this;
+		}
+
 		friend constexpr inline auto operator<(const Radians& lhs, float rhs) noexcept -> bool {
 			return lhs.mValue < rhs;
 		}
@@ -680,11 +994,27 @@ namespace apex::math {
 			return lhs.mValue < rhs;
 		}
 
+		friend constexpr inline auto operator<(const Radians& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
+		friend constexpr inline auto operator<(const Radians& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue < rhs;
+		}
+
 		friend constexpr inline auto operator<(float lhs, const Radians& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
 		friend constexpr inline auto operator<(double lhs, const Radians& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(int64_t lhs, const Radians& rhs) noexcept -> bool {
+			return lhs < rhs.mValue;
+		}
+
+		friend constexpr inline auto operator<(size_t lhs, const Radians& rhs) noexcept -> bool {
 			return lhs < rhs.mValue;
 		}
 
@@ -701,11 +1031,27 @@ namespace apex::math {
 			return lhs.mValue > rhs;
 		}
 
+		friend constexpr inline auto operator>(const Radians& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
+		friend constexpr inline auto operator>(const Radians& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue > rhs;
+		}
+
 		friend constexpr inline auto operator>(float lhs, const Radians& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
 		friend constexpr inline auto operator>(double lhs, const Radians& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(int64_t lhs, const Radians& rhs) noexcept -> bool {
+			return lhs > rhs.mValue;
+		}
+
+		friend constexpr inline auto operator>(size_t lhs, const Radians& rhs) noexcept -> bool {
 			return lhs > rhs.mValue;
 		}
 
@@ -722,11 +1068,27 @@ namespace apex::math {
 			return lhs.mValue == rhs;
 		}
 
+		friend constexpr inline auto operator==(const Radians& lhs, int64_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
+		friend constexpr inline auto operator==(const Radians& lhs, size_t rhs) noexcept -> bool {
+			return lhs.mValue == rhs;
+		}
+
 		friend constexpr inline auto operator==(float lhs, const Radians& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
 		friend constexpr inline auto operator==(double lhs, const Radians& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(int64_t lhs, const Radians& rhs) noexcept -> bool {
+			return lhs == rhs.mValue;
+		}
+
+		friend constexpr inline auto operator==(size_t lhs, const Radians& rhs) noexcept -> bool {
 			return lhs == rhs.mValue;
 		}
 
@@ -743,11 +1105,27 @@ namespace apex::math {
 			return lhs < rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator<=(const Radians& lhs, int64_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(const Radians& lhs, size_t rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator<=(float lhs, const Radians& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
 		friend constexpr inline auto operator<=(double lhs, const Radians& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(int64_t lhs, const Radians& rhs) noexcept -> bool {
+			return lhs < rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator<=(size_t lhs, const Radians& rhs) noexcept -> bool {
 			return lhs < rhs || lhs == rhs;
 		}
 
@@ -764,11 +1142,27 @@ namespace apex::math {
 			return lhs > rhs || lhs == rhs;
 		}
 
+		friend constexpr inline auto operator>=(const Radians& lhs, int64_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(const Radians& lhs, size_t rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
 		friend constexpr inline auto operator>=(float lhs, const Radians& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
 
 		friend constexpr inline auto operator>=(double lhs, const Radians& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(int64_t lhs, const Radians& rhs) noexcept -> bool {
+			return lhs > rhs || lhs == rhs;
+		}
+
+		friend constexpr inline auto operator>=(size_t lhs, const Radians& rhs) noexcept -> bool {
 			return lhs > rhs || lhs == rhs;
 		}
 
@@ -787,6 +1181,16 @@ namespace apex::math {
 			return *this;
 		}
 
+		constexpr inline auto operator=(const int64_t& x) noexcept -> Radians& {
+			mValue = x;
+			return *this;
+		}
+
+		constexpr inline auto operator=(const size_t& x) noexcept -> Radians& {
+			mValue = x;
+			return *this;
+		}
+
 		constexpr inline auto operator=(const Radians& rhs) noexcept -> Radians& = default;
 		constexpr inline auto operator=(Radians&& rhs) noexcept -> Radians& = default;
 
@@ -800,6 +1204,14 @@ namespace apex::math {
 
 		explicit constexpr inline operator int() const noexcept {
 			return gsl::narrow_cast<int>(mValue);
+		}
+
+		explicit constexpr inline operator int64_t() const noexcept {
+			return gsl::narrow_cast<int64_t>(mValue);
+		}
+
+		explicit constexpr inline operator size_t() const noexcept {
+			return gsl::narrow_cast<size_t>(mValue);
 		}
 
 		explicit constexpr inline operator Hertz() const noexcept {
