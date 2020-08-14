@@ -488,7 +488,7 @@ namespace apex::dsp {
 		/// @brief Applies this filter to the array of given input values, in place
 		///
 		/// @param input - The array of input values to filter
-		auto process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void;
+		auto process(Span<float> input) noexcept -> void;
 
 		/// @brief Resets this filter to an initial state
 		auto reset() noexcept -> void;
@@ -508,8 +508,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		template<size_t numFrequencies>
-		auto getMagnitudesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-										 gsl::span<float, numFrequencies> magnitudes) const noexcept
+		auto getMagnitudesForFrequencies(Span<const Hertz> frequencies,
+										 Span<float> magnitudes) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
@@ -534,8 +534,8 @@ namespace apex::dsp {
 		/// @param phases - The array to store the phases in
 		template<size_t numFrequencies>
 		auto
-		getPhasesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-								gsl::span<Radians, numFrequencies> phases) const noexcept -> void {
+		getPhasesForFrequencies(Span<const Hertz> frequencies, Span<Radians> phases) const noexcept
+			-> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
@@ -1046,7 +1046,7 @@ namespace apex::dsp {
 		///
 		/// @param input - The array of input values to filter
 		/// @param numSamples - The number of samples in the array
-		auto process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void;
+		auto process(Span<double> input) noexcept -> void;
 
 		/// @brief Resets this filter to an initial state
 		auto reset() noexcept -> void;
@@ -1067,8 +1067,8 @@ namespace apex::dsp {
 		/// @param magnitudes - The array to store the magnitudes in
 		template<size_t numFrequencies>
 		auto
-		getMagnitudesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-									gsl::span<double, numFrequencies> magnitudes) const noexcept
+		getMagnitudesForFrequencies(Span<const Hertz> frequencies,
+									Span<double> magnitudes) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
@@ -1093,8 +1093,8 @@ namespace apex::dsp {
 		/// @param phases - The array to store the phases in
 		template<size_t numFrequencies>
 		auto
-		getPhasesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-								gsl::span<Radians, numFrequencies> phases) const noexcept -> void {
+		getPhasesForFrequencies(Span<const Hertz> frequencies,
+								Span<Radians> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));

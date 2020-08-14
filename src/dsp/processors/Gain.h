@@ -83,7 +83,7 @@ namespace apex::dsp {
 		/// @brief Applies this `Gain` to the array of input values, in place
 		///
 		/// @param input - The array of input values to apply gain to
-		void process(gsl::span<float, gsl::dynamic_extent> input) noexcept override;
+		void process(Span<float> input) noexcept override;
 
 		auto reset() noexcept -> void override {
 		}
@@ -155,13 +155,13 @@ namespace apex::dsp {
 		///
 		/// @return The resulting value after applying the gain
 		[[nodiscard]] inline auto process(double input) noexcept -> double override {
-		return input * mGainLinear;
+			return input * mGainLinear;
 		}
 
 		/// @brief Applies this `Gain` to the array of input values, in place
 		///
 		/// @param input - The array of input values to apply gain to
-		auto process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void override;
+		auto process(Span<double> input) noexcept -> void override;
 
 		auto reset() noexcept -> void override {
 		}

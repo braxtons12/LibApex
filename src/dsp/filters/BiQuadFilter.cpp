@@ -29,8 +29,7 @@ namespace apex::dsp {
 	/// @brief Applies this filter to the array of given input values, in place
 	///
 	/// @param input - The array of input values to filter
-	auto
-	BiQuadFilter<float>::process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void {
+	auto BiQuadFilter<float>::process(Span<float> input) noexcept -> void {
 		for(auto& in : input) {
 			in = process(in);
 		}
@@ -266,8 +265,7 @@ namespace apex::dsp {
 	///
 	/// @param input - The array of input values to filter
 	/// @param numSamples - The number of samples in the array
-	auto
-	BiQuadFilter<double>::process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void {
+	auto BiQuadFilter<double>::process(Span<double> input) noexcept -> void {
 		for(auto& in : input) {
 			in = process(in);
 		}

@@ -182,7 +182,7 @@ namespace apex::dsp {
 		/// @brief Applies this `EQBand` to the given array of input values, in place
 		///
 		/// @param input - The input values to apply EQ to
-		auto process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void override;
+		auto process(Span<float> input) noexcept -> void override;
 
 		/// @brief Resets this `EQBand` to an initial state
 		auto reset() noexcept -> void override;
@@ -222,9 +222,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		virtual inline auto
-		getMagnitudesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-									gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept
-			-> void {
+		getMagnitudesForFrequencies(Span<const Hertz> frequencies,
+									Span<float> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -237,9 +236,9 @@ namespace apex::dsp {
 		///
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		virtual inline auto getDecibelMagnitudesForFrequencies(
-			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-			gsl::span<Decibels, gsl::dynamic_extent> magnitudes) const noexcept -> void {
+		virtual inline auto
+		getDecibelMagnitudesForFrequencies(Span<const Hertz> frequencies,
+										   Span<Decibels> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -281,10 +280,8 @@ namespace apex::dsp {
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
-		virtual inline auto
-		getPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-								gsl::span<Radians, gsl::dynamic_extent> phases) const noexcept
-			-> void {
+		virtual inline auto getPhasesForFrequencies(Span<const Hertz> frequencies,
+													Span<Radians> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
@@ -297,9 +294,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
 		virtual inline auto
-		getDegreesPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-									   gsl::span<float, gsl::dynamic_extent> phases) const noexcept
-			-> void {
+		getDegreesPhasesForFrequencies(Span<const Hertz> frequencies,
+									   Span<float> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency)
@@ -510,7 +506,7 @@ namespace apex::dsp {
 		/// @brief Applies this `EQBand` to the given array of input values, in place
 		///
 		/// @param input - The input values to apply EQ to
-		auto process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void override;
+		auto process(Span<double> input) noexcept -> void override;
 
 		/// @brief Resets this `EQBand` to an initial state
 		auto reset() noexcept -> void override;
@@ -552,9 +548,9 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in
 		/// Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		virtual inline auto getMagnitudesForFrequencies(
-			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void {
+		virtual inline auto
+		getMagnitudesForFrequencies(Span<const Hertz> frequencies,
+									Span<double> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -568,9 +564,9 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in
 		/// Hertz
 		/// @param magnitudes - The array to store the magnitudes in
-		virtual inline auto getDecibelMagnitudesForFrequencies(
-			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-			gsl::span<Decibels, gsl::dynamic_extent> magnitudes) const noexcept -> void {
+		virtual inline auto
+		getDecibelMagnitudesForFrequencies(Span<const Hertz> frequencies,
+										   Span<Decibels> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -612,10 +608,8 @@ namespace apex::dsp {
 		///
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
-		virtual inline auto
-		getPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-								gsl::span<Radians, gsl::dynamic_extent> phases) const noexcept
-			-> void {
+		virtual inline auto getPhasesForFrequencies(Span<const Hertz> frequencies,
+													Span<Radians> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
@@ -628,9 +622,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
 		virtual inline auto
-		getDegreesPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
-									   gsl::span<double, gsl::dynamic_extent> phases) const noexcept
-			-> void {
+		getDegreesPhasesForFrequencies(Span<const Hertz> frequencies,
+									   Span<double> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency)

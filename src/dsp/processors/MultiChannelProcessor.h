@@ -32,7 +32,7 @@ namespace apex::dsp {
 		static_assert(std::is_base_of<Processor<float>, F>::value, "F must be a Processor type");
 
 		using MultiChannelArray
-			= gsl::span<gsl::span<float, gsl::dynamic_extent>, gsl::dynamic_extent>;
+			= Span<Span<float>>;
 
 		MultiChannelProcessor() = delete;
 

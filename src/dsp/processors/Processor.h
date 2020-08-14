@@ -29,7 +29,7 @@ namespace apex::dsp {
 		/// @brief Processes the array of input values, in place
 		///
 		/// @param input - The input values to process
-		virtual auto process(gsl::span<T, gsl::dynamic_extent> input) noexcept -> void = 0;
+		virtual auto process(Span<T> input) noexcept -> void = 0;
 
 		/// @brief Resets the processor to an initial state
 		virtual auto reset() noexcept -> void = 0;

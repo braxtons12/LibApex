@@ -94,7 +94,7 @@ namespace apex::dsp {
 	///
 	/// @param input - The array of input values to apply EQ to
 	auto
-	ParallelEQBand<float>::process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void {
+	ParallelEQBand<float>::process(Span<float> input) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			for(auto& filt : mFilters) {
 				filt.process(input);
@@ -107,8 +107,8 @@ namespace apex::dsp {
 		}
 		else {
 			gsl::owner<float*> x = new float[input.size()];
-			std::memcpy(x, input.data(), input.size_bytes());
-			gsl::span xspan = gsl::span(x, input.size());
+			std::memcpy(x, input.data(), input.sizeBytes());
+			Span<float> xspan = Span<float>::MakeSpan(x, input.size());
 			mFilter.process(xspan);
 			mGainProcessor.process(xspan);
 			auto size = static_cast<gsl::index>(input.size());
@@ -304,7 +304,7 @@ namespace apex::dsp {
 	///
 	/// @param input - The array of input values to apply EQ to
 	auto
-	ParallelEQBand<double>::process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void {
+	ParallelEQBand<double>::process(Span<double> input) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			for(auto& filt : mFilters) {
 				filt.process(input);
@@ -317,8 +317,8 @@ namespace apex::dsp {
 		}
 		else {
 			gsl::owner<double*> x = new double[input.size()];
-			std::memcpy(x, input.data(), input.size_bytes());
-			gsl::span xspan = gsl::span(x, input.size());
+			std::memcpy(x, input.data(), input.sizeBytes());
+			Span<double> xspan = Span<double>::MakeSpan(x, input.size());
 			mFilter.process(xspan);
 			mGainProcessor.process(xspan);
 			auto size = static_cast<gsl::index>(input.size());

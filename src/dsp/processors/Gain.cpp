@@ -15,7 +15,7 @@ namespace apex::dsp {
 	/// @brief Applies this `Gain` to the array of input values, in place
 	///
 	/// @param input - The array of input values to apply gain to
-	auto Gain<float>::process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void {
+	auto Gain<float>::process(Span<float> input) noexcept -> void {
 #if JUCE_USE_SIMD
 		using juce::dsp::SIMDRegister;
 		SIMDRegister<float> reg = SIMDRegister<float>();
@@ -48,7 +48,7 @@ namespace apex::dsp {
 	/// @brief Applies this `Gain` to the array of input values, in place
 	///
 	/// @param input - The array of input values to apply gain to
-	auto Gain<double>::process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void {
+	auto Gain<double>::process(Span<double> input) noexcept -> void {
 #if JUCE_USE_SIMD
 		using juce::dsp::SIMDRegister;
 		SIMDRegister<double> reg = SIMDRegister<double>();

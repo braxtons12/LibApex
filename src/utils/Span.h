@@ -57,7 +57,9 @@ namespace apex::utils {
 		/// @tparam Count - The number of elements to get
 		/// @tparam std::enable_if_t<Size != gsl::dynamic_extent>
 		/// @return - The first `Count` elements in the `Span`, as a `Span`
-		template<size_t Count, typename Enable = std::enable_if_t<Size != gsl::dynamic_extent>>
+		template<size_t Count,
+				 size_t size = Size,
+				 std::enable_if_t<size != gsl::dynamic_extent, int> = 0>
 		[[nodiscard]] constexpr inline auto first() const noexcept -> Span<T, Count> {
 			return Span(mSpanInternal.template first<Count>());
 		}
@@ -68,8 +70,7 @@ namespace apex::utils {
 		/// @tparam std::enable_if_t<Size == gsl::dynamic_extent>
 		/// @param count - The number of elements to get
 		/// @return - The first `count` elements in the `Span`, as a `Span`
-		template<size_t size = Size,
-				 typename Enable = std::enable_if_t<Size == gsl::dynamic_extent>>
+		template<size_t size = Size, std::enable_if_t<size == gsl::dynamic_extent, int> = 0>
 		[[nodiscard]] constexpr inline auto first(size_t count) const noexcept -> Span<T, Size> {
 			return Span(mSpanInternal.first(count));
 		}
@@ -79,7 +80,9 @@ namespace apex::utils {
 		/// @tparam Count - The number of elements to get
 		/// @tparam std::enable_if_t<Size != gsl::dynamic_extent>
 		/// @return - The last `Count` elements in the `Span`, as a `Span`
-		template<size_t Count, typename Enable = std::enable_if_t<Size != gsl::dynamic_extent>>
+		template<size_t Count,
+				 size_t size = Size,
+				 std::enable_if_t<size != gsl::dynamic_extent, int> = 0>
 		[[nodiscard]] constexpr inline auto last() const noexcept -> Span<T, Count> {
 			return Span(mSpanInternal.template last<Count>());
 		}
@@ -90,8 +93,7 @@ namespace apex::utils {
 		/// @tparam std::enable_if_t<Size == gsl::dynamic_extent>
 		/// @param count - The number of elements to get
 		/// @return- The last `count` elements in the `Span` as a `Span`
-		template<size_t size = Size,
-				 typename Enable = std::enable_if_t<Size == gsl::dynamic_extent>>
+		template<size_t size = Size, std::enable_if_t<size == gsl::dynamic_extent, int> = 0>
 		[[nodiscard]] constexpr inline auto last(size_t count) const noexcept -> Span<T, Size> {
 			return Span(mSpanInternal.last(count));
 		}
@@ -112,7 +114,7 @@ namespace apex::utils {
 		/// @param count - The number of elements to get in the subspan
 		/// @return - The subspan starting at `offset` of size `count`
 		[[nodiscard]] constexpr inline auto
-		subspan(size_t offset, size_t count) const noexcept -> Span<T, gsl::dynamic_extent> {
+		subspan(size_t offset, size_t count = gsl::dynamic_extent) const noexcept -> Span<T, gsl::dynamic_extent> {
 			return Span(mSpanInternal.subspan(offset, count));
 		}
 
@@ -209,8 +211,9 @@ namespace apex::utils {
 			return Span(gsl::make_span(first, last));
 		}
 
+		template<size_t Count>
 		[[nodiscard]] constexpr static inline auto
-		MakeSpan(T (&array)[Size]) noexcept -> Span<T, Size> {
+		MakeSpan(T (&array)[Count]) noexcept -> Span<T, Count> {
 			return Span(gsl::make_span(array));
 		}
 
