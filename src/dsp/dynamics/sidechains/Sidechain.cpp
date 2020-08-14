@@ -7,7 +7,7 @@ namespace apex::dsp {
 	///
 	/// @return - The target gain reduction
 	auto Sidechain<float>::process(float input) noexcept -> Decibels {
-		Decibels x = Decibels::MINUS_INFINITY_DB;
+		Decibels x = 0.0_dB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
 				{
@@ -273,7 +273,7 @@ namespace apex::dsp {
 	///
 	/// @return - The target gain reduction
 	auto Sidechain<double>::process(double input) noexcept -> Decibels {
-		Decibels x = Decibels::MINUS_INFINITY_DB;
+		Decibels x = 0.0_dB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
 				{

@@ -56,7 +56,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
 	///
 	/// @return - The magnitude response at the given frequency
-	auto BiQuadFilter<float>::getMagnitudeForFrequency(float frequency) const noexcept -> float {
+	auto BiQuadFilter<float>::getMagnitudeForFrequency(Hertz frequency) const noexcept -> float {
 		constexpr std::complex<float> j(0.0F, 1.0F);
 		const size_t order = 2;
 		const std::array<float, 5> coefficients
@@ -67,8 +67,8 @@ namespace apex::dsp {
 		std::complex<float> numerator = 0.0F;
 		std::complex<float> denominator = 1.0F;
 		std::complex<float> factor = 1.0F;
-		std::complex<float> jw
-			= std::exp(-math::twoPif * frequency * j / static_cast<float>(mSampleRate));
+		std::complex<float> jw = std::exp(-math::twoPif * gsl::narrow_cast<float>(frequency) * j
+										  / static_cast<float>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -90,7 +90,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the phase response for, in Hertz
 	///
 	/// @return - The phase response at the given frequency
-	auto BiQuadFilter<float>::getPhaseForFrequency(float frequency) const noexcept -> float {
+	auto BiQuadFilter<float>::getPhaseForFrequency(Hertz frequency) const noexcept -> float {
 		constexpr std::complex<float> j(0.0F, 1.0F);
 		const size_t order = 2;
 		const std::array<float, 5> coefficients
@@ -101,8 +101,8 @@ namespace apex::dsp {
 		std::complex<float> numerator = 0.0F;
 		std::complex<float> denominator = 1.0F;
 		std::complex<float> factor = 1.0F;
-		std::complex<float> jw
-			= std::exp(-math::twoPif * frequency * j / static_cast<float>(mSampleRate));
+		std::complex<float> jw = std::exp(-math::twoPif * gsl::narrow_cast<float>(frequency) * j
+										  / static_cast<float>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -119,10 +119,10 @@ namespace apex::dsp {
 		return std::arg(numerator / denominator);
 	}
 
-	BiQuadFilter<float>::BiQuadFilter(float frequency,
+	BiQuadFilter<float>::BiQuadFilter(Hertz frequency,
 									  float q,
-									  float gain,
-									  size_t sampleRate,
+									  Decibels gain,
+									  Hertz sampleRate,
 									  FilterType type) noexcept
 		: mType(type), mFrequency(frequency), mQ(q), mGain(gain), mSampleRate(sampleRate) {
 		updateCoefficients();
@@ -130,11 +130,12 @@ namespace apex::dsp {
 
 	/// @brief Updates the coefficients of this filter
 	auto BiQuadFilter<float>::updateCoefficients() noexcept -> void {
-		float w0 = 2.0F * math::pif * mFrequency / mSampleRate;
+		float w0 = gsl::narrow_cast<float>(2.0F * math::pif * mFrequency)
+				   / gsl::narrow_cast<float>(mSampleRate);
 		float cosw0 = math::cosf(w0);
 		float sinw0 = math::sinf(w0);
 		float alpha = sinw0 / (2.0F * mQ);
-		float a = math::pow10f(mGain / 40.0F);
+		float a = math::pow10f(gsl::narrow_cast<float>(mGain) / 40.0F);
 		float twoSqrtAAlpha = 0.0F;
 
 		if(mType == FilterType::AnalogBell) {
@@ -292,7 +293,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
 	///
 	/// @return - The magnitude response at the given frequency
-	auto BiQuadFilter<double>::getMagnitudeForFrequency(double frequency) const noexcept -> double {
+	auto BiQuadFilter<double>::getMagnitudeForFrequency(Hertz frequency) const noexcept -> double {
 		constexpr std::complex<double> j(0.0, 1.0);
 		const size_t order = 2;
 		const std::array<double, 5> coefficients
@@ -303,8 +304,8 @@ namespace apex::dsp {
 		std::complex<double> numerator = 0.0;
 		std::complex<double> denominator = 1.0;
 		std::complex<double> factor = 1.0;
-		std::complex<double> jw
-			= std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
+		std::complex<double> jw = std::exp(-math::twoPi * static_cast<double>(frequency) * j
+										   / static_cast<double>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -326,7 +327,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the phase response for, in Hertz
 	///
 	/// @return - The phase response at the given frequency
-	auto BiQuadFilter<double>::getPhaseForFrequency(double frequency) const noexcept -> double {
+	auto BiQuadFilter<double>::getPhaseForFrequency(Hertz frequency) const noexcept -> double {
 		constexpr std::complex<double> j(0.0, 1.0);
 		const size_t order = 2;
 		const std::array<double, 5> coefficients
@@ -337,8 +338,8 @@ namespace apex::dsp {
 		std::complex<double> numerator = 0.0;
 		std::complex<double> denominator = 1.0;
 		std::complex<double> factor = 1.0;
-		std::complex<double> jw
-			= std::exp(-math::twoPi * frequency * j / static_cast<double>(mSampleRate));
+		std::complex<double> jw = std::exp(-math::twoPi * static_cast<double>(frequency) * j
+										   / static_cast<double>(mSampleRate));
 
 		for(size_t n = 0; n <= order; ++n) {
 			numerator += coefficients.at(n) * factor;
@@ -355,10 +356,10 @@ namespace apex::dsp {
 		return std::arg(numerator / denominator);
 	}
 
-	BiQuadFilter<double>::BiQuadFilter(double frequency,
+	BiQuadFilter<double>::BiQuadFilter(Hertz frequency,
 									   double q,
-									   double gain,
-									   size_t sampleRate,
+									   Decibels gain,
+									   Hertz sampleRate,
 									   FilterType type) noexcept
 		: mType(type), mFrequency(frequency), mQ(q), mGain(gain), mSampleRate(sampleRate) {
 		updateCoefficients();
@@ -366,11 +367,12 @@ namespace apex::dsp {
 
 	/// @brief Updates the coefficients of this filter
 	auto BiQuadFilter<double>::updateCoefficients() noexcept -> void {
-		double w0 = 2.0 * math::pi * mFrequency / mSampleRate;
+		double w0
+			= static_cast<double>(2.0 * math::pi * mFrequency) / static_cast<double>(mSampleRate);
 		double cosw0 = math::cos(w0);
 		double sinw0 = math::sin(w0);
 		double alpha = sinw0 / (2.0 * mQ);
-		double a = math::pow10(mGain / 40.0);
+		double a = math::pow10(static_cast<double>(mGain) / 40.0);
 		double twoSqrtAAlpha = 0.0;
 
 		if(mType == FilterType::AnalogBell) {
