@@ -53,6 +53,7 @@ END_JUCE_MODULE_DECLARATION
 #include "src/dsp/processors/EQBand.h"
 #include "src/dsp/processors/Gain.h"
 #include "src/dsp/processors/MultiChannelProcessor.h"
+#include "src/dsp/processors/OverSampler.h"
 #include "src/dsp/processors/ParallelEQBand.h"
 #include "src/dsp/processors/Processor.h"
 #include "src/ui/ApexComboBox.h"

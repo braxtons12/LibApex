@@ -54,7 +54,7 @@ namespace apex::dsp {
 	/// @brief Applies this `EQBand` to the given array of input values, in place
 	///
 	/// @param input - The input values to apply EQ to
-	auto EQBand<float>::process(gsl::span<float, gsl::dynamic_extent> input) noexcept -> void {
+	auto EQBand<float>::process(Span<float> input) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			for(auto& filt : mFilters) {
 				filt.process(input);
@@ -286,7 +286,7 @@ namespace apex::dsp {
 	/// @brief Applies this `EQBand` to the given array of input values, in place
 	///
 	/// @param input - The input values to apply EQ to
-	auto EQBand<double>::process(gsl::span<double, gsl::dynamic_extent> input) noexcept -> void {
+	auto EQBand<double>::process(Span<double> input) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			for(auto& filt : mFilters) {
 				filt.process(input);

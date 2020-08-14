@@ -206,12 +206,14 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/EQBand.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/ParallelEQBand.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/processors/Gain.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/processors/OverSampler.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/WaveShaper.h"
 	)
 
 set(MATH
 	"${CMAKE_SOURCE_DIR}/src/math/General.h"
 	"${CMAKE_SOURCE_DIR}/src/math/Decibels.h"
+	"${CMAKE_SOURCE_DIR}/src/math/Frequency.h"
 	"${CMAKE_SOURCE_DIR}/src/math/Exponentials.h"
 	"${CMAKE_SOURCE_DIR}/src/math/TrigFuncs.h"
 	"${CMAKE_SOURCE_DIR}/src/math/Random.h"
@@ -222,6 +224,7 @@ set(UTILS
 	"${CMAKE_SOURCE_DIR}/src/utils/Result.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Error.cpp"
 	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/Span.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ScopedLockGuard.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ReadWriteLock.h"
 	)
