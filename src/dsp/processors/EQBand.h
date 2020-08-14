@@ -60,7 +60,7 @@ namespace apex::dsp {
 		/// @param gainDB - The gain to use, in Decibels
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The type of band
-		EQBand(float frequency, float q, float gainDB, size_t sampleRate, BandType type) noexcept;
+		EQBand(Hertz frequency, float q, Decibels gainDB, Hertz sampleRate, BandType type) noexcept;
 
 		/// @brief Move constructs an `EQBand` from the given one
 		///
@@ -71,7 +71,7 @@ namespace apex::dsp {
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
 		/// @param frequency - The new frequency, in Hertz
-		inline auto setFrequency(float frequency) noexcept -> void {
+		inline auto setFrequency(Hertz frequency) noexcept -> void {
 			mFrequency = frequency;
 			mFilter.setFrequency(mFrequency);
 			if(mType < BandType::Allpass) {
@@ -84,7 +84,7 @@ namespace apex::dsp {
 		/// @brief Returns the frequency of this `EQBand`
 		///
 		/// @return - The current frequency, in Hertz
-		[[nodiscard]] inline auto getFrequency() const noexcept -> float {
+		[[nodiscard]] inline auto getFrequency() const noexcept -> Hertz {
 			return mFrequency;
 		}
 
@@ -111,7 +111,7 @@ namespace apex::dsp {
 		/// @brief Sets the gain of this `EQBand`
 		///
 		/// @param gainDB - The new gain, in Decibels
-		virtual inline auto setGainDB(float gainDB) noexcept -> void {
+		virtual inline auto setGainDB(Decibels gainDB) noexcept -> void {
 			mGain = gainDB;
 			mFilter.setGainDB(mGain);
 			if(mType < BandType::Allpass) {
@@ -124,14 +124,14 @@ namespace apex::dsp {
 		/// @brief Returns the gain of this `EQBand`
 		///
 		/// @return - The current gain, in Decibels
-		[[nodiscard]] virtual inline auto getGainDB() const noexcept -> float {
+		[[nodiscard]] virtual inline auto getGainDB() const noexcept -> Decibels {
 			return mGain;
 		}
 
 		/// @brief Sets the sample rate of this `EQBand` to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+		inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mSampleRate = sampleRate;
 			mFilter.setSampleRate(mSampleRate);
 			if(mType < BandType::Allpass) {
@@ -144,7 +144,7 @@ namespace apex::dsp {
 		/// @brief Returns the sample rate of this `EQBand`
 		///
 		/// @return - The current sample rate, in Hertz
-		[[nodiscard]] inline auto getSampleRate() const noexcept -> size_t {
+		[[nodiscard]] inline auto getSampleRate() const noexcept -> Hertz {
 			return mSampleRate;
 		}
 
@@ -193,7 +193,7 @@ namespace apex::dsp {
 		///
 		/// @return - The magnitude response at the given frequency
 		[[nodiscard]] virtual inline auto
-		getMagnitudeForFrequency(float frequency) const noexcept -> float {
+		getMagnitudeForFrequency(Hertz frequency) const noexcept -> float {
 			float x = 1.0F;
 			if(mType < BandType::Allpass) {
 				for(const auto& filt : mFilters) {
@@ -212,8 +212,8 @@ namespace apex::dsp {
 		///
 		/// @return - The magnitude response at the given frequency
 		[[nodiscard]] virtual inline auto
-		getDecibelMagnitudeForFrequency(float frequency) const noexcept -> float {
-			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
+		getDecibelMagnitudeForFrequency(Hertz frequency) const noexcept -> Decibels {
+			return Decibels::fromLinear(getMagnitudeForFrequency(frequency));
 		}
 
 		/// @brief Calculates the linear magnitude response of this filter for the given array of
@@ -222,7 +222,7 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		virtual inline auto
-		getMagnitudesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
+		getMagnitudesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
 									gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
@@ -238,8 +238,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calcualte the magnitude response for, in Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		virtual inline auto getDecibelMagnitudesForFrequencies(
-			gsl::span<float, gsl::dynamic_extent> frequencies,
-			gsl::span<float, gsl::dynamic_extent> magnitudes) const noexcept -> void {
+			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
+			gsl::span<Decibels, gsl::dynamic_extent> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -253,8 +253,8 @@ namespace apex::dsp {
 		///
 		/// @return - The phase response, in radians, at the given frequency
 		[[nodiscard]] virtual inline auto
-		getPhaseForFrequency(float frequency) const noexcept -> float {
-			float x = 0.0F;
+		getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
+			Radians x = 0.0_rad;
 			if(mType < BandType::Allpass) {
 				for(const auto& filt : mFilters) {
 					x += filt.getPhaseForFrequency(frequency);
@@ -272,8 +272,8 @@ namespace apex::dsp {
 		///
 		/// @return - The phase response, in degrees, at the given frequency
 		[[nodiscard]] virtual inline auto
-		getDegreesPhaseForFrequency(float frequency) const noexcept -> float {
-			return getPhaseForFrequency(frequency) * 180.0F / math::pif;
+		getDegreesPhaseForFrequency(Hertz frequency) const noexcept -> float {
+			return gsl::narrow_cast<float>(getPhaseForFrequency(frequency)) * 180.0F / math::pif;
 		}
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
@@ -282,8 +282,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
 		virtual inline auto
-		getPhasesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
-								gsl::span<float, gsl::dynamic_extent> phases) const noexcept
+		getPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
+								gsl::span<Radians, gsl::dynamic_extent> phases) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
@@ -297,7 +297,7 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
 		virtual inline auto
-		getDegreesPhasesForFrequencies(gsl::span<float, gsl::dynamic_extent> frequencies,
+		getDegreesPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
 									   gsl::span<float, gsl::dynamic_extent> phases) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
@@ -311,12 +311,12 @@ namespace apex::dsp {
 
 	  protected:
 		BandType mType = BandType::Bell;
-		float mFrequency = 1000.0F;
+		Hertz mFrequency = 1000.0_Hz;
 		float mQ = 1.0F;
-		float mGain = 0.0F;
+		Decibels mGain = 0.0_dB;
 		/// Only used for "____pass" type filters
-		Gain<float> mGainProcessor = Gain<float>(mGain, true);
-		size_t mSampleRate = 44100;
+		Gain<float> mGainProcessor = Gain<float>(mGain);
+		Hertz mSampleRate = 44100_Hz;
 		size_t mOrder = 1;
 		BiQuadFilter<float> mFilter
 			= BiQuadFilter<float>::MakeBell(mFrequency, mQ, mGain, mSampleRate);
@@ -328,14 +328,14 @@ namespace apex::dsp {
 		/// @param filterIndex - The filter stage to calculate the shift for
 		///
 		/// @return - The shifted frequency
-		[[nodiscard]] inline auto frequencyShift(size_t filterIndex) const noexcept -> float {
+		[[nodiscard]] inline auto frequencyShift(size_t filterIndex) const noexcept -> Hertz {
 			float shiftMultiplier = 0.25F * filterIndex;
 			if(mType < BandType::Highpass12DB) {
-				float nextOctFreq = mFrequency * 2.0F;
+				Hertz nextOctFreq = mFrequency * 2.0F;
 				return mFrequency + (shiftMultiplier * (nextOctFreq - mFrequency));
 			}
 			else {
-				float nextOctFreq = mFrequency / 2.0F;
+				Hertz nextOctFreq = mFrequency / 2.0F;
 				return mFrequency - (shiftMultiplier * (nextOctFreq - mFrequency));
 			}
 		}
@@ -383,10 +383,10 @@ namespace apex::dsp {
 		/// @param gainDB - The gain to use, in Decibels
 		/// @param sampleRate - The sample rate to use, in Hertz
 		/// @param type - The type of band
-		EQBand(double frequency,
+		EQBand(Hertz frequency,
 			   double q,
-			   double gainDB,
-			   size_t sampleRate,
+			   Decibels gainDB,
+			   Hertz sampleRate,
 			   BandType type) noexcept;
 
 		/// @brief Move constructs an `EQBand` from the given one
@@ -398,7 +398,7 @@ namespace apex::dsp {
 		/// @brief Sets the frequency of this `EQBand` to the given value
 		///
 		/// @param frequency - The new frequency, in Hertz
-		inline auto setFrequency(double frequency) noexcept -> void {
+		inline auto setFrequency(Hertz frequency) noexcept -> void {
 			mFrequency = frequency;
 			mFilter.setFrequency(mFrequency);
 			if(mType < BandType::Allpass) {
@@ -411,7 +411,7 @@ namespace apex::dsp {
 		/// @brief Returns the frequency of this `EQBand`
 		///
 		/// @return - The current frequency, in Hertz
-		[[nodiscard]] inline auto getFrequency() const noexcept -> double {
+		[[nodiscard]] inline auto getFrequency() const noexcept -> Hertz {
 			return mFrequency;
 		}
 
@@ -438,7 +438,7 @@ namespace apex::dsp {
 		/// @brief Sets the gain of this `EQBand`
 		///
 		/// @param gainDB - The new gain, in Decibels
-		virtual inline auto setGainDB(double gainDB) noexcept -> void {
+		virtual inline auto setGainDB(Decibels gainDB) noexcept -> void {
 			mGain = gainDB;
 			mGainProcessor.setGainDecibels(mGain);
 			mFilter.setGainDB(mGain);
@@ -452,14 +452,14 @@ namespace apex::dsp {
 		/// @brief Returns the gain of this `EQBand`
 		///
 		/// @return - The current gain, in Decibels
-		[[nodiscard]] virtual inline auto getGainDB() const noexcept -> double {
+		[[nodiscard]] virtual inline auto getGainDB() const noexcept -> Decibels {
 			return mGain;
 		}
 
 		/// @brief Sets the sample rate of this `EQBand` to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
-		inline auto setSampleRate(size_t sampleRate) noexcept -> void {
+		inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 			mSampleRate = sampleRate;
 			mFilter.setSampleRate(mSampleRate);
 			if(mType < BandType::Allpass) {
@@ -472,7 +472,7 @@ namespace apex::dsp {
 		/// @brief Returns the sample rate of this `EQBand`
 		///
 		/// @return - The current sample rate, in Hertz
-		[[nodiscard]] inline auto getSampleRate() const noexcept -> size_t {
+		[[nodiscard]] inline auto getSampleRate() const noexcept -> Hertz {
 			return mSampleRate;
 		}
 
@@ -522,7 +522,7 @@ namespace apex::dsp {
 		///
 		/// @return - The magnitude response at the given frequency
 		[[nodiscard]] virtual inline auto
-		getMagnitudeForFrequency(double frequency) const noexcept -> double {
+		getMagnitudeForFrequency(Hertz frequency) const noexcept -> double {
 			double x = 1.0;
 			if(mType < BandType::Allpass) {
 				for(const auto& filt : mFilters) {
@@ -542,7 +542,7 @@ namespace apex::dsp {
 		///
 		/// @return - The magnitude response at the given frequency
 		[[nodiscard]] virtual inline auto
-		getDecibelMagnitudeForFrequency(double frequency) const noexcept -> double {
+		getDecibelMagnitudeForFrequency(Hertz frequency) const noexcept -> Decibels {
 			return math::Decibels::linearToDecibels(getMagnitudeForFrequency(frequency));
 		}
 
@@ -553,7 +553,7 @@ namespace apex::dsp {
 		/// Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		virtual inline auto getMagnitudesForFrequencies(
-			gsl::span<double, gsl::dynamic_extent> frequencies,
+			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
 			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
@@ -569,8 +569,8 @@ namespace apex::dsp {
 		/// Hertz
 		/// @param magnitudes - The array to store the magnitudes in
 		virtual inline auto getDecibelMagnitudesForFrequencies(
-			gsl::span<double, gsl::dynamic_extent> frequencies,
-			gsl::span<double, gsl::dynamic_extent> magnitudes) const noexcept -> void {
+			gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
+			gsl::span<Decibels, gsl::dynamic_extent> magnitudes) const noexcept -> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(magnitudes, frequency)
@@ -584,8 +584,8 @@ namespace apex::dsp {
 		///
 		/// @return - The phase response, in radians, at the given frequency
 		[[nodiscard]] virtual inline auto
-		getPhaseForFrequency(double frequency) const noexcept -> double {
-			double x = 0.0;
+		getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
+			Radians x = 0.0_rad;
 			if(mType < BandType::Allpass) {
 				for(const auto& filt : mFilters) {
 					x += filt.getPhaseForFrequency(frequency);
@@ -603,8 +603,8 @@ namespace apex::dsp {
 		///
 		/// @return - The phase response, in degrees, at the given frequency
 		[[nodiscard]] virtual inline auto
-		getDegreesPhaseForFrequency(double frequency) const noexcept -> double {
-			return getPhaseForFrequency(frequency) * 180.0 / math::pi;
+		getDegreesPhaseForFrequency(Hertz frequency) const noexcept -> double {
+			return static_cast<double>(getPhaseForFrequency(frequency)) * 180.0 / math::pi;
 		}
 
 		/// @brief Calculates the phase response of this filter for the given array of
@@ -613,8 +613,8 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in radians) in
 		virtual inline auto
-		getPhasesForFrequencies(gsl::span<double, gsl::dynamic_extent> frequencies,
-								gsl::span<double, gsl::dynamic_extent> phases) const noexcept
+		getPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
+								gsl::span<Radians, gsl::dynamic_extent> phases) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
@@ -628,7 +628,7 @@ namespace apex::dsp {
 		/// @param frequencies - The frequencies to calculate the phase response for, in Hertz
 		/// @param phases - The array to store the phases (in degrees) in
 		virtual inline auto
-		getDegreesPhasesForFrequencies(gsl::span<double, gsl::dynamic_extent> frequencies,
+		getDegreesPhasesForFrequencies(gsl::span<const Hertz, gsl::dynamic_extent> frequencies,
 									   gsl::span<double, gsl::dynamic_extent> phases) const noexcept
 			-> void {
 			auto size = static_cast<gsl::index>(frequencies.size());
@@ -642,12 +642,12 @@ namespace apex::dsp {
 
 	  protected:
 		BandType mType = BandType::Bell;
-		double mFrequency = 1000.0;
+		Hertz mFrequency = 1000.0_Hz;
 		double mQ = 1.0;
-		double mGain = 0.0;
+		Decibels mGain = 0.0_dB;
 		/// Only used for "____pass" type filters
-		Gain<double> mGainProcessor = Gain<double>(mGain, true);
-		size_t mSampleRate = 44100;
+		Gain<double> mGainProcessor = Gain<double>(mGain);
+		Hertz mSampleRate = 44100_Hz;
 		size_t mOrder = 1;
 		BiQuadFilter<double> mFilter
 			= BiQuadFilter<double>::MakeBell(mFrequency, mQ, mGain, mSampleRate);
@@ -659,14 +659,14 @@ namespace apex::dsp {
 		/// @param filterIndex - The filter stage to calculate the shift for
 		///
 		/// @return - The shifted frequency
-		[[nodiscard]] inline auto frequencyShift(size_t filterIndex) const noexcept -> double {
+		[[nodiscard]] inline auto frequencyShift(size_t filterIndex) const noexcept -> Hertz {
 			double shiftMultiplier = 0.25 * filterIndex;
 			if(mType < BandType::Highpass12DB) {
-				double nextOctFreq = mFrequency * 2.0;
+				Hertz nextOctFreq = mFrequency * 2.0;
 				return mFrequency + (shiftMultiplier * (nextOctFreq - mFrequency));
 			}
 			else {
-				double nextOctFreq = mFrequency / 2.0;
+				Hertz nextOctFreq = mFrequency / 2.0;
 				return mFrequency - (shiftMultiplier * (nextOctFreq - mFrequency));
 			}
 		}

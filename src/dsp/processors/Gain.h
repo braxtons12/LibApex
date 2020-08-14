@@ -33,7 +33,7 @@ namespace apex::dsp {
 		///
 		/// @param gain - The gain value to use
 		/// @param gainIsDecibels - Whether the gain value is in Decibels
-		explicit Gain(float gain, bool gainIsDecibels = false) noexcept;
+		explicit Gain(Decibels gain) noexcept;
 
 		/// @brief Move contructs the given `Gain`
 		///
@@ -44,29 +44,41 @@ namespace apex::dsp {
 		/// @brief Sets the gain of this `Gain` to be the given linear value
 		///
 		/// @param gain - The linear gain value to set this `Gain` to
-		auto setGainLinear(float gain) noexcept -> void;
+		inline auto setGainLinear(float gain) noexcept -> void {
+			mGainLinear = gain;
+			mGainDecibels = Decibels::fromLinear(gain);
+		}
 
 		/// @brief Returns the currently set linear gain value
 		///
 		/// @return The linear gain value
-		[[nodiscard]] auto getGainLinear() const noexcept -> float;
+		[[nodiscard]] inline auto getGainLinear() const noexcept -> float {
+			return mGainLinear;
+		}
 
 		/// @brief Sets the gain of this `Gain` to be the given Decibel value
 		///
 		/// @param gainDecibels - The Decibel gain value to set this `Gain` to
-		auto setGainDecibels(float gainDecibels) noexcept -> void;
+		inline auto setGainDecibels(Decibels gainDecibels) noexcept -> void {
+			mGainDecibels = gainDecibels;
+			mGainLinear = gsl::narrow_cast<float>(gainDecibels.getLinear());
+		}
 
 		/// @brief Returns the currently set gain value, in Decibels
 		///
 		/// @return The gain value, in Decibels
-		[[nodiscard]] auto getGainDecibels() const noexcept -> float;
+		[[nodiscard]] inline auto getGainDecibels() const noexcept -> Decibels {
+			return mGainDecibels;
+		}
 
 		/// @brief Applies this `Gain` to the input
 		///
 		/// @param input - The input to apply the gain to
 		///
 		/// @return The resulting value after applying the gain
-		[[nodiscard]] auto process(float input) noexcept -> float override;
+		[[nodiscard]] inline auto process(float input) noexcept -> float override {
+			return input * mGainLinear;
+		}
 
 		/// @brief Applies this `Gain` to the array of input values, in place
 		///
@@ -82,7 +94,7 @@ namespace apex::dsp {
 		/// The linear gain value
 		float mGainLinear = 1.0F;
 		/// The gain value, in Decibels
-		float mGainDecibels = 0.0F;
+		Decibels mGainDecibels = 0.0F;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Gain)
 	};
@@ -99,7 +111,7 @@ namespace apex::dsp {
 		///
 		/// @param gain - The gain value to use
 		/// @param gainIsDecibels - Whether the gain value is in Decibels
-		explicit Gain(double gain, bool gainIsDecibels = false) noexcept;
+		explicit Gain(Decibels gain) noexcept;
 
 		/// @brief Move constructs the given `Gain`
 		///
@@ -110,29 +122,41 @@ namespace apex::dsp {
 		/// @brief Sets the gain of this `Gain` to be the given linear value
 		///
 		/// @param gain - The linear gain value to set this `Gain` to
-		auto setGainLinear(double gain) noexcept -> void;
+		inline auto setGainLinear(double gain) noexcept -> void {
+			mGainLinear = gain;
+			mGainDecibels = Decibels::fromLinear(gain);
+		}
 
 		/// @brief Returns the currently set linear gain value
 		///
 		/// @return The linear gain value
-		[[nodiscard]] auto getGainLinear() const noexcept -> double;
+		[[nodiscard]] inline auto getGainLinear() const noexcept -> double {
+			return mGainLinear;
+		}
 
 		/// @brief Sets the gain of this `Gain` to be the given Decibel value
 		///
 		/// @param gainDecibels - The Decibel gain value to set this `Gain` to
-		auto setGainDecibels(double gainDecibels) noexcept -> void;
+		inline auto setGainDecibels(Decibels gainDecibels) noexcept -> void {
+			mGainDecibels = gainDecibels;
+			mGainLinear = gainDecibels.getLinear();
+		}
 
 		/// @brief Returns the currently set gain value, in Decibels
 		///
 		/// @return The gain value, in Decibels
-		[[nodiscard]] auto getGainDecibels() const noexcept -> double;
+		[[nodiscard]] inline auto getGainDecibels() const noexcept -> Decibels {
+			return mGainDecibels;
+		}
 
 		/// @brief Applies this `Gain` to the input
 		///
 		/// @param input - The input to apply the gain to
 		///
 		/// @return The resulting value after applying the gain
-		[[nodiscard]] auto process(double input) noexcept -> double override;
+		[[nodiscard]] inline auto process(double input) noexcept -> double override {
+		return input * mGainLinear;
+		}
 
 		/// @brief Applies this `Gain` to the array of input values, in place
 		///
@@ -148,7 +172,7 @@ namespace apex::dsp {
 		/// The linear gain value
 		double mGainLinear = 1.0;
 		/// The gain value, in Decibels
-		double mGainDecibels = 0.0;
+		Decibels mGainDecibels = 0.0;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Gain)
 	};

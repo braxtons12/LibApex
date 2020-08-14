@@ -523,7 +523,7 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calculate the phase response for, in Hertz
 		///
 		/// @return - The phase response at the given frequency
-		[[nodiscard]] auto getPhaseForFrequency(Hertz frequency) const noexcept -> float;
+		[[nodiscard]] auto getPhaseForFrequency(Hertz frequency) const noexcept -> Radians;
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
@@ -535,7 +535,7 @@ namespace apex::dsp {
 		template<size_t numFrequencies>
 		auto
 		getPhasesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-								gsl::span<float, numFrequencies> phases) const noexcept -> void {
+								gsl::span<Radians, numFrequencies> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));
@@ -1082,7 +1082,7 @@ namespace apex::dsp {
 		/// @param frequency - The frequency to calculate the phase response for, in Hertz
 		///
 		/// @return - The phase response at the given frequency
-		[[nodiscard]] auto getPhaseForFrequency(Hertz frequency) const noexcept -> double;
+		[[nodiscard]] auto getPhaseForFrequency(Hertz frequency) const noexcept -> Radians;
 
 		/// @brief Calculates the phase response of this filter for the given array of frequencies
 		/// and stores it in `phases`
@@ -1094,7 +1094,7 @@ namespace apex::dsp {
 		template<size_t numFrequencies>
 		auto
 		getPhasesForFrequencies(gsl::span<const Hertz, numFrequencies> frequencies,
-								gsl::span<double, numFrequencies> phases) const noexcept -> void {
+								gsl::span<Radians, numFrequencies> phases) const noexcept -> void {
 			auto size = static_cast<gsl::index>(numFrequencies);
 			for(gsl::index frequency = 0; frequency < size; ++frequency) {
 				gsl::at(phases, frequency) = getPhaseForFrequency(gsl::at(frequencies, frequency));

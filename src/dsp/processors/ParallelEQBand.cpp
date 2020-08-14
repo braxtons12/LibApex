@@ -13,10 +13,10 @@ namespace apex::dsp {
 	/// @param gainDB - The gain to use, in Decibels
 	/// @param sampleRate - The sample rate to use, in Hertz
 	/// @param type - The band type to use
-	ParallelEQBand<float>::ParallelEQBand(float frequency,
+	ParallelEQBand<float>::ParallelEQBand(Hertz frequency,
 										  float q,
-										  float gainDB,
-										  size_t sampleRate,
+										  Decibels gainDB,
+										  Hertz sampleRate,
 										  BandType type) noexcept
 		: EQBand<float>(frequency, q, gainDB, sampleRate, type) {
 		setGainDB(mGain);
@@ -25,7 +25,7 @@ namespace apex::dsp {
 	/// @brief Sets the gain of this `ParallelEQBand` to the given value
 	///
 	/// @param gainDB - The new gain, in Decibels
-	auto ParallelEQBand<float>::setGainDB(float gainDB) noexcept -> void {
+	auto ParallelEQBand<float>::setGainDB(Decibels gainDB) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			mGain = gainDB;
 			mGainActual = mGain;
@@ -47,14 +47,12 @@ namespace apex::dsp {
 			// to get the desired gain:
 			// linear 0db (eg 1.0) - linear gain level = amount of linear signal to be removed
 			if(gainDB < 0.0F) {
-				mGain = math::Decibels::linearToDecibels(
-					1.0F - math::Decibels::decibelsToLinear(gainDB));
+				mGain = Decibels::fromLinear(1.0F - gainDB.getLinear());
 			}
 			// otherwise, the gain is the amount of linear gain we need to add to the input:
 			// linear gain level - linear 0db (eg 1.0) = amount of linear signal to be added
 			else {
-				mGain = math::Decibels::linearToDecibels(math::Decibels::decibelsToLinear(gainDB)
-														 - 1.0F);
+				mGain = math::Decibels::linearToDecibels(gainDB.getLinear() - 1.0F);
 			}
 
 			mGainProcessor.setGainDecibels(mGain);
@@ -133,7 +131,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the magnitude response for, in Hertz
 	///
 	/// @return - The magnitude response at the given frequency
-	auto ParallelEQBand<float>::getMagnitudeForFrequency(float frequency) const noexcept -> float {
+	auto ParallelEQBand<float>::getMagnitudeForFrequency(Hertz frequency) const noexcept -> float {
 		float x = 1.0F;
 		if(mType < BandType::Allpass) {
 			for(const auto& filt : mFilters) {
@@ -172,8 +170,8 @@ namespace apex::dsp {
 	///
 	/// @return - The phase response, in radians, at the given frequency
 	inline auto
-	ParallelEQBand<float>::getPhaseForFrequency(float frequency) const noexcept -> float {
-		float x = 0.0F;
+	ParallelEQBand<float>::getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
+		Radians x = 0.0_rad;
 		if(mType < BandType::Allpass) {
 			for(const auto& filt : mFilters) {
 				x += filt.getPhaseForFrequency(frequency);
@@ -206,9 +204,10 @@ namespace apex::dsp {
 			mFilter = BiQuadFilter<float>::MakeBandpass(mFrequency, mQ, mSampleRate);
 		}
 		else if(mType == BandType::AnalogBell) {
-			mFilter = BiQuadFilter<float>::MakeBandpass(mFrequency,
-														mQ * math::pow10f(mGainActual / 40.0F),
-														mSampleRate);
+			mFilter = BiQuadFilter<float>::MakeBandpass(
+				mFrequency,
+				mQ * math::pow10f(gsl::narrow_cast<float>(mGainActual) / 40.0F),
+				mSampleRate);
 		}
 	}
 
@@ -224,10 +223,10 @@ namespace apex::dsp {
 	/// @param gainDB - The gain to use, in Decibels
 	/// @param sampleRate - The sample rate to use, in Hertz
 	/// @param type - The band type to use
-	ParallelEQBand<double>::ParallelEQBand(double frequency,
+	ParallelEQBand<double>::ParallelEQBand(Hertz frequency,
 										   double q,
-										   double gainDB,
-										   size_t sampleRate,
+										   Decibels gainDB,
+										   Hertz sampleRate,
 										   BandType type) noexcept
 		: EQBand<double>(frequency, q, gainDB, sampleRate, type) {
 		setGainDB(mGain);
@@ -236,7 +235,7 @@ namespace apex::dsp {
 	/// @brief Sets the gain of this `ParallelEQBand` to the given value
 	///
 	/// @param gainDB - The new gain, in Decibels
-	auto ParallelEQBand<double>::setGainDB(double gainDB) noexcept -> void {
+	auto ParallelEQBand<double>::setGainDB(Decibels gainDB) noexcept -> void {
 		if(mType < BandType::Allpass) {
 			mGain = gainDB;
 			mGainActual = mGain;
@@ -258,14 +257,12 @@ namespace apex::dsp {
 			// to get the desired gain:
 			// linear 0db (eg 1.0) - linear gain level = amount of linear signal to be removed
 			if(gainDB < 0.0) {
-				mGain = math::Decibels::linearToDecibels(
-					1.0 - math::Decibels::decibelsToLinear(gainDB));
+				mGain = Decibels::fromLinear(1.0 - gainDB.getLinear());
 			}
 			// otherwise, the gain is the amount of linear gain we need to add to the input:
 			// linear gain level - linear 0db (eg 1.0) = amount of linear signal to be added
 			else {
-				mGain = math::Decibels::linearToDecibels(math::Decibels::decibelsToLinear(gainDB)
-														 - 1.0);
+				mGain = Decibels::fromLinear(gainDB.getLinear() - 1.0);
 			}
 
 			mGainProcessor.setGainDecibels(mGain);
@@ -345,7 +342,7 @@ namespace apex::dsp {
 	///
 	/// @return - The magnitude response at the given frequency
 	inline auto
-	ParallelEQBand<double>::getMagnitudeForFrequency(double frequency) const noexcept -> double {
+	ParallelEQBand<double>::getMagnitudeForFrequency(Hertz frequency) const noexcept -> double {
 		double x = 1.0;
 		if(mType < BandType::Allpass) {
 			for(const auto& filt : mFilters) {
@@ -384,8 +381,8 @@ namespace apex::dsp {
 	///
 	/// @return - The phase response, in radians, at the given frequency
 	inline auto
-	ParallelEQBand<double>::getPhaseForFrequency(double frequency) const noexcept -> double {
-		double x = 0.0;
+	ParallelEQBand<double>::getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
+		Radians x = 0.0_rad;
 		if(mType < BandType::Allpass) {
 			for(const auto& filt : mFilters) {
 				x += filt.getPhaseForFrequency(frequency);
@@ -419,7 +416,7 @@ namespace apex::dsp {
 		}
 		else if(mType == BandType::AnalogBell) {
 			mFilter = BiQuadFilter<double>::MakeBandpass(mFrequency,
-														 mQ * math::pow10(mGainActual / 40.0),
+														 mQ * math::pow10(static_cast<double>(mGainActual) / 40.0),
 														 mSampleRate);
 		}
 	}

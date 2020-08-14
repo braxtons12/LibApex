@@ -7,54 +7,9 @@ namespace apex::dsp {
 	///
 	/// @param gain - The gain value to use
 	/// @param gainIsDecibels - Whether the gain value is in Decibels
-	Gain<float>::Gain(float gain, bool gainIsDecibels) noexcept {
-		if(gainIsDecibels) {
-			mGainDecibels = gain;
-			mGainLinear = math::Decibels::decibelsToLinear(gain);
-		}
-		else {
-			mGainLinear = gain;
-			mGainDecibels = math::Decibels::linearToDecibels(gain);
-		}
-	}
-
-	/// @brief Sets the gain of this `Gain` to be the given linear value
-	///
-	/// @param gain - The linear gain value to set this `Gain` to
-	auto Gain<float>::setGainLinear(float gain) noexcept -> void {
-		mGainLinear = gain;
-		mGainDecibels = math::Decibels::linearToDecibels(gain);
-	}
-
-	/// @brief Returns the currently set linear gain value
-	///
-	/// @return The linear gain value
-	auto Gain<float>::getGainLinear() const noexcept -> float {
-		return mGainLinear;
-	}
-
-	/// @brief Sets the gain of this `Gain` to be the given Decibel value
-	///
-	/// @param gainDecibels - The Decibel gain value to set this `Gain` to
-	auto Gain<float>::setGainDecibels(float gainDecibels) noexcept -> void {
-		mGainDecibels = gainDecibels;
-		mGainLinear = math::Decibels::decibelsToLinear(gainDecibels);
-	}
-
-	/// @brief Returns the currently set gain value, in Decibels
-	///
-	/// @return The gain value, in Decibels
-	auto Gain<float>::getGainDecibels() const noexcept -> float {
-		return mGainDecibels;
-	}
-
-	/// @brief Applies this `Gain` to the input
-	///
-	/// @param input - The input to apply the gain to
-	///
-	/// @return The resulting value after applying the gain
-	auto Gain<float>::process(float input) noexcept -> float {
-		return input * mGainLinear;
+	Gain<float>::Gain(Decibels gain) noexcept {
+		mGainDecibels = gain;
+		mGainLinear = gsl::narrow_cast<float>(gain.getLinear());
 	}
 
 	/// @brief Applies this `Gain` to the array of input values, in place
@@ -85,54 +40,9 @@ namespace apex::dsp {
 	///
 	/// @param gain - The gain value to use
 	/// @param gainIsDecibels - Whether the gain value is in Decibels
-	Gain<double>::Gain(double gain, bool gainIsDecibels) noexcept {
-		if(gainIsDecibels) {
-			mGainDecibels = gain;
-			mGainLinear = math::Decibels::decibelsToLinear(gain);
-		}
-		else {
-			mGainLinear = gain;
-			mGainDecibels = math::Decibels::linearToDecibels(gain);
-		}
-	}
-
-	/// @brief Sets the gain of this `Gain` to be the given linear value
-	///
-	/// @param gain - The linear gain value to set this `Gain` to
-	auto Gain<double>::setGainLinear(double gain) noexcept -> void {
-		mGainLinear = gain;
-		mGainDecibels = math::Decibels::linearToDecibels(gain);
-	}
-
-	/// @brief Returns the currently set linear gain value
-	///
-	/// @return The linear gain value
-	auto Gain<double>::getGainLinear() const noexcept -> double {
-		return mGainLinear;
-	}
-
-	/// @brief Sets the gain of this `Gain` to be the given Decibel value
-	///
-	/// @param gainDecibels - The Decibel gain value to set this `Gain` to
-	auto Gain<double>::setGainDecibels(double gainDecibels) noexcept -> void {
-		mGainDecibels = gainDecibels;
-		mGainLinear = math::Decibels::decibelsToLinear(gainDecibels);
-	}
-
-	/// @brief Returns the currently set gain value, in Decibels
-	///
-	/// @return The gain value, in Decibels
-	auto Gain<double>::getGainDecibels() const noexcept -> double {
-		return mGainDecibels;
-	}
-
-	/// @brief Applies this `Gain` to the input
-	///
-	/// @param input - The input to apply the gain to
-	///
-	/// @return The resulting value after applying the gain
-	auto Gain<double>::process(double input) noexcept -> double {
-		return input * mGainLinear;
+	Gain<double>::Gain(Decibels gain) noexcept {
+		mGainDecibels = gain;
+		mGainLinear = gain.getLinear();
 	}
 
 	/// @brief Applies this `Gain` to the array of input values, in place

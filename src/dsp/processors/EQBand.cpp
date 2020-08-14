@@ -8,10 +8,10 @@ namespace apex::dsp {
 	/// @param gainDB - The gain to use, in Decibels
 	/// @param sampleRate - The sample rate to use, in Hertz
 	/// @param type - The type of band
-	EQBand<float>::EQBand(float frequency,
+	EQBand<float>::EQBand(Hertz frequency,
 						  float q,
-						  float gainDB,
-						  size_t sampleRate,
+						  Decibels gainDB,
+						  Hertz sampleRate,
 						  BandType type) noexcept
 		: mType(type), mFrequency(frequency), mQ(q), mGain(gainDB), mSampleRate(sampleRate),
 		  mFilter(BiQuadFilter<float>::MakeAllpass()) {
@@ -22,7 +22,7 @@ namespace apex::dsp {
 				case 2: mOrder = 4; break;
 				case 3: mOrder = 8; break;
 			}
-			mGainProcessor = Gain<float>(mGain, true);
+			mGainProcessor = Gain<float>(mGain);
 		}
 
 		mFilters.resize(mOrder);
@@ -240,10 +240,10 @@ namespace apex::dsp {
 	/// @param gainDB - The gain to use, in Decibels
 	/// @param sampleRate - The sample rate to use, in Hertz
 	/// @param type - The type of band
-	EQBand<double>::EQBand(double frequency,
+	EQBand<double>::EQBand(Hertz frequency,
 						   double q,
-						   double gainDB,
-						   size_t sampleRate,
+						   Decibels gainDB,
+						   Hertz sampleRate,
 						   BandType type) noexcept
 		: mType(type), mFrequency(frequency), mQ(q), mGain(gainDB), mSampleRate(sampleRate),
 		  mFilter(BiQuadFilter<double>::MakeAllpass()) {
@@ -254,7 +254,7 @@ namespace apex::dsp {
 				case 2: mOrder = 4; break;
 				case 3: mOrder = 8; break;
 			}
-			mGainProcessor = Gain<double>(mGain, true);
+			mGainProcessor = Gain<double>(mGain);
 		}
 
 		mFilters.resize(mOrder);

@@ -90,7 +90,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the phase response for, in Hertz
 	///
 	/// @return - The phase response at the given frequency
-	auto BiQuadFilter<float>::getPhaseForFrequency(Hertz frequency) const noexcept -> float {
+	auto BiQuadFilter<float>::getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
 		constexpr std::complex<float> j(0.0F, 1.0F);
 		const size_t order = 2;
 		const std::array<float, 5> coefficients
@@ -327,7 +327,7 @@ namespace apex::dsp {
 	/// @param frequency - The frequency to calculate the phase response for, in Hertz
 	///
 	/// @return - The phase response at the given frequency
-	auto BiQuadFilter<double>::getPhaseForFrequency(Hertz frequency) const noexcept -> double {
+	auto BiQuadFilter<double>::getPhaseForFrequency(Hertz frequency) const noexcept -> Radians {
 		constexpr std::complex<double> j(0.0, 1.0);
 		const size_t order = 2;
 		const std::array<double, 5> coefficients
