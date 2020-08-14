@@ -88,8 +88,8 @@ namespace apex::dsp {
 		///
 		/// @param sampleRate - The new sample rate to use
 		inline virtual auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mNumSamplesToTransitionGain
-				= static_cast<size_t>(sampleRate * mRiseTimeSeconds + static_cast<T>(0.5));
+			mNumSamplesToTransitionGain = static_cast<size_t>(
+				static_cast<T>(sampleRate * mRiseTimeSeconds + static_cast<T>(0.5)));
 		}
 
 		/// @brief Sets the slew rate to use for calculations to the given value
@@ -98,7 +98,7 @@ namespace apex::dsp {
 		inline virtual auto setRiseTimeSeconds(T seconds) noexcept -> void {
 			mRiseTimeSeconds = seconds;
 			mNumSamplesToTransitionGain = static_cast<size_t>(
-				mState->getSampleRate() * mRiseTimeSeconds + static_cast<T>(0.5));
+				static_cast<T>(mState->getSampleRate() * mRiseTimeSeconds + static_cast<T>(0.5)));
 		}
 
 		/// @brief Sets the shared state to the given one

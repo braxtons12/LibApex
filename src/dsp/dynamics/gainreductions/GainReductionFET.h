@@ -77,9 +77,9 @@ namespace apex::dsp {
 			if(math::fabs(static_cast<double>(gainReductionStep)) - static_cast<T>(0.001)
 			   > static_cast<T>(0.0)) {
 				gainReductionStep = waveshapers::softSaturation(
-					this->mCurrentGainReduction
-						+ (gainReductionStep > static_cast<T>(0.0) ? -SLEW_RATE_OFFSET :
-																	   SLEW_RATE_OFFSET),
+					static_cast<T>(this->mCurrentGainReduction
+								   + (gainReductionStep > static_cast<T>(0.0) ? -SLEW_RATE_OFFSET :
+																				  SLEW_RATE_OFFSET)),
 					SLEW_RATE_AMOUNT,
 					SLEW_RATE_SLOPE);
 			}
@@ -87,7 +87,7 @@ namespace apex::dsp {
 			this->mCurrentGainReduction += gainReductionStep;
 			this->mCurrentSample++;
 
-			return waveshapers::softSaturation(this->mCurrentGainReduction,
+			return waveshapers::softSaturation(static_cast<T>(this->mCurrentGainReduction),
 											   WAVE_SHAPER_AMOUNT,
 											   WAVE_SHAPER_SLOPE);
 		}

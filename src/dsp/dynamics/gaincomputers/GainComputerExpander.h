@@ -110,7 +110,8 @@ namespace apex::dsp {
 			float ratio = this->mState->getRatio();
 			Decibels kneeWidth = this->mState->getKneeWidth();
 
-			float twoXMinusT = 2.0F * (input - this->mState->getThreshold());
+			auto twoXMinusT
+				= gsl::narrow_cast<float>(2.0F * (input - this->mState->getThreshold()));
 			if(twoXMinusT < -kneeWidth) {
 				return threshold + (input - threshold) * ratio;
 			}
@@ -178,7 +179,7 @@ namespace apex::dsp {
 			double ratio = this->mState->getRatio();
 			Decibels kneeWidth = this->mState->getKneeWidth();
 
-			double twoXMinusT = 2.0 * (input - this->mState->getThreshold());
+			auto twoXMinusT = static_cast<double>(2.0 * (input - this->mState->getThreshold()));
 			if(twoXMinusT < -kneeWidth) {
 				return threshold + (input - threshold) * ratio;
 			}
