@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "../base/StandardIncludes.h"
 
 namespace apex::ui {
@@ -11,9 +13,6 @@ namespace apex::ui {
 	/// @brief Apex Audio look and feel implementation
 	class ApexLookAndFeel : public juce::LookAndFeel_V4 {
 	  public:
-		//#define USE_PHYSICAL_ROTARIES
-		//#define USE_2D_SEMICIRCULAR_ROTARIES
-
 		/// @brief list of available Apex Audio specific colors
 		enum class ApexColourId
 		{
@@ -401,7 +400,7 @@ namespace apex::ui {
 		/// @return - The corresponding color
 		[[nodiscard]] virtual auto getColour(ApexColourId id) const noexcept -> juce::Colour;
 
-		/// @brief Returns the actual rectangulary bounds of a rotary slider, given the raw bounds
+		/// @brief Returns the actual rectangular bounds of a rotary slider, given the raw bounds
 		///
 		/// @param x - The raw x position
 		/// @param y - The raw y position
@@ -413,39 +412,35 @@ namespace apex::ui {
 		getActualRotaryBounds(int x, int y, int width, int height) const noexcept
 			-> juce::Rectangle<int>;
 
-	  protected:
-		virtual auto drawPhysicalRotary(juce::Graphics& g,
-										int x,
-										int y,
-										int width,
-										int height,
-										float sliderPos,
-										float rotaryStartAngle,
-										float rotaryEndAngle,
-										juce::Slider& slider) noexcept -> void;
-		virtual auto drawSemiCircularRotary(juce::Graphics& g,
-											int x,
-											int y,
-											int width,
-											int height,
-											float sliderPos,
-											float rotaryStartAngle,
-											float rotaryEndAngle,
-											juce::Slider& slider) noexcept -> void;
-		virtual auto drawCircularFillRotary(juce::Graphics& g,
-											int x,
-											int y,
-											int width,
-											int height,
-											float sliderPos,
-											float rotaryStartAngle,
-											float rotaryEndAngle,
-											juce::Slider& slider) noexcept -> void;
+		/// @brief Returns the actual rectangular bounds of a combo box, given the raw bounds
+		///
+		/// @param x - Thew raw x position
+		/// @param y - The raw y position
+		/// @param width - The raw width
+		/// @param height - The raw height
+		///
+		/// @return - The actual bounds of the combo box's on screen position
+		[[nodiscard]] virtual auto
+		getActualComboBounds(int x, int y, int width, int height) const noexcept
+			-> juce::Rectangle<int>;
 
+		/// @brief Returns the actual rectangular bounds of a button, given the raw bounds
+		///
+		/// @param x - Thew raw x position
+		/// @param y - The raw y position
+		/// @param width - The raw width
+		/// @param height - The raw height
+		///
+		/// @return - The actual bounds of the button's on screen position
+		[[nodiscard]] virtual auto
+		getActualButtonBounds(int x, int y, int width, int height) const noexcept
+			-> juce::Rectangle<int>;
+
+	  protected:
 		juce::Colour mBackgroundColour = juce::Colour(0xff282c34);
 		juce::Colour mButtonShadowColour = juce::Colour(0xff14161a);
-		juce::Colour mButtonNormalColour = juce::Colour(0xff6a90af);
-		juce::Colour mButtonPressedColour = juce::Colour(0xff3d5264);
+		juce::Colour mButtonNormalColour = juce::Colour(0xff202932);
+		juce::Colour mButtonPressedColour = juce::Colour(0xff13181e);
 		juce::Colour mButtonTroughColour = juce::Colour(0xff1e2128);
 		juce::Colour mButtonTextColour = juce::Colour(0xff8598b5);
 		juce::Colour mComboBoxBackgroundColour = juce::Colour(0xff282c34);
@@ -459,7 +454,7 @@ namespace apex::ui {
 		juce::Colour mPopupMenuBackgroundColour = juce::Colour(0xff1e2128);
 		juce::Colour mPopupMenuTextColour = juce::Colour(0xff8598b5);
 		juce::Colour mPopupMenuHighlightColour = juce::Colour(0xff1c1f26);
-		juce::Colour mRotarySliderFillColour = juce::Colour(0xff2e324c);
+		juce::Colour mRotarySliderFillColour = juce::Colour(0xff202932);
 		juce::Colour mRotarySliderIndicatorColour = juce::Colour(0xff1276c8);
 		juce::Colour mSliderStrokeColour = juce::Colour(0xff1276c8);
 		juce::Colour mSliderShadowColour = juce::Colour(0xff14161a);

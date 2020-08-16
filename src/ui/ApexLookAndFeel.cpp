@@ -11,11 +11,7 @@ namespace apex::ui {
 		registerColours();
 	}
 
-	/// @brief Draws a rotary `juce::Slider`. If `USE_PHYSICAL_ROTARIES` is defined, it will
-	/// draw a more physical-style knob. If `USE_2D_SEMICIRCULAR_ROTARIES` is defined, it will
-	/// draw a traditional juce-style rotary slider with a circular knob in the center and
-	/// elliptical slider around it. Otherwise, will draw an elliptical-fill based slider which
-	/// fills up as the value increases
+	/// @brief Draws a rotary `juce::Slider`.
 	///
 	/// @param g - The graphics context to use for draw
 	/// @param x - The x position, relative to the bounds set for the graphics context. (Usually
@@ -39,44 +35,154 @@ namespace apex::ui {
 										   const float rotaryStartAngle,
 										   const float rotaryEndAngle,
 										   juce::Slider& slider) noexcept -> void {
-#if defined USE_PHYSICAL_ROTARIES
-		drawPhysicalRotary(g,
-						   x,
-						   y,
-						   width,
-						   height,
-						   sliderPos,
-						   rotaryStartAngle,
-						   rotaryEndAngle,
-						   slider);
-#elif defined USE_2D_SEMICIRCULAR_ROTARIES
-		drawSemiCircularRotary(g,
-							   x,
-							   y,
-							   width,
-							   height,
-							   sliderPos,
-							   rotaryStartAngle,
-							   rotaryEndAngle,
-							   slider);
-#else
-		drawCircularFillRotary(g,
-							   x,
-							   y,
-							   width,
-							   height,
-							   sliderPos,
-							   rotaryStartAngle,
-							   rotaryEndAngle,
-							   slider);
-#endif
+		g.setFont(mFont);
+		int size = juce::jmin(width, height);
+		float reduction = gsl::narrow_cast<float>(size) * 0.5F * 0.2F;
+		juce::Rectangle<int> initialBounds = {x, y, width, height};
+		juce::Rectangle<float> bounds
+			= juce::Rectangle<int>(x, y, size, size).toFloat().reduced(reduction);
+		bounds.setCentre(initialBounds.getCentre().toFloat());
+		float radius = bounds.getWidth() * 0.5F;
+		float endAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+		float lineWidth = radius * 0.2F;
+		float troughWidth = lineWidth * 1.03F;
+		float arcRadius = radius - lineWidth * 0.5F;
+		float troughRadius = radius - lineWidth * 0.5F;
+		float thumbWidth = lineWidth;
+		float radiusReductionForKnobTrough = thumbWidth;
+		float radiusReductionForKnob = radiusReductionForKnobTrough * 1.03F;
+		juce::Rectangle<float> knobTroughBounds = bounds.reduced(radiusReductionForKnobTrough);
+		juce::Rectangle<float> knobBounds = bounds.reduced(radiusReductionForKnob);
+		float indicatorInnerRadius = (knobBounds.getWidth() * 0.8F) * 0.5F;
+		float indicatorOuterRadius = arcRadius;
+
+		juce::Path backgroundArc;
+		backgroundArc.addCentredArc(bounds.getCentreX(),
+									bounds.getCentreY(),
+									troughRadius,
+									troughRadius,
+									0.0F,
+									rotaryStartAngle,
+									rotaryEndAngle,
+									true);
+		g.setColour(mSliderTroughColour);
+		g.strokePath(backgroundArc,
+					 juce::PathStrokeType(troughWidth,
+										  juce::PathStrokeType::curved,
+										  juce::PathStrokeType::square));
+		juce::Path knobTrough;
+		knobTrough.addEllipse(knobTroughBounds);
+		g.fillPath(knobTrough);
+		juce::Rectangle<float> shadowBounds = knobBounds.translated(-reduction * 0.6F, reduction);
+		juce::Path shadow;
+		shadow.addEllipse(shadowBounds);
+		juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.5F),
+											shadowBounds.getTopRight(),
+											mSliderShadowColour.withAlpha(0.0F),
+											shadowBounds.getBottomLeft(),
+											false);
+		g.setGradientFill(shadowGradient);
+		g.fillPath(shadow);
+		juce::ColourGradient knobGradient(mRotarySliderFillColour.darker(0.1F),
+										  bounds.getCentre(),
+										  mRotarySliderFillColour.darker(0.1F),
+										  bounds.getBottomRight(),
+										  true);
+		knobGradient.addColour(0.5F, mRotarySliderFillColour.darker(0.1F));
+		knobGradient.addColour(0.65F, mRotarySliderFillColour.brighter(0.1F));
+		knobGradient.addColour(0.75F, mRotarySliderFillColour.darker(0.1F));
+		g.setGradientFill(knobGradient);
+		juce::Path knob;
+		knob.addEllipse(knobBounds);
+		g.fillPath(knob);
+		juce::ColourGradient knobLight(mRotarySliderFillColour.darker(0.4F).withAlpha(0.2F),
+									   bounds.getTopLeft(),
+									   mRotarySliderFillColour.darker(0.4F).withAlpha(0.2F),
+									   bounds.getBottomRight(),
+									   false);
+		knobLight.addColour(0.5F, mRotarySliderFillColour.brighter(0.3F).withAlpha(0.6F));
+		g.setGradientFill(knobLight);
+		g.fillPath(knob);
+
+		juce::Point<float> indicatorStart(
+			bounds.getCentreX() + indicatorInnerRadius * math::cosf(endAngle - math::piOver2f),
+			bounds.getCentreY() + indicatorInnerRadius * math::sinf(endAngle - math::piOver2f));
+		juce::Point<float> indicatorEnd(
+			bounds.getCentreX() + indicatorOuterRadius * math::cosf(endAngle - math::piOver2f),
+			bounds.getCentreY() + indicatorOuterRadius * math::sinf(endAngle - math::piOver2f));
+		juce::ColourGradient indicatorGradient(mRotarySliderIndicatorColour,
+											   bounds.getCentre(),
+											   mRotarySliderIndicatorColour,
+											   bounds.getBottomRight(),
+											   true);
+		indicatorGradient.addColour(0.45F, mRotarySliderIndicatorColour);
+		indicatorGradient.addColour(0.65F, mRotarySliderIndicatorColour.darker(0.3F));
+		indicatorGradient.addColour(0.75F, mRotarySliderIndicatorColour);
+		juce::Path indicatorPath;
+		indicatorPath.startNewSubPath(indicatorStart);
+		indicatorPath.lineTo(indicatorEnd);
+		indicatorPath.closeSubPath();
+		g.setColour(mSliderTroughColour);
+		g.strokePath(indicatorPath,
+					 juce::PathStrokeType(lineWidth * 1.03F,
+										  juce::PathStrokeType::curved,
+										  juce::PathStrokeType::square));
+		g.setGradientFill(indicatorGradient);
+		g.strokePath(indicatorPath,
+					 juce::PathStrokeType(lineWidth,
+										  juce::PathStrokeType::curved,
+										  juce::PathStrokeType::square));
+		if(slider.isEnabled()) {
+			juce::ColourGradient arcGradient(mSliderStrokeColour.brighter(0.5F),
+											 bounds.getCentre(),
+											 mSliderStrokeColour.brighter(0.5F),
+											 bounds.getBottomRight(),
+											 true);
+			arcGradient.addColour(0.52F, mSliderStrokeColour.darker(0.3F).withAlpha(0.7F));
+			juce::Path valueArc;
+			valueArc.addCentredArc(bounds.getCentreX(),
+								   bounds.getCentreY(),
+								   arcRadius,
+								   arcRadius,
+								   0.0F,
+								   rotaryStartAngle,
+								   endAngle,
+								   true);
+			g.setGradientFill(arcGradient);
+			g.strokePath(valueArc,
+						 juce::PathStrokeType(lineWidth,
+											  juce::PathStrokeType::curved,
+											  juce::PathStrokeType::square));
+		}
+
+		juce::Point<float> thumbStart(
+			bounds.getCentreX()
+				+ (arcRadius - thumbWidth * 0.5F) * math::cosf(endAngle - math::piOver2f),
+			bounds.getCentreY()
+				+ (arcRadius - thumbWidth * 0.5F) * math::sinf(endAngle - math::piOver2f));
+		juce::Point<float> thumbEnd(
+			bounds.getCentreX()
+				+ (arcRadius + thumbWidth * 0.5F) * math::cosf(endAngle - math::piOver2f),
+			bounds.getCentreY()
+				+ (arcRadius + thumbWidth * 0.5F) * math::sinf(endAngle - math::piOver2f));
+		juce::Path thumbPath;
+		thumbPath.startNewSubPath(thumbStart);
+		thumbPath.lineTo(thumbEnd);
+		thumbPath.closeSubPath();
+		juce::ColourGradient thumbGradient(mSliderGlowColour,
+										   bounds.getCentre(),
+										   mSliderGlowColour,
+										   bounds.getBottomRight(),
+										   true);
+		thumbGradient.addColour(0.52F, mSliderStrokeColour.darker(0.2F));
+		g.setGradientFill(thumbGradient);
+		g.strokePath(thumbPath,
+					 juce::PathStrokeType(thumbWidth,
+										  juce::PathStrokeType::mitered,
+										  juce::PathStrokeType::square));
 	}
 
-	/// @brief Draws a rotary `ApexSlider`. If `USE_PHYSICAL_ROTARIES` is defined, it will draw
-	/// a more physical-style knob. If `USE_2D_SEMICIRCULAR_ROTARIES` is defined, it will draw a
-	/// traditional juce-style rotary slider with a circular knob in the center and elliptical
-	/// slider around it. Otherwise, will draw an elliptical-fill based slider which fills up as
-	/// the value increases
+	/// @brief Draws a rotary `ApexSlider`.
 	///
 	/// @param g - The graphics context to use for draw
 	/// @param x - The x position, relative to the bounds set for the graphics context. (Usually
@@ -155,13 +261,11 @@ namespace apex::ui {
 		juce::Rectangle<float> troughBounds = rawBounds.toFloat().reduced(2.0F, 2.0F);
 		juce::Rectangle<float> shadowBounds = troughBounds.expanded(1.0F, 1.0F);
 
-		juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.8F),
-											shadowBounds.getCentreX(),
-											shadowBounds.getCentreY(),
-											mSliderShadowColour.withAlpha(0.2F),
-											shadowBounds.getRight(),
-											shadowBounds.getBottom(),
-											true);
+		juce::ColourGradient shadowGradient(mSliderShadowColour,
+											shadowBounds.getTopRight(),
+											mSliderShadowColour.withAlpha(0.0F),
+											shadowBounds.getBottomLeft(),
+											false);
 		g.setColour(mSliderTroughColour);
 		g.fillRect(troughBounds);
 
@@ -415,14 +519,14 @@ namespace apex::ui {
 		juce::Rectangle<float> stroke
 			= juce::Rectangle<float>(sliderPosX, sliderPosY, strokeWidth, strokeHeight);
 		juce::ColourGradient strokeGradient(
-			mSliderStrokeColour.withAlpha(0.5F),
+			mSliderStrokeColour.darker(0.3F).withAlpha(0.7F),
 			sliderPosX,
 			sliderPosY,
-			mSliderStrokeColour.withAlpha(0.5F),
+			mSliderStrokeColour.darker(0.3F).withAlpha(0.7F),
 			sliderPosX + (slider.isHorizontal() ? 0.0F : strokeWidth),
 			sliderPosY + (slider.isHorizontal() ? strokeHeight : 0.0F),
 			false);
-		strokeGradient.addColour(0.5F, mSliderStrokeColour.withAlpha(0.2F));
+		strokeGradient.addColour(0.5F, mSliderStrokeColour.darker(0.2F));
 		g.setGradientFill(strokeGradient);
 		g.fillRect(stroke);
 
@@ -494,8 +598,8 @@ namespace apex::ui {
 		-> void {
 		juce::Rectangle<float> bounds(0.0F,
 									  0.0F,
-									  static_cast<float>(width),
-									  static_cast<float>(height));
+									  gsl::narrow_cast<float>(width),
+									  gsl::narrow_cast<float>(height));
 		g.setColour(mPopupMenuBackgroundColour.darker(0.4F).withAlpha(0.9F));
 		g.fillAll();
 		g.setColour(mComboBoxShadowColour.withAlpha(0.8F));
@@ -632,15 +736,22 @@ namespace apex::ui {
 									   juce::ComboBox& box) noexcept -> void {
 		juce::ignoreUnused(buttonX, buttonY, buttonW, buttonH, isButtonDown);
 
-		float cornerSize = juce::jmin(width, height) * 0.1F;
+		float reducedWidth = gsl::narrow_cast<float>(width) * 0.1F;
+		float reducedHeight = gsl::narrow_cast<float>(height) * 0.1F;
+		float cornerSize = juce::jmin(gsl::narrow_cast<float>(width) - reducedWidth,
+									  gsl::narrow_cast<float>(height) - reducedHeight)
+						   * 0.1F;
 		juce::Rectangle<float> boxBounds = juce::Rectangle<int>(0, 0, width, height).toFloat();
-		juce::Rectangle<float> troughBounds = boxBounds.reduced(2.0F, 2.0F);
-		juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0F, 2.0F);
-		juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0F, 2.0F);
-		juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75),
-									   0,
-									   static_cast<int>(width * 0.2),
-									   height);
+		juce::Rectangle<float> troughBounds = boxBounds.reduced(reducedWidth, reducedHeight);
+		troughBounds.setCentre(boxBounds.getCentre());
+		juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0F);
+		juce::Rectangle<float> shadowBounds
+			= troughBounds.translated(-reducedWidth * 0.2F, reducedHeight * 0.4F);
+		juce::Rectangle<int> arrowZone(
+			static_cast<int>(buttonBounds.getX() + buttonBounds.getWidth() * 0.75),
+			static_cast<int>(buttonBounds.getY()),
+			static_cast<int>(buttonBounds.getWidth() * 0.2),
+			static_cast<int>(buttonBounds.getHeight()));
 
 		g.setColour(mComboBoxBackgroundColour);
 		g.fillRect(boxBounds);
@@ -649,10 +760,10 @@ namespace apex::ui {
 		g.fillRoundedRectangle(troughBounds, cornerSize);
 
 		juce::ColourGradient shadowGradient(mComboBoxShadowColour.withAlpha(0.8F),
-											shadowBounds.getCentre(),
+											shadowBounds.getTopRight(),
 											mComboBoxShadowColour.withAlpha(0.2F),
-											shadowBounds.getBottomRight(),
-											true);
+											shadowBounds.getBottomLeft(),
+											false);
 		g.setGradientFill(shadowGradient);
 		g.fillRoundedRectangle(shadowBounds, cornerSize);
 
@@ -662,14 +773,21 @@ namespace apex::ui {
 					 (box.isMouseOver() ?
 						  mButtonNormalColour.brighter(0.1F) :
 						  (box.isEnabled() ? mButtonNormalColour : mButtonPressedColour)));
-		juce::ColourGradient buttonGradient(buttonColour.withAlpha(0.4F),
+		juce::ColourGradient buttonGradient(buttonColour,
 											buttonBounds.getCentre(),
-											buttonColour.withAlpha(0.1F),
+											buttonColour.darker(0.3F),
 											buttonBounds.getBottomRight(),
 											true);
 		g.setGradientFill(buttonGradient);
 		g.fillRoundedRectangle(buttonBounds, cornerSize);
-
+		juce::ColourGradient lightGradient(buttonColour.darker(0.4F).withAlpha(0.2F),
+										   boxBounds.getTopLeft(),
+										   buttonColour.darker(0.4F).withAlpha(0.2F),
+										   boxBounds.getBottomRight(),
+										   false);
+		lightGradient.addColour(0.5F, buttonColour.brighter(0.3F).withAlpha(0.4F));
+		g.setGradientFill(lightGradient);
+		g.fillRoundedRectangle(buttonBounds, cornerSize);
 		juce::Path p;
 		p.startNewSubPath(arrowZone.getX() + 3.0F,
 						  arrowZone.getY() + arrowZone.getHeight() * 0.45F);
@@ -743,60 +861,7 @@ namespace apex::ui {
 			}
 		}
 		else {
-
-			float cornerSize = juce::jmin(width, height) * 0.1F;
-			juce::Rectangle<float> boxBounds = juce::Rectangle<int>(0, 0, width, height).toFloat();
-			juce::Rectangle<float> troughBounds = boxBounds.reduced(2.0F, 2.0F);
-			juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0F, 2.0F);
-			juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0F, 2.0F);
-			juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75),
-										   0,
-										   static_cast<int>(width * 0.2),
-										   height);
-
-			g.setColour(mComboBoxBackgroundColour);
-			g.fillRect(boxBounds);
-
-			g.setColour(mComboBoxTroughColour);
-			g.fillRoundedRectangle(troughBounds, cornerSize);
-
-			juce::ColourGradient shadowGradient(mComboBoxShadowColour.withAlpha(0.8F),
-												shadowBounds.getCentre(),
-												mComboBoxShadowColour.withAlpha(0.2F),
-												shadowBounds.getBottomRight(),
-												true);
-			g.setGradientFill(shadowGradient);
-			g.fillRoundedRectangle(shadowBounds, cornerSize);
-
-			juce::Colour buttonColour
-				= (box.isPopupActive() ?
-						 mButtonNormalColour.brighter(0.2F) :
-						 (box.isHovered() ?
-							  mButtonNormalColour.brighter(0.1F) :
-							  (box.isEnabled() ? mButtonNormalColour : mButtonPressedColour)));
-			juce::ColourGradient buttonGradient(buttonColour.withAlpha(0.4F),
-												buttonBounds.getCentre(),
-												buttonColour.withAlpha(0.1F),
-												buttonBounds.getBottomRight(),
-												true);
-			g.setGradientFill(buttonGradient);
-			g.fillRoundedRectangle(buttonBounds, cornerSize);
-
-			juce::Path p;
-			p.startNewSubPath(arrowZone.getX() + 3.0F,
-							  arrowZone.getY() + arrowZone.getHeight() * 0.45F);
-			p.lineTo(static_cast<float>(arrowZone.getCentreX()),
-					 arrowZone.getY() + arrowZone.getHeight() * 0.575F);
-			p.lineTo(arrowZone.getRight() - 3.0F, arrowZone.getY() + arrowZone.getHeight() * 0.45F);
-
-			juce::Colour textColour
-				= (box.isPopupActive() ?
-						 mComboBoxTextColour.brighter(0.2F) :
-						 (box.isHovered() ? mComboBoxTextColour.brighter(0.1F) :
-											(box.isEnabled() ? mComboBoxTextColour :
-															   mComboBoxTextColour.darker(0.3F))));
-			g.setColour(textColour);
-			g.strokePath(p, juce::PathStrokeType(2.0F));
+			drawComboBox(g, width, height, isButtonDown, buttonX, buttonY, buttonW, buttonH, box);
 		}
 	}
 
@@ -897,29 +962,31 @@ namespace apex::ui {
 										   juce::ToggleButton& button,
 										   bool shouldDrawButtonAsHighlighted,
 										   bool shouldDrawButtonAsDown) noexcept -> void {
-		auto cornerSize = gsl::narrow_cast<float>(
-			juce::jmax(5.0, button.getWidth() * 0.1, button.getHeight() * 0.1));
-		auto width = gsl::narrow_cast<float>(button.getWidth());
-		auto height = gsl::narrow_cast<float>(button.getHeight());
-		float fontSize = juce::jmin(width * 0.33F, height * 0.33F);
-		juce::Rectangle<float> bounds(0.0F, 0.0F, width, height);
+		auto initialWidth = gsl::narrow_cast<float>(button.getWidth());
+		auto initialHeight = gsl::narrow_cast<float>(button.getHeight());
+		float reducedWidth = initialWidth * 0.1F;
+		float reducedHeight = initialHeight * 0.1F;
+		float cornerSize
+			= juce::jmin(initialWidth - reducedWidth, initialHeight - reducedHeight) * 0.1F;
+		juce::Rectangle<float> initialBounds(0.0F, 0.0F, initialWidth, initialHeight);
+		juce::Rectangle<float> bounds = initialBounds.reduced(reducedWidth, reducedHeight);
+		float fontSize = juce::jmin(bounds.getWidth() * 0.33F, bounds.getHeight() * 0.33F);
 		juce::Rectangle<float> troughBounds = bounds.reduced(2.0F, 2.0F);
-		juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0F, 2.0F);
+		juce::Rectangle<float> shadowBounds
+			= troughBounds.translated(-reducedWidth * 0.4F, reducedHeight * 0.4F);
 		juce::Rectangle<float> buttonBounds = troughBounds.reduced(2.0F, 2.0F);
 
 		g.setColour(mBackgroundColour);
-		g.fillRect(bounds);
+		g.fillRect(initialBounds);
 
 		g.setColour(mButtonTroughColour);
 		g.fillRoundedRectangle(troughBounds, cornerSize);
 
 		juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.8F),
-											shadowBounds.getCentreX(),
-											shadowBounds.getCentreY(),
+											shadowBounds.getTopRight(),
 											mSliderShadowColour.withAlpha(0.2F),
-											shadowBounds.getRight(),
-											shadowBounds.getBottom(),
-											true);
+											shadowBounds.getBottomLeft(),
+											false);
 		g.setGradientFill(shadowGradient);
 		g.fillRoundedRectangle(shadowBounds, cornerSize);
 
@@ -929,17 +996,22 @@ namespace apex::ui {
 					 (shouldDrawButtonAsHighlighted ?
 						  mButtonNormalColour.brighter(0.1F) :
 						  (shouldDrawButtonAsDown ? mButtonPressedColour : mButtonNormalColour)));
-		juce::ColourGradient buttonGradient(buttonColour.withAlpha(0.4F),
-											buttonBounds.getCentreX(),
-											buttonBounds.getCentreY(),
-											buttonColour.withAlpha(0.1F),
-											buttonBounds.getRight(),
-											buttonBounds.getBottom(),
+		juce::ColourGradient buttonGradient(buttonColour,
+											buttonBounds.getCentre(),
+											buttonColour.darker(0.4F),
+											buttonBounds.getBottomRight(),
 											true);
 		g.setGradientFill(buttonGradient);
 		g.fillRoundedRectangle(buttonBounds, cornerSize);
 
-		g.setColour(mButtonTextColour);
+		juce::ColourGradient lightGradient(buttonColour.darker(0.4F).withAlpha(0.2F),
+										   initialBounds.getTopLeft(),
+										   buttonColour.darker(0.4F).withAlpha(0.2F),
+										   initialBounds.getBottomRight(),
+										   false);
+		lightGradient.addColour(0.5F, buttonColour.brighter(0.3F).withAlpha(0.4F));
+		g.setGradientFill(lightGradient);
+		g.fillRoundedRectangle(buttonBounds, cornerSize);
 
 		juce::Colour textColour
 			= ((shouldDrawButtonAsHighlighted && shouldDrawButtonAsDown) ?
@@ -1428,7 +1500,7 @@ namespace apex::ui {
 		juce::LookAndFeel::setColour(juce::TextEditor::textColourId, mSliderTextColour);
 	}
 
-	/// @brief Returns the actual rectangulary bounds of a rotary slider, given the raw bounds
+	/// @brief Returns the actual rectangular bounds of a rotary slider, given the raw bounds
 	///
 	/// @param x - The raw x position
 	/// @param y - The raw y position
@@ -1438,355 +1510,47 @@ namespace apex::ui {
 	/// @return - The actualy bounds of the rotary slider's on screen position
 	auto ApexLookAndFeel::getActualRotaryBounds(int x, int y, int width, int height) const noexcept
 		-> juce::Rectangle<int> {
-#if defined USE_PHYSICAL_ROTARIES
-		auto diameter = static_cast<double>(juce::jmin(width, height));
-		juce::Rectangle<double> bounds(x + (width - diameter) / 2.0,
-									   y + (height - diameter) / 2.0,
-									   diameter,
-									   diameter);
-		return bounds.toNearestInt();
-#elif defined USE_2D_SEMICIRCULAR_ROTARIES
-		auto diameter = static_cast<double>(juce::jmin(width, height));
-		juce::Rectangle<double> bounds(x + (width - diameter) / 2.0,
-									   y + (height - diameter) / 2.0,
-									   diameter,
-									   diameter / 2.0);
-		return bounds.toNearestInt();
-#else
-		auto diameter = static_cast<double>(juce::jmin(width, height));
-		juce::Rectangle<double> bounds(x + (width - diameter) / 2.0,
-									   y + (height - diameter) / 2.0,
-									   diameter,
-									   diameter);
-		return bounds.toNearestInt();
-#endif
+		int size = juce::jmin(width, height);
+		juce::Rectangle<int> bounds = {x, y, size, size};
+		auto newBounds
+			= bounds.toFloat().reduced(gsl::narrow_cast<float>(size) * 0.5F * 0.2F).toNearestInt();
+		newBounds.setCentre(bounds.getCentre());
+		return newBounds;
 	}
 
-	auto ApexLookAndFeel::drawPhysicalRotary(juce::Graphics& g,
-											 int x,
-											 int y,
-											 int width,
-											 int height,
-											 float sliderPos,
-											 const float rotaryStartAngle,
-											 const float rotaryEndAngle,
-											 juce::Slider& slider) noexcept -> void {
-		juce::ignoreUnused(slider);
-
-		juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
-
-		g.setColour(mBackgroundColour);
-		g.fillRect(rawBounds);
-
-		float diameter = juce::jmin(rawBounds.getWidth(), rawBounds.getHeight());
-
-		juce::Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
-												  .withHeight(diameter)
-												  .reduced(2.0F, 2.0F)
-												  .withCentre(rawBounds.getCentre());
-		juce::Rectangle<float> circleBounds = troughBounds.reduced(2.0F, 2.0F);
-		juce::Rectangle<float> innerShadowBounds = troughBounds.expanded(2.0F, 2.0F);
-		juce::Rectangle<float> outerShadowBounds
-			= juce::Rectangle<float>(innerShadowBounds.getX() - 3.0F,
-									 innerShadowBounds.getY(),
-									 innerShadowBounds.getWidth() + 3.0F,
-									 innerShadowBounds.getHeight() + 8.0F);
-
-		float lineWidth = diameter * 0.02F;
-
-		juce::ColourGradient innerShadowGradient(
-			mSliderShadowColour.withAlpha(0.8F),
-			innerShadowBounds.getX() + innerShadowBounds.getWidth() / 2.0F,
-			innerShadowBounds.getY() + innerShadowBounds.getHeight() / 2.0F,
-			mSliderShadowColour.withAlpha(0.2F),
-			innerShadowBounds.getX() + innerShadowBounds.getWidth(),
-			innerShadowBounds.getY() + innerShadowBounds.getHeight(),
-			true);
-		juce::ColourGradient outerShadowGradient(
-			mSliderShadowColour.withAlpha(0.8F),
-			outerShadowBounds.getX() + outerShadowBounds.getWidth() / 2.0F,
-			outerShadowBounds.getY() + outerShadowBounds.getHeight() / 2.0F,
-			mSliderShadowColour.darker(0.2F).withAlpha(0.0F),
-			outerShadowBounds.getX(),
-			outerShadowBounds.getY() + outerShadowBounds.getHeight(),
-			true);
-		juce::ColourGradient circleGradient(mRotarySliderFillColour.brighter(0.1F),
-											circleBounds.getX() + circleBounds.getWidth() / 2,
-											circleBounds.getY() + circleBounds.getHeight() / 2,
-											mRotarySliderFillColour.darker(0.3F),
-											circleBounds.getX() + circleBounds.getWidth(),
-											circleBounds.getY() + circleBounds.getHeight(),
-											true);
-		juce::ColourGradient circleHighlight(mRotarySliderFillColour.darker(0.2F).withAlpha(0.3F),
-											 circleBounds.getX(),
-											 circleBounds.getY(),
-											 mRotarySliderFillColour.darker(0.2F).withAlpha(0.3F),
-											 circleBounds.getX() + circleBounds.getWidth(),
-											 circleBounds.getY() + circleBounds.getHeight(),
-											 false);
-		circleHighlight.addColour(0.5F, mRotarySliderFillColour.brighter(0.1F).withAlpha(0.5F));
-
-		g.setColour(mSliderTroughColour);
-		g.fillEllipse(troughBounds);
-
-		g.setGradientFill(innerShadowGradient);
-		g.fillEllipse(innerShadowBounds);
-
-		g.setGradientFill(outerShadowGradient);
-		g.fillEllipse(outerShadowBounds);
-
-		g.setGradientFill(circleGradient);
-		g.fillEllipse(circleBounds);
-		g.setGradientFill(circleHighlight);
-		g.fillEllipse(circleBounds);
-
-		float radius = circleBounds.getWidth() / 2.0F;
-		float angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-
-		juce::Point<float> indicatorStart(
-			circleBounds.getCentreX() + (radius / 2.0F) * math::cosf(angle - math::piOver2f),
-			circleBounds.getCentreY() + (radius / 2.0F) * math::sinf(angle - math::piOver2f));
-		juce::Point<float> indicatorEnd(
-			circleBounds.getCentreX() + radius * math::cosf(angle - math::piOver2f),
-			circleBounds.getCentreY() + radius * math::sinf(angle - math::piOver2f));
-
-		juce::ColourGradient indicatorGradient(mRotarySliderIndicatorColour.brighter(0.2F),
-											   indicatorStart,
-											   mRotarySliderIndicatorColour.darker(0.3F),
-											   indicatorEnd,
-											   false);
-		juce::ColourGradient indicatorBackgroundGradient(
-			mSliderShadowColour.darker(0.2F).withAlpha(0.5F),
-			indicatorStart,
-			mSliderShadowColour.darker(0.2F).withAlpha(0.2F),
-			indicatorEnd,
-			false);
-
-		juce::Line<float> indicatorLine = juce::Line<float>(indicatorStart, indicatorEnd);
-		juce::Path indicator;
-		indicator.addLineSegment(indicatorLine, lineWidth);
-		juce::Path indicatorBackground;
-		indicatorBackground.addLineSegment(indicatorLine, lineWidth + 2.0F);
-
-		g.setGradientFill(indicatorBackgroundGradient);
-		g.strokePath(indicatorBackground,
-					 juce::PathStrokeType(lineWidth + 2.0F,
-										  juce::PathStrokeType::curved,
-										  juce::PathStrokeType::rounded));
-		g.setGradientFill(indicatorGradient);
-		g.strokePath(indicator,
-					 juce::PathStrokeType(lineWidth,
-										  juce::PathStrokeType::curved,
-										  juce::PathStrokeType::rounded));
-
-		juce::ColourGradient glowGradient(
-			mRotarySliderIndicatorColour.withAlpha(0.0F),
-			indicatorStart,
-			mRotarySliderIndicatorColour.brighter(0.4F).withAlpha(0.3F),
-			indicatorEnd,
-			false);
-		g.setGradientFill(glowGradient);
-		g.strokePath(indicator,
-					 juce::PathStrokeType(lineWidth,
-										  juce::PathStrokeType::curved,
-										  juce::PathStrokeType::rounded));
+	/// @brief Returns the actual rectangular bounds of a combo box, given the raw bounds
+	///
+	/// @param x - Thew raw x position
+	/// @param y - The raw y position
+	/// @param width - The raw width
+	/// @param height - The raw height
+	///
+	/// @return - The actual bounds of the combo box's on screen position
+	auto ApexLookAndFeel::getActualComboBounds(int x, int y, int width, int height) const noexcept
+		-> juce::Rectangle<int> {
+		float reducedWidth = gsl::narrow_cast<float>(width) * 0.1F;
+		float reducedHeight = gsl::narrow_cast<float>(height) * 0.1F;
+		juce::Rectangle<int> initBounds = {x, y, width, height};
+		auto newBounds = initBounds.toFloat().reduced(reducedWidth, reducedHeight).toNearestInt();
+		newBounds.setCentre(initBounds.getCentre());
+		return newBounds;
 	}
 
-	auto ApexLookAndFeel::drawSemiCircularRotary(juce::Graphics& g,
-												 int x,
-												 int y,
-												 int width,
-												 int height,
-												 float sliderPos,
-												 const float rotaryStartAngle,
-												 const float rotaryEndAngle,
-												 juce::Slider& slider) noexcept -> void {
-		juce::ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
-
-		juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
-
-		g.setColour(mBackgroundColour);
-		g.fillRect(rawBounds);
-
-		float diameter = juce::jmin(rawBounds.getWidth(), rawBounds.getHeight());
-
-		juce::Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
-												  .withHeight(diameter)
-												  .reduced(2.0F, 2.0F)
-												  .withCentre(rawBounds.getCentre());
-		juce::Rectangle<float> circleBounds
-			= troughBounds.reduced(2.0F, 2.0F)
-				  .withCentre(juce::Point<float>(troughBounds.getCentreX(),
-												 troughBounds.getCentreY() - 2.0F));
-		juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0F, 2.0F);
-
-		juce::Point<float> troughCentre = troughBounds.getCentre();
-		juce::Point<float> shadowCentre = shadowBounds.getCentre();
-		juce::Point<float> circleCentre = circleBounds.getCentre();
-
-		juce::Point<float> troughLeft(troughBounds.getX(), troughBounds.getCentreY());
-		juce::Point<float> shadowLeft(shadowBounds.getX(), shadowBounds.getCentreY());
-
-		juce::Point<float> troughRight(troughBounds.getX() + troughBounds.getWidth(),
-									   troughBounds.getCentreY());
-		juce::Point<float> shadowRight(shadowBounds.getX() + shadowBounds.getWidth(),
-									   shadowBounds.getCentreY());
-
-		float troughRadius = troughBounds.getWidth() / 2.0F;
-		float shadowRadius = shadowBounds.getWidth() / 2.0F;
-		float circleRadius = circleBounds.getWidth() / 2.0F;
-
-		float endAngle = 2.0F * math::pif;
-		float startAngle = math::pif;
-		float angle = startAngle + sliderPos * (endAngle - startAngle);
-
-		juce::Path trough;
-		trough.addCentredArc(troughCentre.getX(),
-							 troughCentre.getY(),
-							 troughRadius / 2.0F,
-							 troughRadius / 2.0F,
-							 0.0F,
-							 startAngle + math::piOver2f,
-							 endAngle + math::piOver2f,
-							 true);
-
-		g.setColour(mSliderTroughColour);
-		g.strokePath(trough,
-					 juce::PathStrokeType(troughRadius,
-										  juce::PathStrokeType::mitered,
-										  juce::PathStrokeType::butt));
-
-		juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.9F),
-											shadowBounds.getX() + shadowBounds.getWidth() / 2.0F,
-											shadowBounds.getY() + shadowBounds.getHeight() / 2.0F,
-											mSliderShadowColour.withAlpha(0.3F),
-											shadowBounds.getX(),
-											shadowBounds.getY(),
-											true);
-
-		juce::Path shadow;
-		shadow.addCentredArc(shadowCentre.getX(),
-							 shadowCentre.getY(),
-							 shadowRadius / 2.0F,
-							 shadowRadius / 2.0F,
-							 0.0F,
-							 startAngle + math::piOver2f,
-							 endAngle + math::piOver2f,
-							 true);
-		g.setGradientFill(shadowGradient);
-		g.strokePath(shadow,
-					 juce::PathStrokeType(shadowRadius,
-										  juce::PathStrokeType::mitered,
-										  juce::PathStrokeType::butt));
-
-		juce::Point<float> thumbStart = circleCentre;
-		juce::Point<float> thumbEnd(circleCentre.getX() + circleRadius * math::cosf(angle),
-									circleCentre.getY() + circleRadius * math::sinf(angle));
-
-		float thumbWidth = circleRadius * 0.1F;
-
-		float strokeRadius = circleRadius + 5.0F;
-
-		juce::Path fillPath;
-		fillPath.addCentredArc(circleCentre.getX(),
-							   circleCentre.getY(),
-							   circleRadius / 2.0F,
-							   circleRadius / 2.0F,
-							   0.0F,
-							   startAngle + math::piOver2f,
-							   angle + math::piOver2f,
-							   true);
-
-		juce::ColourGradient strokeGradient(
-			mSliderStrokeColour.withAlpha(0.5F),
-			thumbStart,
-			mSliderStrokeColour.withAlpha(0.5F),
-			juce::Point<float>(thumbStart.getX(), thumbStart.getY() + strokeRadius),
-			true);
-		strokeGradient.addColour(0.5F, mSliderStrokeColour.withAlpha(0.2F));
-		g.setGradientFill(strokeGradient);
-		g.strokePath(fillPath,
-					 juce::PathStrokeType(circleRadius,
-										  juce::PathStrokeType::mitered,
-										  juce::PathStrokeType::butt));
-
-		juce::Line<float> thumbLine(thumbStart, thumbEnd);
-		juce::Path thumb;
-		thumb.addLineSegment(thumbLine, thumbWidth);
-		juce::ColourGradient thumbGradient(mSliderStrokeColour.brighter(0.2F),
-										   thumbStart,
-										   mSliderStrokeColour.brighter(0.2F),
-										   thumbEnd,
-										   true);
-		thumbGradient.addColour(0.5F, mSliderStrokeColour.darker(0.8F));
-		g.setGradientFill(thumbGradient);
-		g.strokePath(thumb,
-					 juce::PathStrokeType(thumbWidth,
-										  juce::PathStrokeType::curved,
-										  juce::PathStrokeType::rounded));
-		float cornerSize = thumbWidth * 0.1F;
-		juce::ColourGradient glowGradient(mSliderGlowColour.brighter(0.2F).withAlpha(0.5F),
-										  thumbStart,
-										  mSliderGlowColour.brighter(0.2F).withAlpha(0.5F),
-										  thumbEnd,
-										  true);
-		glowGradient.addColour(0.5F, mSliderGlowColour.darker(0.2F).withAlpha(0.5F));
-		g.setGradientFill(glowGradient);
-		g.strokePath(thumb,
-					 juce::PathStrokeType(thumbWidth - cornerSize,
-										  juce::PathStrokeType::curved,
-										  juce::PathStrokeType::rounded));
-	}
-
-	auto ApexLookAndFeel::drawCircularFillRotary(juce::Graphics& g,
-												 int x,
-												 int y,
-												 int width,
-												 int height,
-												 float sliderPos,
-												 const float rotaryStartAngle,
-												 const float rotaryEndAngle,
-												 juce::Slider& slider) noexcept -> void {
-		juce::ignoreUnused(rotaryStartAngle, rotaryEndAngle, slider);
-
-		juce::Rectangle<float> rawBounds = juce::Rectangle<int>(x, y, width, height).toFloat();
-
-		g.setColour(mBackgroundColour);
-		g.fillRect(rawBounds);
-
-		auto diameter = gsl::narrow_cast<float>(juce::jmin(width, height));
-
-		juce::Rectangle<float> troughBounds = rawBounds.withWidth(diameter)
-												  .withHeight(diameter)
-												  .reduced(2.0F, 2.0F)
-												  .withCentre(rawBounds.getCentre());
-		juce::Rectangle<float> circleBounds
-			= troughBounds.withWidth(juce::jmax(diameter * sliderPos, 20.0F))
-				  .withHeight(juce::jmax(diameter * sliderPos, 20.0F))
-				  .reduced(2.0F, 2.0F)
-				  .withCentre(troughBounds.getCentre());
-		juce::Rectangle<float> shadowBounds = troughBounds.expanded(2.0F, 2.0F);
-
-		juce::ColourGradient shadowGradient(mSliderShadowColour.withAlpha(0.8F),
-											shadowBounds.getCentreX(),
-											shadowBounds.getCentreY(),
-											mSliderShadowColour.withAlpha(0.2F),
-											shadowBounds.getRight(),
-											shadowBounds.getBottom(),
-											true);
-		juce::ColourGradient circleGradient(mSliderStrokeColour.withAlpha(0.1F),
-											circleBounds.getCentreX(),
-											circleBounds.getCentreY(),
-											mSliderStrokeColour.withAlpha(0.5F),
-											circleBounds.getRight(),
-											circleBounds.getBottom(),
-											true);
-
-		g.setColour(mSliderTroughColour);
-		g.fillEllipse(troughBounds);
-		g.setGradientFill(shadowGradient);
-		g.fillEllipse(shadowBounds);
-		g.setGradientFill(circleGradient);
-		g.fillEllipse(circleBounds);
+	/// @brief Returns the actual rectangular bounds of a button, given the raw bounds
+	///
+	/// @param x - Thew raw x position
+	/// @param y - The raw y position
+	/// @param width - The raw width
+	/// @param height - The raw height
+	///
+	/// @return - The actual bounds of the button's on screen position
+	auto ApexLookAndFeel::getActualButtonBounds(int x, int y, int width, int height) const noexcept
+		-> juce::Rectangle<int> {
+		float reducedWidth = gsl::narrow_cast<float>(width) * 0.1F;
+		float reducedHeight = gsl::narrow_cast<float>(height) * 0.1F;
+		juce::Rectangle<int> initBounds = {x, y, width, height};
+		auto newBounds = initBounds.toFloat().reduced(reducedWidth, reducedHeight).toNearestInt();
+		newBounds.setCentre(initBounds.getCentre());
+		return newBounds;
 	}
 } // namespace apex::ui
