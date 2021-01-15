@@ -13,26 +13,19 @@ namespace apex::dsp {
 	/// @brief Base class for calculating gain reduction values adjusted to match different topology
 	/// behaviors. Base implementation only performs basic slew-rate adjustments.
 	///
-	/// @tparam T - The floating point type to back operations
+	/// @tparam FloatType - The floating point type to back operations
 	/// @tparam AttackKind - The attack type used by the shared `DynamicState`
 	/// @tparam ReleaseKind - The release type used by the shared `DynamicState`
-	template<typename T, typename AttackKind, typename ReleaseKind>
+	template<
+		typename FloatType = float,
+		typename AttackKind = FloatType,
+		typename ReleaseKind = FloatType,
+		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class GainReduction {
 	  protected:
-		using Field = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field;
-		using DynamicsState = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>;
+		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-		static_assert((std::is_floating_point<AttackKind>::value
-					   && std::is_same<T, AttackKind>::value)
-						  || std::is_enum<AttackKind>::value,
-					  "AttackKind must be the same floating point type as T, or an enum");
-		static_assert((std::is_floating_point<ReleaseKind>::value
-					   && std::is_same<T, ReleaseKind>::value)
-						  || std::is_enum<ReleaseKind>::value,
-					  "ReleaseKind must be the same floating point type as T, or an enum");
-
 		/// @brief Constructs a default `GainReduction` - zeroed state, zero rise time
 		GainReduction() noexcept = default;
 
@@ -40,21 +33,21 @@ namespace apex::dsp {
 		///
 		/// @param state - Non-Owning pointer to the shared dynamics state
 		/// @param riseTimeSeconds - The rise time, in seconds
-		explicit GainReduction(DynamicsState* state, T riseTimeSeconds = 0) noexcept
-			: mState(state), mRiseTimeSeconds(riseTimeSeconds) {
+		explicit GainReduction(DynamicsState* state,
+							   FloatType riseTimeSeconds = narrow_cast<FloatType>(0.0)) noexcept
+			: mState(state), mRiseTimeSeconds(riseTimeSeconds),
+			  mRiseCoefficient(calculateRiseCoefficient(state->getSampleRate())) {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Creating Base Gain Reduction");
 	#endif
-			mState->template registerCallback<Hertz, Field::SampleRate>(
+			mState->template registerCallback<Hertz, DynamicsField::SampleRate>(
 				[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
-			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
-				-1.0 / (mRiseTimeSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Move constructs the given `GainReduction`
 		///
 		/// @param reduction - The `GainReduction` to move
-		GainReduction(GainReduction<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
+		GainReduction(GainReduction&& reduction) noexcept = default;
 		virtual ~GainReduction() noexcept = default;
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReduction`'s parameters
@@ -68,23 +61,24 @@ namespace apex::dsp {
 			apex::utils::Logger::LogMessage(
 				"Base Gain Reduction Calculating Adjusted Gain Reduction");
 	#endif
-			T sign = 1.0;
-			if(gainReduction < 0.0) {
+			auto sign = narrow_cast<FloatType>(1.0);
+			if(gainReduction < narrow_cast<FloatType>(0.0)) {
 				sign = -sign;
 				gainReduction *= sign;
 			}
 
 			mCurrentGainReduction = sign
 									* (mRiseCoefficient * mCurrentGainReduction
-									   + (gsl::narrow_cast<T>(1.0) - mRiseCoefficient)
-											 * gsl::narrow_cast<T>(gainReduction));
+									   + (narrow_cast<FloatType>(1.0) - mRiseCoefficient)
+											 * narrow_cast<FloatType>(gainReduction));
 			return mCurrentGainReduction;
 		}
 
 		/// @brief Resets this `GainReduction` to an initial state.
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
-		inline virtual auto reset(T currentGainReduction = 0) noexcept -> void {
+		inline virtual auto
+		reset(FloatType currentGainReduction = narrow_cast<FloatType>(0.0)) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Resetting");
 	#endif
@@ -98,20 +92,18 @@ namespace apex::dsp {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Sample Rate");
 	#endif
-			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
-				-1.0 / (mRiseTimeSeconds * static_cast<double>(sampleRate))));
+			mRiseCoefficient = calculateRiseCoefficient(sampleRate);
 		}
 
 		/// @brief Sets the slew rate to use for calculations to the given value
 		///
 		/// @param seconds - The new slew rate
-		inline virtual auto setRiseTimeSeconds(T seconds) noexcept -> void {
+		inline virtual auto setRiseTimeSeconds(FloatType seconds) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Rise Time");
 	#endif
 			mRiseTimeSeconds = seconds;
-			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
-				-1.0 / (mRiseTimeSeconds * static_cast<double>(mState->getSampleRate()))));
+			mRiseCoefficient = calculateRiseCoefficient(mState->getSampleRate());
 		}
 
 		/// @brief Sets the shared state to the given one
@@ -124,19 +116,25 @@ namespace apex::dsp {
 			mState = state;
 		}
 
-		auto operator=(GainReduction<T, AttackKind, ReleaseKind>&& reduction) noexcept
-			-> GainReduction<T, AttackKind, ReleaseKind>& = default;
+		auto operator=(GainReduction&& reduction) noexcept -> GainReduction& = default;
 
 	  protected:
 		/// prevent us from having to `new` or use a smart pointer
 		/// just to get our zeroed state
 		DynamicsState DEFAULT_STATE = DynamicsState();
 		DynamicsState* mState = &DEFAULT_STATE;
-		T mRiseCoefficient = gsl::narrow_cast<T>(0.1);
-		/// The current gain reduction value
-		Decibels mCurrentGainReduction = gsl::narrow_cast<T>(0.0);
 		/// The slew rate
-		T mRiseTimeSeconds = gsl::narrow_cast<T>(0.00001);
+		FloatType mRiseTimeSeconds = narrow_cast<FloatType>(1e-9);
+		/// The LPF coefficient for rise time
+		FloatType mRiseCoefficient = narrow_cast<FloatType>(0.1);
+		/// The current gain reduction value
+		Decibels mCurrentGainReduction = narrow_cast<FloatType>(0.0);
+
+		inline virtual auto calculateRiseCoefficient(Hertz sampleRate) noexcept -> FloatType {
+			return Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mRiseTimeSeconds * narrow_cast<FloatType>(sampleRate)));
+		}
 
 	  private:
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)

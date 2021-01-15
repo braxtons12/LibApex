@@ -15,40 +15,36 @@ namespace apex::dsp {
 	/// @brief Class for calculating gain reduction values adjusted to roughly model Optical
 	/// topology behavior
 	///
-	/// @tparam T - The floating point type to back operations
+	/// @tparam FloatType - The floating point type to back operations
 	/// @tparam AttackKind - The attack type used by the shared `DynamicsState`
 	/// @tparam ReleaseKind - The release type used by the shared `DynamicsState`
-	template<typename T, typename AttackKind, typename ReleaseKind>
-	class GainReductionOptical : public GainReduction<T, AttackKind, ReleaseKind> {
+	template<
+		typename FloatType = float,
+		typename AttackKind = FloatType,
+		typename ReleaseKind = FloatType,
+		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
+	class GainReductionOptical : public GainReduction<FloatType, AttackKind, ReleaseKind> {
 	  protected:
-		using Field = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field;
-		using DynamicsState = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>;
+		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using GainReduction = GainReduction<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-		static_assert((std::is_floating_point<AttackKind>::value
-					   && std::is_same<T, AttackKind>::value)
-						  || std::is_enum<AttackKind>::value,
-					  "AttackKind must be the same floating point type as T, or an enum");
-		static_assert((std::is_floating_point<ReleaseKind>::value
-					   && std::is_same<T, ReleaseKind>::value)
-						  || std::is_enum<ReleaseKind>::value,
-					  "ReleaseKind must be the same floating point type as T, or an enum");
-
+	#ifdef TESTING_GAIN_REDUCTION_OPTO
 		/// @brief Constructs a default `GainReductionOptical`
 		/// (zeroed shared state)
-		GainReductionOptical() noexcept : GainReduction<T, AttackKind, ReleaseKind>() {
-	#ifdef TESTING_GAIN_REDUCTION_OPTO
+		GainReductionOptical() noexcept {
 			apex::utils::Logger::LogMessage("Creating Gain Reduction Opto");
-	#endif
 		}
+	#else
+		GainReductionOptical() noexcept = default;
+	#endif
 
 		/// @brief Contructs a `GainReductionOptical` with the given shared state
 		///
 		/// @param state - The shared state
 		explicit GainReductionOptical(DynamicsState* state) noexcept {
-			this->mState = state;
-			this->mState->template registerCallback<size_t, Field::SampleRate>(
+			GainReduction::mState = state;
+			GainReduction::mState->template registerCallback<size_t, DynamicsField::SampleRate>(
 				[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
 	#ifdef TESTING_GAIN_REDUCTION_OPTO
 			apex::utils::Logger::LogMessage("Creating Gain Reduction Opto");
@@ -58,8 +54,7 @@ namespace apex::dsp {
 		/// @brief Move constructs the given `GainReductionOptical`
 		///
 		/// @param reduction - The `GainReductionOptical` to move
-		GainReductionOptical(
-			GainReductionOptical<T, AttackKind, ReleaseKind>&& reduction) noexcept = default;
+		GainReductionOptical(GainReductionOptical&& reduction) noexcept = default;
 		~GainReductionOptical() noexcept override = default;
 
 		/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s
@@ -74,31 +69,31 @@ namespace apex::dsp {
 			apex::utils::Logger::LogMessage(
 				"Gain Reduction Opto Calculating Adjusted Gain Reduction");
 	#endif
-			Decibels oldGainReduction = this->mCurrentGainReduction;
+			Decibels oldGainReduction = GainReduction::mCurrentGainReduction;
 			Decibels coefficient = gainReduction;
-			auto coefficientIndex
-				= static_cast<size_t>(coefficient * static_cast<T>(NUM_COEFFICIENTS_PER_STEP));
+			auto coefficientIndex = narrow_cast<size_t>(
+				coefficient * narrow_cast<FloatType>(NUM_COEFFICIENTS_PER_STEP));
 
 			if(coefficientIndex > (NUM_COEFFICIENTS - 1)) {
 				coefficientIndex = NUM_COEFFICIENTS - 1;
 			}
 
-			if(gainReduction > this->mCurrentGainReduction) {
-				this->mCurrentGainReduction
+			if(gainReduction > GainReduction::mCurrentGainReduction) {
+				GainReduction::mCurrentGainReduction
 					= (mAttackCoefficients[coefficientIndex] * oldGainReduction)
-					  + (static_cast<T>(1.0) - mAttackCoefficients[coefficientIndex])
+					  + (narrow_cast<FloatType>(1.0) - mAttackCoefficients[coefficientIndex])
 							* gainReduction;
 			}
 			else {
-				this->mCurrentGainReduction
+				GainReduction::mCurrentGainReduction
 					= (mReleaseCoefficients[coefficientIndex] * oldGainReduction)
-					  + (static_cast<T>(1.0) - mReleaseCoefficients[coefficientIndex])
+					  + (narrow_cast<FloatType>(1.0) - mReleaseCoefficients[coefficientIndex])
 							* gainReduction;
 			}
 
-			return waveshapers::softSaturation(this->mCurrentGainReduction,
-											   WAVE_SHAPER_AMOUNT,
-											   WAVE_SHAPER_SLOPE);
+			return waveshapers::softSaturation<FloatType>(GainReduction::mCurrentGainReduction,
+														  WAVE_SHAPER_AMOUNT,
+														  WAVE_SHAPER_SLOPE);
 		}
 
 		/// @brief Sets the sample rate to use for calculations to the given value
@@ -106,24 +101,27 @@ namespace apex::dsp {
 		/// @param sampleRate - The new sample rate to use
 		auto setSampleRate(Hertz sampleRate) noexcept -> void override {
 			for(size_t coefficient = 0; coefficient < NUM_COEFFICIENTS; ++coefficient) {
-				Decibels decibel
-					= static_cast<T>(coefficient) / static_cast<T>(NUM_COEFFICIENTS_PER_STEP);
-				T resistance
-					= static_cast<T>(510.0) / static_cast<T>(static_cast<T>(3.0) + decibel);
-				T attackSeconds = (resistance / static_cast<T>(10.0)) / static_cast<T>(1000.0);
-				T releaseSeconds = resistance / static_cast<T>(1000.0);
+				Decibels decibel = narrow_cast<FloatType>(coefficient)
+								   / narrow_cast<FloatType>(NUM_COEFFICIENTS_PER_STEP);
+				auto resistance
+					= narrow_cast<FloatType>(510.0) / narrow_cast<FloatType>(3.0 + decibel);
+				auto attackSeconds
+					= (resistance / narrow_cast<FloatType>(10.0)) / narrow_cast<FloatType>(1000.0);
+				auto releaseSeconds = resistance / narrow_cast<FloatType>(1000.0);
 
-				T sampleRateFloat = static_cast<T>(sampleRate);
+				auto sampleRateFloat = narrow_cast<FloatType>(sampleRate);
 
-				mAttackCoefficients[coefficient] = static_cast<T>(math::exp(
-					math::ln(0.27) / static_cast<double>(attackSeconds * sampleRateFloat)));
-				mReleaseCoefficients[coefficient] = static_cast<T>(math::exp(
-					math::ln(0.27) / static_cast<double>(releaseSeconds * sampleRateFloat)));
+				mAttackCoefficients[coefficient] = Exponentials<FloatType>::exp(
+					Exponentials<FloatType>::ln(narrow_cast<FloatType>(0.27))
+					/ (attackSeconds * sampleRateFloat));
+				mReleaseCoefficients[coefficient] = Exponentials<FloatType>::exp(
+					Exponentials<FloatType>::ln(narrow_cast<FloatType>(0.27))
+					/ (releaseSeconds * sampleRateFloat));
 			}
 		}
 
-		auto operator=(GainReductionOptical<T, AttackKind, ReleaseKind>&& reduction) noexcept
-			-> GainReductionOptical<T, AttackKind, ReleaseKind>& = default;
+		auto
+		operator=(GainReductionOptical&& reduction) noexcept -> GainReductionOptical& = default;
 
 	  private:
 		/// The number of steps in decibels to store coefficients for
@@ -133,13 +131,15 @@ namespace apex::dsp {
 		/// The total number of coefficients
 		static const constexpr size_t NUM_COEFFICIENTS = NUM_DB_STEPS * NUM_COEFFICIENTS_PER_STEP;
 		/// The "amount" to use for the `softSaturation` wave shaper
-		static const constexpr T WAVE_SHAPER_AMOUNT = static_cast<T>(0.2);
+		static const constexpr FloatType WAVE_SHAPER_AMOUNT = narrow_cast<FloatType>(0.2);
 		/// The "slope" to use for the `softSaturation` wave shaper
-		static const constexpr T WAVE_SHAPER_SLOPE = static_cast<T>(0.2);
+		static const constexpr FloatType WAVE_SHAPER_SLOPE = narrow_cast<FloatType>(0.2);
 		/// The attack response coefficients
-		std::vector<T> mAttackCoefficients = std::vector<T>(NUM_COEFFICIENTS);
+		std::array<FloatType, NUM_COEFFICIENTS> mAttackCoefficients
+			= std::array<FloatType, NUM_COEFFICIENTS>();
 		/// The release response coefficients
-		std::vector<T> mReleaseCoefficients = std::vector<T>(NUM_COEFFICIENTS);
+		std::array<FloatType, NUM_COEFFICIENTS> mReleaseCoefficients
+			= std::array<FloatType, NUM_COEFFICIENTS>();
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReductionOptical)
 	};

@@ -23,6 +23,14 @@ namespace apex::dsp {
 		AutoRelease
 	};
 
+	/// @brief Determines if the given combination of template parameters are a valid combination
+	/// for dynamics processor component types
+	///
+	/// @tparam FloatType - The floating point type to use for calculations (float or double)
+	/// @tparam AttackKind - The type used to represent attack times, either FloatType or an enum
+	/// @tparam ReleaseKind - The type used to represent release times, either FloatType or an enum
+	///
+	/// @return `true` if the combination is valid, `false` otherwise
 	template<typename FloatType = float,
 			 typename AttackKind = FloatType,
 			 typename ReleaseKind = FloatType>
