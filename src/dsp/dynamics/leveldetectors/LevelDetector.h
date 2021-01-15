@@ -14,38 +14,27 @@
 //#define TESTING_LEVELDETECTOR
 
 namespace apex::dsp {
-	/// @brief Base Level Detector used for the level detection portion of a
-	/// Dynamic Range Processor's Sidechain
-	///
-	/// @tparam T - The floating point type to back operations, either float or double
-	template<typename T>
-	class LevelDetector {
-	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-
-	  private:
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetector)
+	/// @brief The different detector topologies
+	enum class DetectorType
+	{
+		NonCorrected,
+		Branching,
+		Decoupled,
+		BranchingSmooth,
+		DecoupledSmooth
 	};
 
 	/// @brief Base Level Detector used for the level detection portion of a
 	/// Dynamic Range Processor's Sidechain
-	template<>
-	class LevelDetector<float> {
+	///
+	/// @tparam FloatType - The floating point type to back operations, either float or double
+	template<typename FloatType = float,
+			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+	class LevelDetector {
 	  private:
-		using Field = typename apex::dsp::DynamicsState<float, float, float>::Field;
-		using DynamicsState = typename apex::dsp::DynamicsState<float, float, float>;
+		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, FloatType, FloatType>;
 
 	  public:
-		/// @brief The different detector topologies
-		enum class DetectorType
-		{
-			NonCorrected,
-			Branching,
-			Decoupled,
-			BranchingSmooth,
-			DecoupledSmooth
-		};
-
 		/// @brief Constructs a default `LevelDetector` (zeroed shared state)
 		LevelDetector() noexcept = default;
 
@@ -54,13 +43,23 @@ namespace apex::dsp {
 		///
 		/// @param state - The shared state
 		/// @param type - The detector type
-		explicit LevelDetector(DynamicsState* state,
-							   DetectorType type = DetectorType::NonCorrected) noexcept;
+		explicit LevelDetector(DynamicsState* state, DetectorType type) noexcept
+			: mType(type), mState(state) {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Creating Base Level Detector");
+#endif
+			mState->template registerCallback<FloatType, DynamicsField::Attack>(
+				[this](FloatType attack) { this->setAttackTime(attack); });
+			mState->template registerCallback<FloatType, DynamicsField::Release>(
+				[this](FloatType release) { this->setReleaseTime(release); });
+			mState->template registerCallback<Hertz, DynamicsField::SampleRate>(
+				[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
+		}
 
 		/// @brief Move constructs a `LevelDetector` from the given one
 		///
 		/// @param detector - The `LevelDetector` to move
-		LevelDetector(LevelDetector<float>&& detector) noexcept = default;
+		LevelDetector(LevelDetector&& detector) noexcept = default;
 		virtual ~LevelDetector() noexcept = default;
 
 		/// @brief Generates the detected level from the given input
@@ -68,47 +67,57 @@ namespace apex::dsp {
 		/// @param input - The input to detect on
 		///
 		/// @return - The detected level
-		[[nodiscard]] virtual auto process(float input) noexcept -> float;
+		[[nodiscard]] virtual auto process(FloatType input) noexcept -> FloatType {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Processing Input");
+#endif
+			switch(mType) {
+				case DetectorType::NonCorrected: return processNonCorrected(input);
+				case DetectorType::Branching: return processBranching(input);
+				case DetectorType::Decoupled: return processDecoupled(input);
+				case DetectorType::BranchingSmooth: return processBranchingSmooth(input);
+				case DetectorType::DecoupledSmooth: return processDecoupledSmooth(input);
+			}
+			return narrow_cast<FloatType>(0.0);
+		}
 
 		/// @brief Resets this level detector to an initial state
 		virtual inline auto reset() noexcept -> void {
 #ifdef TESTING_LEVELDETECTOR
 			Logger::LogMessage("Base Level Detector Resetting");
 #endif
-			mYOut1 = 0.0F;
-			mYTempStage1 = 0.0F;
+			mYOut1 = narrow_cast<FloatType>(0.0);
+			mYTempStage1 = narrow_cast<FloatType>(0.0);
 		}
 
 		/// @brief Sets the attack time to the given value
 		///
 		/// @param attackSeconds - The new attack time, in seconds
-		virtual inline auto setAttackTime(float attackSeconds) noexcept -> void {
+		virtual inline auto setAttackTime(FloatType attackSeconds) noexcept -> void {
 #ifdef TESTING_LEVELDETECTOR
 			Logger::LogMessage("Base Level Detector Updating Attack Time");
 #endif
-			mState->setAttackCoefficient1(Exponentials<>::exp(
-				-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
+			juce::ignoreUnused(attackSeconds);
+			mState->setAttackCoefficient1(calculateAttackCoefficient1(mState->getSampleRate()));
 		}
 
 		/// @brief Sets the release time to the given value
 		///
 		/// @param releaseSeconds - The new release time, in seconds
-		virtual inline auto setReleaseTime(float releaseSeconds) noexcept -> void {
+		virtual inline auto setReleaseTime(FloatType releaseSeconds) noexcept -> void {
 #ifdef TESTING_LEVELDETECTOR
 			Logger::LogMessage("Base Level Detector Updating Release Time");
 #endif
-			mState->setReleaseCoefficient1(Exponentials<>::exp(
-				-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
+			juce::ignoreUnused(releaseSeconds);
+			mState->setReleaseCoefficient1(calculateReleaseCoefficient1(mState->getSampleRate()));
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
 		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mState->setAttackCoefficient1(Exponentials<>::exp(
-				-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
-			mState->setReleaseCoefficient1(Exponentials<>::exp(
-				-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
+			mState->setAttackCoefficient1(calculateAttackCoefficient1(sampleRate));
+			mState->setReleaseCoefficient1(calculateReleaseCoefficient1(sampleRate));
 #ifdef TESTING_LEVELDETECTOR
 			Logger::LogMessage(
 				"Base LevelDetector AttackSeconds: " + juce::String(mState->getAttack())
@@ -131,137 +140,106 @@ namespace apex::dsp {
 			return mType;
 		}
 
-		auto operator=(LevelDetector<float>&& detector) noexcept -> LevelDetector<float>& = default;
+		auto operator=(LevelDetector&& detector) noexcept -> LevelDetector& = default;
 
 	  protected:
 		// y[n-1]
-		float mYOut1 = 0.0F;
+		FloatType mYOut1 = narrow_cast<FloatType>(0.0);
 		// used in decoupled calculations to store y_1[n-1]
-		float mYTempStage1 = 0.0F;
+		FloatType mYTempStage1 = narrow_cast<FloatType>(0.0);
 		DetectorType mType = DetectorType::NonCorrected;
 
-		[[nodiscard]] virtual auto processNonCorrected(float input) noexcept -> float;
-		[[nodiscard]] virtual auto processBranching(float input) noexcept -> float;
-		[[nodiscard]] virtual auto processDecoupled(float input) noexcept -> float;
-		[[nodiscard]] virtual auto processBranchingSmooth(float input) noexcept -> float;
-		[[nodiscard]] virtual auto processDecoupledSmooth(float input) noexcept -> float;
-
-	  private:
-		DynamicsState DEFAULT_STATE = DynamicsState();
-		DynamicsState* mState = &DEFAULT_STATE;
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetector)
-	};
-
-	/// @brief Base Level Detector used for the level detection portion of a
-	/// Dynamic Range Processor's Sidechain
-	template<>
-	class LevelDetector<double> {
-	  private:
-		using Field = typename apex::dsp::DynamicsState<double, double, double>::Field;
-		using DynamicsState = typename apex::dsp::DynamicsState<double, double, double>;
-
-	  public:
-		/// @brief The different detector topologies
-		enum class DetectorType
-		{
-			NonCorrected,
-			Branching,
-			Decoupled,
-			BranchingSmooth,
-			DecoupledSmooth
-		};
-
-		/// @brief Constructs a default `LevelDetector` (zeroed shared state)
-		LevelDetector() noexcept = default;
-
-		/// @brief Constructs a `LevelDetector` of the given type
-		/// with the given shared state
-		///
-		/// @param state - The shared state
-		/// @param type - The detector type
-		explicit LevelDetector(DynamicsState* state,
-							   DetectorType type = DetectorType::NonCorrected) noexcept;
-
-		/// @brief Move constructs a `LevelDetector` from the given one
-		///
-		/// @param detector - The `LevelDetector` to move
-		LevelDetector(LevelDetector<double>&& detector) noexcept = default;
-		virtual ~LevelDetector() noexcept = default;
-
-		/// @brief Generates the detected level from the given input
-		///
-		/// @param input - The input to detect on
-		///
-		/// @return - The detected level
-		[[nodiscard]] virtual auto process(double input) noexcept -> double;
-
-		/// @brief Resets this level detector to an initial state
-		virtual inline auto reset() noexcept -> void {
+		[[nodiscard]] virtual auto processNonCorrected(FloatType input) noexcept -> FloatType {
 #ifdef TESTING_LEVELDETECTOR
-			Logger::LogMessage("Base Level Detector Resetting");
+			Logger::LogMessage("Base Level Detector Processing NonCorrected");
 #endif
-			mYOut1 = 0.0;
-			mYTempStage1 = 0.0;
+			// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
+			auto yn = mState->getReleaseCoefficient1() * mYOut1
+					  + (narrow_cast<FloatType>(1.0) - mState->getAttackCoefficient1())
+							* General<FloatType>::max(input - mYOut1, narrow_cast<FloatType>(0.0));
+			mYOut1 = yn;
+			return yn;
 		}
 
-		/// @brief Sets the attack time to the given value
-		///
-		/// @param attackSeconds - The new attack time, in seconds
-		virtual inline auto setAttackTime(double attackSeconds) noexcept -> void {
+		[[nodiscard]] virtual auto processBranching(FloatType input) noexcept -> FloatType {
 #ifdef TESTING_LEVELDETECTOR
-			Logger::LogMessage("Base Level Detector Updating Attack Time");
+			Logger::LogMessage("Base Level Detector Processing Branching");
 #endif
-			mState->setAttackCoefficient1(Exponentials<double>::exp(
-				-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
+			//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n], x[n] > y[n-1]
+			// y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
+			//       {
+			auto yn
+				= (input > mYOut1 ?
+						 (mState->getAttackCoefficient1() * mYOut1
+						+ (narrow_cast<FloatType>(1.0) - mState->getAttackCoefficient1()) * input) :
+						 (mState->getReleaseCoefficient1() * mYOut1));
+			mYOut1 = yn;
+			return yn;
 		}
 
-		/// @brief Sets the release time to the given value
-		///
-		/// @param releaseSeconds - The new release time, in seconds
-		virtual inline auto setReleaseTime(double releaseSeconds) noexcept -> void {
+		[[nodiscard]] virtual auto processDecoupled(FloatType input) noexcept -> FloatType {
 #ifdef TESTING_LEVELDETECTOR
-			Logger::LogMessage("Base Level Detector Updating Release Time");
+			Logger::LogMessage("Base Level Detector Processing Decoupled");
 #endif
-			mState->setReleaseCoefficient1(Exponentials<double>::exp(
-				-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
+			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
+			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
+			auto ytempn
+				= General<FloatType>::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
+			auto yn = mState->getAttackCoefficient1() * mYOut1
+					  + (narrow_cast<FloatType>(1.0) - mState->getAttackCoefficient1()) * ytempn;
+			mYTempStage1 = ytempn;
+			mYOut1 = yn;
+			return yn;
 		}
 
-		/// @brief Sets the sample rate to the given value
-		///
-		/// @param sampleRate - The new sample rate, in Hertz
-		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mState->setAttackCoefficient1(Exponentials<double>::exp(
-				-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
-			mState->setReleaseCoefficient1(Exponentials<double>::exp(
-				-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
-		}
-
-		virtual inline auto setDetectorType(DetectorType type) noexcept -> void {
+		[[nodiscard]] virtual auto processBranchingSmooth(FloatType input) noexcept -> FloatType {
 #ifdef TESTING_LEVELDETECTOR
-			Logger::LogMessage("Base Level Detector Updating Detector Type");
+			Logger::LogMessage("Base Level Detector Processing Branching Smooth");
 #endif
-			mType = type;
+			//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n],   x[n] > y[n-1]
+			// y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
+			//       {
+
+			auto one = narrow_cast<FloatType>(1.0);
+			auto yn = (input > mYOut1 ? (mState->getAttackCoefficient1() * mYOut1
+										 + (one - mState->getAttackCoefficient1()) * input) :
+										  (mState->getReleaseCoefficient1() * mYOut1
+										 + (one - mState->getReleaseCoefficient1()) * input));
+			mYOut1 = yn;
+			return yn;
 		}
 
-		[[nodiscard]] virtual inline auto getDetectorType() const noexcept -> DetectorType {
-			return mType;
+		[[nodiscard]] virtual auto processDecoupledSmooth(FloatType input) noexcept -> FloatType {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Processing Decoupled Smooth");
+#endif
+			// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
+			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
+
+			auto one = narrow_cast<FloatType>(1.0);
+			auto ytempn = General<>::max(input,
+										 mState->getReleaseCoefficient1() * mYTempStage1
+											 + (one - mState->getReleaseCoefficient1()) * input);
+			auto yn = mState->getAttackCoefficient1() * mYOut1
+					  + (one - mState->getAttackCoefficient1()) * ytempn;
+			mYTempStage1 = ytempn;
+			mYOut1 = yn;
+			return yn;
 		}
 
-		auto
-		operator=(LevelDetector<double>&& detector) noexcept -> LevelDetector<double>& = default;
+		[[nodiscard]] virtual inline auto
+		calculateAttackCoefficient1(Hertz sampleRate) noexcept -> FloatType {
+			return Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mState->getAttack() * narrow_cast<FloatType>(sampleRate)));
+		}
 
-	  protected:
-		// y[n-1]
-		double mYOut1 = 0.0;
-		// used in decoupled calculations to store y_1[n-1]
-		double mYTempStage1 = 0.0;
-		DetectorType mType = DetectorType::NonCorrected;
-
-		[[nodiscard]] virtual auto processNonCorrected(double input) noexcept -> double;
-		[[nodiscard]] virtual auto processBranching(double input) noexcept -> double;
-		[[nodiscard]] virtual auto processDecoupled(double input) noexcept -> double;
-		[[nodiscard]] virtual auto processBranchingSmooth(double input) noexcept -> double;
-		[[nodiscard]] virtual auto processDecoupledSmooth(double input) noexcept -> double;
+		[[nodiscard]] virtual inline auto
+		calculateReleaseCoefficient1(Hertz sampleRate) noexcept -> FloatType {
+			return Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mState->getRelease() * narrow_cast<FloatType>(sampleRate)));
+		}
 
 	  private:
 		DynamicsState DEFAULT_STATE = DynamicsState();
