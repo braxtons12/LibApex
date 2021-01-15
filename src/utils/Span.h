@@ -26,6 +26,8 @@ namespace apex::utils {
 		template<size_t Offset, size_t Count>
 		using SubSpan = typename gsl::details::calculate_subspan_type<T, Size, Offset, Count>::type;
 
+		Span() noexcept = default;
+
 		/// @brief Constructs a `Span` from a `gsl::span`
 		///
 		/// @param span - The `gsl::span` to wrap
@@ -255,7 +257,7 @@ namespace apex::utils {
 		constexpr auto operator=(Span<T, Size>&& span) noexcept -> Span<T, Size>& = default;
 
 	  private:
-		gsl::span<T, Size> mSpanInternal;
+		gsl::span<T, Size> mSpanInternal = gsl::span<T, Size>();
 	};
 } // namespace apex::utils
 #endif // APEX_SPAN

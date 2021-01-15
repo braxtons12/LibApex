@@ -38,6 +38,9 @@ namespace apex::dsp {
 		/// @brief Constructs a default `GainReductionOptical`
 		/// (zeroed shared state)
 		GainReductionOptical() noexcept : GainReduction<T, AttackKind, ReleaseKind>() {
+	#ifdef TESTING_GAIN_REDUCTION_OPTO
+			apex::utils::Logger::LogMessage("Creating Gain Reduction Opto");
+	#endif
 		}
 
 		/// @brief Contructs a `GainReductionOptical` with the given shared state
@@ -47,6 +50,9 @@ namespace apex::dsp {
 			this->mState = state;
 			this->mState->template registerCallback<size_t, Field::SampleRate>(
 				[this](size_t sampleRate) { this->setSampleRate(sampleRate); });
+	#ifdef TESTING_GAIN_REDUCTION_OPTO
+			apex::utils::Logger::LogMessage("Creating Gain Reduction Opto");
+	#endif
 		}
 
 		/// @brief Move constructs the given `GainReductionOptical`
@@ -64,6 +70,10 @@ namespace apex::dsp {
 		/// @return - The adjusted gain reduction
 		[[nodiscard]] auto
 		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
+	#ifdef TESTING_GAIN_REDUCTION_OPTO
+			apex::utils::Logger::LogMessage(
+				"Gain Reduction Opto Calculating Adjusted Gain Reduction");
+	#endif
 			Decibels oldGainReduction = this->mCurrentGainReduction;
 			Decibels coefficient = gainReduction;
 			auto coefficientIndex
@@ -106,9 +116,9 @@ namespace apex::dsp {
 				T sampleRateFloat = static_cast<T>(sampleRate);
 
 				mAttackCoefficients[coefficient] = static_cast<T>(math::exp(
-					math::log(0.27) / static_cast<double>(attackSeconds * sampleRateFloat)));
+					math::ln(0.27) / static_cast<double>(attackSeconds * sampleRateFloat)));
 				mReleaseCoefficients[coefficient] = static_cast<T>(math::exp(
-					math::log(0.27) / static_cast<double>(releaseSeconds * sampleRateFloat)));
+					math::ln(0.27) / static_cast<double>(releaseSeconds * sampleRateFloat)));
 			}
 		}
 

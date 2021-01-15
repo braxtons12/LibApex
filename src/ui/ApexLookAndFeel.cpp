@@ -7,7 +7,7 @@
 
 namespace apex::ui {
 	/// @brief Creates a default `ApexLookAndFeel`
-	ApexLookAndFeel::ApexLookAndFeel() noexcept : juce::LookAndFeel_V4() {
+	ApexLookAndFeel::ApexLookAndFeel() noexcept {
 		registerColours();
 	}
 
@@ -105,11 +105,15 @@ namespace apex::ui {
 		g.fillPath(knob);
 
 		juce::Point<float> indicatorStart(
-			bounds.getCentreX() + indicatorInnerRadius * math::cosf(endAngle - math::piOver2f),
-			bounds.getCentreY() + indicatorInnerRadius * math::sinf(endAngle - math::piOver2f));
+			bounds.getCentreX()
+				+ indicatorInnerRadius * Trig<>::cos(endAngle - Constants<>::piOver2),
+			bounds.getCentreY()
+				+ indicatorInnerRadius * Trig<>::sin(endAngle - Constants<>::piOver2));
 		juce::Point<float> indicatorEnd(
-			bounds.getCentreX() + indicatorOuterRadius * math::cosf(endAngle - math::piOver2f),
-			bounds.getCentreY() + indicatorOuterRadius * math::sinf(endAngle - math::piOver2f));
+			bounds.getCentreX()
+				+ indicatorOuterRadius * Trig<>::cos(endAngle - Constants<>::piOver2),
+			bounds.getCentreY()
+				+ indicatorOuterRadius * Trig<>::sin(endAngle - Constants<>::piOver2));
 		juce::ColourGradient indicatorGradient(mRotarySliderIndicatorColour,
 											   bounds.getCentre(),
 											   mRotarySliderIndicatorColour,
@@ -157,14 +161,14 @@ namespace apex::ui {
 
 		juce::Point<float> thumbStart(
 			bounds.getCentreX()
-				+ (arcRadius - thumbWidth * 0.5F) * math::cosf(endAngle - math::piOver2f),
+				+ (arcRadius - thumbWidth * 0.5F) * Trig<>::cos(endAngle - Constants<>::piOver2),
 			bounds.getCentreY()
-				+ (arcRadius - thumbWidth * 0.5F) * math::sinf(endAngle - math::piOver2f));
+				+ (arcRadius - thumbWidth * 0.5F) * Trig<>::sin(endAngle - Constants<>::piOver2));
 		juce::Point<float> thumbEnd(
 			bounds.getCentreX()
-				+ (arcRadius + thumbWidth * 0.5F) * math::cosf(endAngle - math::piOver2f),
+				+ (arcRadius + thumbWidth * 0.5F) * Trig<>::cos(endAngle - Constants<>::piOver2),
 			bounds.getCentreY()
-				+ (arcRadius + thumbWidth * 0.5F) * math::sinf(endAngle - math::piOver2f));
+				+ (arcRadius + thumbWidth * 0.5F) * Trig<>::sin(endAngle - Constants<>::piOver2));
 		juce::Path thumbPath;
 		thumbPath.startNewSubPath(thumbStart);
 		thumbPath.lineTo(thumbEnd);
@@ -209,10 +213,10 @@ namespace apex::ui {
 		Option<ApexFilmStrip> maybeStrip = slider.getFilmStrip();
 		if(maybeStrip.isSome()) {
 			ApexFilmStrip strip = *maybeStrip.getConst();
-			auto index = static_cast<size_t>(sliderPos * strip.getNumFrames());
+			auto index = narrow_cast<size_t>(sliderPos * narrow_cast<float>(strip.getNumFrames()));
 			juce::Image image = strip.getFrameScaled(index,
-													 static_cast<size_t>(width),
-													 static_cast<size_t>(height));
+													 narrow_cast<size_t>(width),
+													 narrow_cast<size_t>(height));
 			g.drawImageAt(image, x, y);
 		}
 		else {
@@ -298,8 +302,8 @@ namespace apex::ui {
 		// vs built-ins
 		// also, Why TF do we need to dynamic cast to Slider& when ApexSlider : Slider?????
 		auto sliderMaxPos
-			= static_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x : y);
-		auto sliderMinPos = static_cast<float>(
+			= narrow_cast<float>(dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x : y);
+		auto sliderMinPos = narrow_cast<float>(
 			dynamic_cast<juce::Slider&>(slider).isHorizontal() ? x + width : y + height);
 		drawLinearSliderBackground(g,
 								   x,
@@ -565,10 +569,11 @@ namespace apex::ui {
 		Option<ApexFilmStrip> maybeFilmStrip = slider.getFilmStrip();
 		if(maybeFilmStrip.isSome()) {
 			ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
-			auto index = static_cast<size_t>(sliderPos * filmStrip.getNumFrames());
+			auto index
+				= narrow_cast<size_t>(sliderPos * narrow_cast<float>(filmStrip.getNumFrames()));
 			juce::Image image = filmStrip.getFrameScaled(index,
-														 static_cast<size_t>(width),
-														 static_cast<size_t>(height));
+														 narrow_cast<size_t>(width),
+														 narrow_cast<size_t>(height));
 			g.drawImageAt(image, x, y);
 		}
 		else {
@@ -636,7 +641,7 @@ namespace apex::ui {
 
 		if(isSeparator) {
 			juce::Rectangle<int> r = area.reduced(5, 0);
-			r.removeFromTop(juce::roundToInt((r.getHeight() * 0.5F) - 0.5F));
+			r.removeFromTop(juce::roundToInt((narrow_cast<float>(r.getHeight()) * 0.5F) - 0.5F));
 
 			g.setColour(mPopupMenuTextColour.withAlpha(0.3F));
 			g.fillRect(r.removeFromTop(1));
@@ -655,8 +660,8 @@ namespace apex::ui {
 
 			r.reduce(juce::jmin(5, area.getWidth() / 20), 0);
 
-			juce::Font font = juce::jmin(r.getWidth(), r.getHeight()) * 0.33F;
-			float maxFontHeight = r.getHeight() * 0.33F;
+			juce::Font font = narrow_cast<float>(juce::jmin(r.getWidth(), r.getHeight())) * 0.33F;
+			float maxFontHeight = narrow_cast<float>(r.getHeight()) * 0.33F;
 
 			g.setFont(font);
 
@@ -748,10 +753,10 @@ namespace apex::ui {
 		juce::Rectangle<float> shadowBounds
 			= troughBounds.translated(-reducedWidth * 0.2F, reducedHeight * 0.4F);
 		juce::Rectangle<int> arrowZone(
-			static_cast<int>(buttonBounds.getX() + buttonBounds.getWidth() * 0.75),
-			static_cast<int>(buttonBounds.getY()),
-			static_cast<int>(buttonBounds.getWidth() * 0.2),
-			static_cast<int>(buttonBounds.getHeight()));
+			narrow_cast<int>(buttonBounds.getX() + buttonBounds.getWidth() * 0.75),
+			narrow_cast<int>(buttonBounds.getY()),
+			narrow_cast<int>(buttonBounds.getWidth() * 0.2),
+			narrow_cast<int>(buttonBounds.getHeight()));
 
 		g.setColour(mComboBoxBackgroundColour);
 		g.fillRect(boxBounds);
@@ -789,11 +794,15 @@ namespace apex::ui {
 		g.setGradientFill(lightGradient);
 		g.fillRoundedRectangle(buttonBounds, cornerSize);
 		juce::Path p;
-		p.startNewSubPath(arrowZone.getX() + 3.0F,
-						  arrowZone.getY() + arrowZone.getHeight() * 0.45F);
-		p.lineTo(static_cast<float>(arrowZone.getCentreX()),
-				 arrowZone.getY() + arrowZone.getHeight() * 0.575F);
-		p.lineTo(arrowZone.getRight() - 3.0F, arrowZone.getY() + arrowZone.getHeight() * 0.45F);
+		p.startNewSubPath(narrow_cast<float>(arrowZone.getX()) + 3.0F,
+						  narrow_cast<float>(arrowZone.getY())
+							  + narrow_cast<float>(arrowZone.getHeight()) * 0.45F);
+		p.lineTo(narrow_cast<float>(arrowZone.getCentreX()),
+				 narrow_cast<float>(arrowZone.getY())
+					 + narrow_cast<float>(arrowZone.getHeight()) * 0.575F);
+		p.lineTo(narrow_cast<float>(arrowZone.getRight()) - 3.0F,
+				 narrow_cast<float>(arrowZone.getY())
+					 + narrow_cast<float>(arrowZone.getHeight()) * 0.5F);
 
 		juce::Colour textColour
 			= (box.isPopupActive() ?
@@ -829,9 +838,9 @@ namespace apex::ui {
 
 		Option<juce::Image> maybeActiveArrow = box.getActiveArrowImage();
 		if(maybeActiveArrow.isSome()) {
-			juce::Rectangle<int> arrowZone(static_cast<int>(width * 0.75),
+			juce::Rectangle<int> arrowZone(narrow_cast<int>(width * 0.75),
 										   0,
-										   static_cast<int>(width * 0.25),
+										   narrow_cast<int>(width * 0.25),
 										   height);
 
 			juce::Image activeArrow = *maybeActiveArrow.getConst();
@@ -878,8 +887,8 @@ namespace apex::ui {
 										  (box.isEnabled() ? mComboBoxTextColour :
 															 mComboBoxTextColour.darker(0.3F))));
 		label.setColour(juce::Label::textColourId, textColour);
-		label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7), box.getHeight());
-		label.setFont(juce::jmin(box.getWidth(), box.getHeight()) * 0.33F);
+		label.setBounds(0, 0, narrow_cast<int>(box.getWidth() * 0.7), box.getHeight());
+		label.setFont(narrow_cast<float>(juce::jmin(box.getWidth(), box.getHeight())) * 0.33F);
 	}
 
 	/// @brief Positions the text of an `ApexComboBox` within the combobox's bounds
@@ -895,8 +904,8 @@ namespace apex::ui {
 										(box.isEnabled() ? mComboBoxTextColour :
 														   mComboBoxTextColour.darker(0.3F))));
 		label.setColour(juce::Label::textColourId, textColour);
-		label.setBounds(0, 0, static_cast<int>(box.getWidth() * 0.7), box.getHeight());
-		label.setFont(juce::jmin(box.getWidth(), box.getHeight()) * 0.33F);
+		label.setBounds(0, 0, narrow_cast<int>(box.getWidth() * 0.7), box.getHeight());
+		label.setFont(narrow_cast<float>(juce::jmin(box.getWidth(), box.getHeight())) * 0.33F);
 	}
 
 	/// @brief Draws the correct text for a `juce::ComboBox` when no entry has been chosen
@@ -921,7 +930,9 @@ namespace apex::ui {
 		g.drawFittedText(box.getTextWhenNothingSelected(),
 						 textArea,
 						 label.getJustificationType(),
-						 juce::jmax(1, static_cast<int>(textArea.getHeight() / font.getHeight())),
+						 juce::jmax(1,
+									narrow_cast<int>(narrow_cast<float>(textArea.getHeight())
+													 / font.getHeight())),
 						 label.getMinimumHorizontalScale());
 	}
 
@@ -948,7 +959,9 @@ namespace apex::ui {
 		g.drawFittedText(box.getTextWhenNothingSelected(),
 						 textArea,
 						 label.getJustificationType(),
-						 juce::jmax(1, static_cast<int>(textArea.getHeight() / font.getHeight())),
+						 juce::jmax(1,
+									narrow_cast<int>(narrow_cast<float>(textArea.getHeight())
+													 / font.getHeight())),
 						 label.getMinimumHorizontalScale());
 	}
 
@@ -1127,16 +1140,17 @@ namespace apex::ui {
 		Option<juce::Image> maybeMaxedImage = meter.getMaxedImage();
 		if(maybeFilmStrip.isSome()) {
 			ApexFilmStrip filmStrip = *maybeFilmStrip.getConst();
-			auto index = static_cast<size_t>(filmStrip.getNumFrames() * levelProportional);
+			auto index = narrow_cast<size_t>(narrow_cast<float>(filmStrip.getNumFrames())
+											 * levelProportional);
 			g.drawImageAt(filmStrip.getFrameScaled(index,
-												   static_cast<size_t>(meterWidth),
-												   static_cast<size_t>(meterHeight)),
+												   narrow_cast<size_t>(meterWidth),
+												   narrow_cast<size_t>(meterHeight)),
 						  meterX,
 						  meterY);
 		}
 		else if(maybeMaxedImage.isSome()) {
 			juce::Image maxedImage = *maybeMaxedImage.getConst();
-			int meterPeak = static_cast<int>(gsl::narrow_cast<float>(meterY)
+			int meterPeak = narrow_cast<int>(gsl::narrow_cast<float>(meterY)
 											 + (1.0F - levelProportional)
 												   * gsl::narrow_cast<float>(meterHeight));
 			int meterDiff = meterHeight - meterPeak;
@@ -1145,35 +1159,35 @@ namespace apex::ui {
 			g.drawImageAt(clipped, meterX, meterY + meterDiff);
 		}
 		else {
-			int meterLevelY = static_cast<int>(gsl::narrow_cast<float>(meterY)
+			int meterLevelY = narrow_cast<int>(gsl::narrow_cast<float>(meterY)
 											   + (1.0F - levelProportional)
 													 * gsl::narrow_cast<float>(meterHeight));
 
 			float stepHeight
 				= gsl::narrow_cast<float>(meterHeight) / gsl::narrow_cast<float>(numSteps);
 
-			juce::Rectangle<float> bounds(static_cast<float>(meterX),
-										  static_cast<float>(meterY),
-										  static_cast<float>(meterWidth),
-										  static_cast<float>(meterHeight));
+			juce::Rectangle<float> bounds(narrow_cast<float>(meterX),
+										  narrow_cast<float>(meterY),
+										  narrow_cast<float>(meterWidth),
+										  narrow_cast<float>(meterHeight));
 			juce::Rectangle<float> troughBounds = bounds.reduced(2.0F, 2.0F);
 
 			juce::Rectangle<float> meterBounds = troughBounds.reduced(2.0F, 2.0F);
 			auto meterHeightDiff = gsl::narrow_cast<float>(meterLevelY - (meterY + 2.0));
 			float meterBoundsHeight = meterBounds.getHeight();
-			meterBounds = meterBounds.withY(static_cast<float>(meterLevelY) + 2.0F)
-							  .withHeight(static_cast<float>(meterBoundsHeight) + 2.0F
-										  - static_cast<float>(meterHeightDiff));
+			meterBounds = meterBounds.withY(narrow_cast<float>(meterLevelY) + 2.0F)
+							  .withHeight(narrow_cast<float>(meterBoundsHeight) + 2.0F
+										  - narrow_cast<float>(meterHeightDiff));
 
 			float troughX = troughBounds.getX() + 2.0F;
 			float troughWidth = troughBounds.getWidth() - 2.0F;
 
 			juce::ColourGradient meterGradient(mMeterClipColour,
 											   troughX,
-											   static_cast<float>(meterY),
+											   narrow_cast<float>(meterY),
 											   mMeterLowerColour,
 											   troughX,
-											   static_cast<float>(meterY + meterHeight),
+											   narrow_cast<float>(meterY + meterHeight),
 											   false);
 			meterGradient.addColour(clipLevelProportional, mMeterUpperColour);
 
@@ -1211,7 +1225,7 @@ namespace apex::ui {
 			case ApexColourId::backgroundColourId:
 				{
 					mBackgroundColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::backgroundColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::backgroundColourId),
 												 mBackgroundColour);
 					juce::LookAndFeel::setColour(juce::AlertWindow::outlineColourId,
 												 mBackgroundColour);
@@ -1221,7 +1235,7 @@ namespace apex::ui {
 				{
 					mButtonShadowColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::buttonShadowColourId),
+						narrow_cast<int>(ApexColourId::buttonShadowColourId),
 						mButtonShadowColour);
 				}
 				break;
@@ -1229,7 +1243,7 @@ namespace apex::ui {
 				{
 					mButtonNormalColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::buttonNormalColourId),
+						narrow_cast<int>(ApexColourId::buttonNormalColourId),
 						mButtonNormalColour);
 				}
 				break;
@@ -1237,7 +1251,7 @@ namespace apex::ui {
 				{
 					mButtonPressedColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::buttonPressedColourId),
+						narrow_cast<int>(ApexColourId::buttonPressedColourId),
 						mButtonPressedColour);
 				}
 				break;
@@ -1245,14 +1259,14 @@ namespace apex::ui {
 				{
 					mButtonTroughColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::buttonTroughColourId),
+						narrow_cast<int>(ApexColourId::buttonTroughColourId),
 						mButtonTroughColour);
 				}
 				break;
 			case ApexColourId::buttonTextColourId:
 				{
 					mButtonTextColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonTextColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonTextColourId),
 												 mButtonTextColour);
 				}
 				break;
@@ -1260,7 +1274,7 @@ namespace apex::ui {
 				{
 					mComboBoxBackgroundColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::comboBoxBackgroundColourId),
+						narrow_cast<int>(ApexColourId::comboBoxBackgroundColourId),
 						mComboBoxBackgroundColour);
 				}
 				break;
@@ -1268,7 +1282,7 @@ namespace apex::ui {
 				{
 					mComboBoxShadowColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::comboBoxShadowColourId),
+						narrow_cast<int>(ApexColourId::comboBoxShadowColourId),
 						mComboBoxShadowColour);
 				}
 				break;
@@ -1276,7 +1290,7 @@ namespace apex::ui {
 				{
 					mComboBoxTroughColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::comboBoxTroughColourId),
+						narrow_cast<int>(ApexColourId::comboBoxTroughColourId),
 						mComboBoxTroughColour);
 				}
 				break;
@@ -1284,21 +1298,21 @@ namespace apex::ui {
 				{
 					mComboBoxTextColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::comboBoxTextColourId),
+						narrow_cast<int>(ApexColourId::comboBoxTextColourId),
 						mComboBoxTextColour);
 				}
 				break;
 			case ApexColourId::meterClipColourId:
 				{
 					mMeterClipColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterClipColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterClipColourId),
 												 mMeterClipColour);
 				}
 				break;
 			case ApexColourId::meterLowerColourId:
 				{
 					mMeterLowerColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterLowerColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterLowerColourId),
 												 mMeterLowerColour);
 				}
 				break;
@@ -1306,14 +1320,14 @@ namespace apex::ui {
 				{
 					mMeterTroughColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::meterTroughColourId),
+						narrow_cast<int>(ApexColourId::meterTroughColourId),
 						mMeterTroughColour);
 				}
 				break;
 			case ApexColourId::meterUpperColourId:
 				{
 					mMeterUpperColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterUpperColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterUpperColourId),
 												 mMeterUpperColour);
 				}
 				break;
@@ -1321,7 +1335,7 @@ namespace apex::ui {
 				{
 					mPopupMenuBackgroundColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::popupMenuBackgroundColourId),
+						narrow_cast<int>(ApexColourId::popupMenuBackgroundColourId),
 						mPopupMenuBackgroundColour);
 					juce::LookAndFeel::setColour(juce::PopupMenu::backgroundColourId,
 												 mPopupMenuBackgroundColour.withAlpha(0.9F));
@@ -1334,7 +1348,7 @@ namespace apex::ui {
 				{
 					mPopupMenuTextColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::popupMenuTextColourId),
+						narrow_cast<int>(ApexColourId::popupMenuTextColourId),
 						mPopupMenuTextColour);
 				}
 				break;
@@ -1342,7 +1356,7 @@ namespace apex::ui {
 				{
 					mPopupMenuHighlightColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::popupMenuHighlightColourId),
+						narrow_cast<int>(ApexColourId::popupMenuHighlightColourId),
 						mPopupMenuHighlightColour);
 				}
 				break;
@@ -1350,7 +1364,7 @@ namespace apex::ui {
 				{
 					mRotarySliderFillColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::rotarySliderFillColourId),
+						narrow_cast<int>(ApexColourId::rotarySliderFillColourId),
 						mRotarySliderFillColour);
 				}
 				break;
@@ -1358,7 +1372,7 @@ namespace apex::ui {
 				{
 					mRotarySliderIndicatorColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::rotarySliderIndicatorColourId),
+						narrow_cast<int>(ApexColourId::rotarySliderIndicatorColourId),
 						mRotarySliderIndicatorColour);
 				}
 				break;
@@ -1366,7 +1380,7 @@ namespace apex::ui {
 				{
 					mSliderStrokeColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::sliderStrokeColourId),
+						narrow_cast<int>(ApexColourId::sliderStrokeColourId),
 						mSliderStrokeColour);
 				}
 				break;
@@ -1374,7 +1388,7 @@ namespace apex::ui {
 				{
 					mSliderShadowColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::sliderShadowColourId),
+						narrow_cast<int>(ApexColourId::sliderShadowColourId),
 						mSliderShadowColour);
 				}
 				break;
@@ -1382,7 +1396,7 @@ namespace apex::ui {
 				{
 					mSliderTroughColour = colour;
 					juce::LookAndFeel::setColour(
-						static_cast<int>(ApexColourId::sliderTroughColourId),
+						narrow_cast<int>(ApexColourId::sliderTroughColourId),
 						mSliderTroughColour);
 
 					juce::LookAndFeel::setColour(juce::Slider::textBoxOutlineColourId,
@@ -1399,14 +1413,14 @@ namespace apex::ui {
 			case ApexColourId::sliderGlowColourId:
 				{
 					mSliderGlowColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderGlowColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderGlowColourId),
 												 mSliderGlowColour);
 				}
 				break;
 			case ApexColourId::sliderTextColourId:
 				{
 					mSliderTextColour = colour;
-					juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderTextColourId),
+					juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderTextColourId),
 												 mSliderTextColour);
 					juce::LookAndFeel::setColour(juce::TextEditor::textColourId, mSliderTextColour);
 					juce::LookAndFeel::setColour(juce::AlertWindow::textColourId,
@@ -1423,67 +1437,67 @@ namespace apex::ui {
 	///
 	/// @return - The corresponding color
 	auto ApexLookAndFeel::getColour(ApexColourId id) const noexcept -> juce::Colour {
-		return findColour(static_cast<int>(id));
+		return findColour(narrow_cast<int>(id));
 	}
 
 	auto ApexLookAndFeel::registerColours() noexcept -> void {
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::backgroundColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::backgroundColourId),
 									 mBackgroundColour);
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonShadowColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonShadowColourId),
 									 mButtonShadowColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonNormalColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonNormalColourId),
 									 mButtonNormalColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonPressedColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonPressedColourId),
 									 mButtonPressedColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonTroughColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonTroughColourId),
 									 mButtonTroughColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::buttonTextColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::buttonTextColourId),
 									 mButtonTextColour);
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::comboBoxBackgroundColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::comboBoxBackgroundColourId),
 									 mComboBoxBackgroundColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::comboBoxShadowColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::comboBoxShadowColourId),
 									 mComboBoxShadowColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::comboBoxTroughColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::comboBoxTroughColourId),
 									 mComboBoxTroughColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::comboBoxTextColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::comboBoxTextColourId),
 									 mComboBoxTextColour);
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterClipColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterClipColourId),
 									 mMeterClipColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterLowerColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterLowerColourId),
 									 mMeterLowerColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterTroughColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterTroughColourId),
 									 mMeterTroughColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::meterUpperColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::meterUpperColourId),
 									 mMeterUpperColour);
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::popupMenuBackgroundColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::popupMenuBackgroundColourId),
 									 mPopupMenuBackgroundColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::popupMenuTextColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::popupMenuTextColourId),
 									 mPopupMenuTextColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::popupMenuHighlightColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::popupMenuHighlightColourId),
 									 mPopupMenuHighlightColour);
 		juce::LookAndFeel::setColour(juce::PopupMenu::backgroundColourId,
 									 mPopupMenuBackgroundColour.withAlpha(0.9F));
 		juce::LookAndFeel::setColour(juce::PopupMenu::highlightedBackgroundColourId,
 									 mPopupMenuBackgroundColour.brighter(0.2F).withAlpha(0.9F));
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::rotarySliderFillColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::rotarySliderFillColourId),
 									 mRotarySliderFillColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::rotarySliderIndicatorColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::rotarySliderIndicatorColourId),
 									 mRotarySliderIndicatorColour);
 
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderStrokeColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderStrokeColourId),
 									 mSliderStrokeColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderShadowColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderShadowColourId),
 									 mSliderShadowColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderTroughColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderTroughColourId),
 									 mSliderTroughColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderGlowColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderGlowColourId),
 									 mSliderGlowColour);
-		juce::LookAndFeel::setColour(static_cast<int>(ApexColourId::sliderTextColourId),
+		juce::LookAndFeel::setColour(narrow_cast<int>(ApexColourId::sliderTextColourId),
 									 mSliderTextColour);
 		juce::LookAndFeel::setColour(juce::Slider::textBoxOutlineColourId, mSliderTroughColour);
 

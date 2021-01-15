@@ -11,14 +11,14 @@ namespace apex::ui {
 	ApexComboBox::ApexComboBox(juce::Image activeArrowImage,
 							   juce::Image hoveredArrowImage,
 							   juce::Image normalArrowImage) noexcept
-		: juce::ComboBox(), mActiveArrowImage(std::move(activeArrowImage)),
+		: mActiveArrowImage(std::move(activeArrowImage)),
 		  mHoveredArrowImage(std::move(hoveredArrowImage)),
 		  mNormalArrowImage(std::move(normalArrowImage)), mUsesArrowImages(true) {
 		setJustificationType(juce::Justification::centred);
 	}
 
 	/// @brief Constructs a default `ApexComboBox`
-	ApexComboBox::ApexComboBox() noexcept : juce::ComboBox() {
+	ApexComboBox::ApexComboBox() noexcept {
 		setJustificationType(juce::Justification::centred);
 	}
 

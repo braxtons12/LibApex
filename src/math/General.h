@@ -1,141 +1,159 @@
 #pragma once
+
 #include <cstdint>
+#include <type_traits>
 
 namespace apex::math {
 
 #ifndef _MSC_VER
+	using std::int32_t;
 	using std::size_t;
 #endif //_MSC_VER
 
-	/// @brief Fast approximation calculation of the square root of the given value
-	///
-	/// @param x - The value to take the square root of
-	/// @return - The square root of x
-	[[nodiscard]] constexpr inline auto sqrtf(float x) noexcept -> float {
-		float n = (x > 10.0F ? (x / 10.0F) : (x / 2.0F));
-		float y = 1;
-		double e = 0.0000000001;
-		while(n - y > e) {
-			n = (n + y) / 2.0F;
-			y = x / n;
+	template<typename NumericType = float,
+			 std::enable_if_t<std::is_arithmetic_v<NumericType>, bool> = true>
+	class General {
+	  public:
+		/// @brief Calculates the maximum of the two values
+		///
+		/// @param x
+		/// @param y
+		/// @return The maximum of the two
+		[[nodiscard]] inline static constexpr auto
+		max(NumericType left, NumericType right) noexcept -> NumericType {
+			return (left > right ? left : right);
 		}
-		return n;
-	}
 
-	/// @brief Calculates the absolute value of x
-	///
-	/// @param x - The value to take the absolute value of
-	/// @return - The absolute value of x
-	[[nodiscard]] constexpr inline auto fabsf(float x) noexcept -> float {
-		return sqrtf(x * x);
-	}
-
-	/// @brief Calculates the truncation of x
-	///
-	/// @param x - The value to truncate
-	/// @return - The truncated value
-	[[nodiscard]] constexpr inline auto truncf(float x) noexcept -> float {
-		return static_cast<float>(static_cast<std::int64_t>(x));
-	}
-
-	/// @brief Calculates the floating point modulus x mod y
-	///
-	/// @param x - The moduland
-	/// @param y - The dividend
-	/// @return x mod y
-	[[nodiscard]] constexpr inline auto fmodf(float x, float y) noexcept -> float {
-		return x - truncf(x / y) * y;
-	}
-
-	/// @brief Calculates the maximum of the two values
-	///
-	/// @param x
-	/// @param y
-	/// @return The maximum of the two
-	[[nodiscard]] constexpr inline auto max(float x, float y) noexcept -> float {
-		return (x > y ? x : y);
-	}
-
-	/// @brief Fast approximation calculation of the square root of the given value
-	///
-	/// @param x - The value to take the square root of
-	/// @return - The square root of x
-	[[nodiscard]] constexpr inline auto sqrt(double x) noexcept -> double {
-		double n = (x > 10.0 ? (x / 10.0) : (x / 2.0));
-		double y = 1;
-		double e = 0.0000000001;
-		while(n - y > e) {
-			n = (n + y) / 2.0;
-			y = x / n;
+		/// @brief Calculates the absolute value of x
+		///
+		/// @param x - The value to take the absolute value of
+		/// @return - The absolute value of x
+		[[nodiscard]] inline static constexpr auto abs(NumericType x) noexcept -> NumericType {
+			if constexpr(std::is_same_v<NumericType, float>) {
+				return sqrtf_internal(x * x);
+			}
+			else if constexpr(std::is_same_v<NumericType, double>) {
+				return sqrt_internal(x * x);
+			}
+			else {
+				return (x >= 0 ? x : -x);
+			}
 		}
-		return n;
-	}
 
-	/// @brief Calculates the absolute value of x
-	///
-	/// @param x - The value to take the absolute value of
-	/// @return - The absolute value of x
-	[[nodiscard]] constexpr inline auto fabs(double x) noexcept -> double {
-		return sqrt(x * x);
-	}
+		/// @brief Fast approximation calculation of the square root of the given value
+		///
+		/// @param x - The value to take the square root of
+		/// @return - The square root of x
+		template<typename FloatType = NumericType,
+				 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+		[[nodiscard]] inline static constexpr auto sqrt(FloatType x) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
+				return sqrtf_internal(x);
+			}
+			else {
+				return sqrt_internal(x);
+			}
+		}
 
-	/// @brief Calculates the truncation of x
-	///
-	/// @param x - The value to truncate
-	/// @return - The truncated value
-	[[nodiscard]] constexpr inline auto trunc(double x) noexcept -> double {
-		return static_cast<float>(static_cast<std::int64_t>(x));
-	}
+		/// @brief Calculates the truncation of x
+		///
+		/// @param x - The value to truncate
+		/// @return - The truncated value
+		template<typename FloatType = NumericType,
+				 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+		[[nodiscard]] inline static constexpr auto trunc(FloatType x) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
+				return static_cast<float>(static_cast<std::int64_t>(x));
+			}
+			else {
+				return static_cast<double>(static_cast<std::int64_t>(x));
+			}
+		}
 
-	/// @brief Calculates the floating point modulus x mod y
-	///
-	/// @param x - The moduland
-	/// @param y - The dividend
-	/// @return x mod y
-	[[nodiscard]] constexpr inline auto fmod(double x, double y) noexcept -> double {
-		return x - trunc(x / y) * y;
-	}
+		/// @brief Calculates the floating point modulus, x mod y
+		///
+		/// @param x - The moduland
+		/// @param y - The dividend
+		/// @return x mod y
+		template<typename FloatType = NumericType,
+				 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+		[[nodiscard]] inline static constexpr auto
+		fmod(FloatType x, FloatType y) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
+				return x - trunc<float>(x / y) * y;
+			}
+			else {
+				return x - trunc<double>(x / y) * y;
+			}
+		}
 
-	/// @brief Calculates the maximum of the two values
-	///
-	/// @param x
-	/// @param y
-	/// @return The maximum of the two
-	[[nodiscard]] constexpr inline auto max(double x, double y) noexcept -> double {
-		return (x > y ? x : y);
-	}
+		/// @brief Calculates the integer rounded version of the given value
+		///
+		/// @param x - The value to round
+		/// @return - The rounded value
+		template<typename FloatType = NumericType,
+				 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+		[[nodiscard]] inline static constexpr auto round(FloatType x) noexcept -> int32_t {
+			if constexpr(std::is_same_v<FloatType, float>) {
+				return static_cast<int32_t>(x + 0.5F);
+			}
+			else {
+				return static_cast<int32_t>(x + 0.5);
+			}
+		}
 
-	/// @brief Calculates the maximum of the two values
-	///
-	/// @param x
-	/// @param y
-	/// @return The maximum of the two
-	[[nodiscard]] constexpr inline auto max(int x, int y) noexcept -> int {
-		return (x > y ? x : y);
-	}
+		/// @brief Calculates the unsigned integer rounded version of the given value
+		///
+		/// @param x - The value to round
+		/// @return - The rounded value
+		template<typename FloatType = NumericType,
+				 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+		[[nodiscard]] inline static constexpr auto roundU(FloatType x) noexcept -> size_t {
+			if constexpr(std::is_same_v<FloatType, float>) {
+				return static_cast<size_t>(x + 0.5F);
+			}
+			else {
+				return static_cast<size_t>(x + 0.5);
+			}
+		}
 
-	/// @brief Calculates the maximum of the two values
-	///
-	/// @param x
-	/// @param y
-	/// @return The maximum of the two
-	[[nodiscard]] constexpr inline auto max(size_t x, size_t y) noexcept -> size_t {
-		return (x > y ? x : y);
-	}
+	  private:
+		/// @brief Fast approximation calculation of the square root of the given value
+		///
+		/// @param x - The value to take the square root of
+		/// @return - The square root of x
+		[[nodiscard]] static constexpr inline auto sqrtf_internal(float x) noexcept -> float {
+			const float xhalf = 0.5F * x;
+			union // get bits for floating value
+			{
+				float f = 0.0F;
+				int i;
+			} u;
+			u.f = x;
+			u.i = 0x5F375A86
+				  - (u.i >> 1); // gives initial guess y0. use 0x5fe6ec85e7de30da for double
+			u.f = u.f * (1.5F - xhalf * u.f * u.f); // Newton method, repeating increases accuracy
+			u.f = u.f * (1.5F - xhalf * u.f * u.f); // Newton method, repeating increases accuracy
+			return x * u.f;
+		}
 
-	[[nodiscard]] constexpr inline auto round(float x) noexcept -> int32_t {
-		return static_cast<int32_t>(x + 0.5F);
-	}
-
-	[[nodiscard]] constexpr inline auto round(double x) noexcept -> int32_t {
-		return static_cast<int32_t>(x + 0.5);
-	}
-
-	[[nodiscard]] constexpr inline auto roundU(float x) noexcept -> size_t {
-		return static_cast<size_t>(x + 0.5F);
-	}
-
-	[[nodiscard]] constexpr inline auto roundU(double x) noexcept -> size_t {
-		return static_cast<size_t>(x + 0.5);
-	}
+		/// @brief Fast approximation calculation of the square root of the given value
+		///
+		/// @param x - The value to take the square root of
+		/// @return - The square root of x
+		[[nodiscard]] static constexpr inline auto sqrt_internal(double x) noexcept -> double {
+			const double xhalf = 0.5 * x;
+			union // get bits for floating value
+			{
+				double f = 0.0;
+				int64_t i;
+			} u;
+			u.f = x;
+			u.i = 0x5fe6ec85e7de30da
+				  - (u.i >> 1); // gives initial guess y0. use 0x5fe6ec85e7de30da for double
+			u.f = u.f * (1.5 - xhalf * u.f * u.f); // Newton method, repeating increases accuracy
+			u.f = u.f * (1.5 - xhalf * u.f * u.f); // Newton method, repeating increases accuracy
+			return x * u.f;
+		}
+	};
 } // namespace apex::math

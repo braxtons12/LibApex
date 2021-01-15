@@ -7,10 +7,10 @@ namespace apex::ui {
 	/// @param frameSize - The size of a frame in the film strip
 	/// @param isHorizontal - Whether the film strip rolls horizontally or vertically
 	ApexFilmStrip::ApexFilmStrip(juce::Image image, size_t frameSize, bool isHorizontal) noexcept
-		: mFilmStrip(std::move(image)), mFrameSize(frameSize), mIsHorizontal(isHorizontal) {
-
-		mNumFrames = mIsHorizontal ? (size_t(mFilmStrip.getWidth()) / mFrameSize) :
-									   (size_t(mFilmStrip.getHeight()) / mFrameSize);
+		: mFilmStrip(std::move(image)), mFrameSize(frameSize),
+		  mNumFrames(isHorizontal ? (narrow_cast<size_t>(mFilmStrip.getWidth()) / mFrameSize) :
+									  (narrow_cast<size_t>(mFilmStrip.getHeight()) / mFrameSize)),
+		  mIsHorizontal(isHorizontal) {
 	}
 
 	/// @brief Returns the frame at the given index

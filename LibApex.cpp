@@ -1,11 +1,5 @@
 #include "LibApex.h"
 
-#include "src/dsp/dynamics/compressors/Compressor.cpp"
-#include "src/dsp/dynamics/compressors/CompressorFET.cpp"
-#include "src/dsp/dynamics/compressors/CompressorOpto.cpp"
-#include "src/dsp/dynamics/compressors/CompressorVCA.cpp"
-#include "src/dsp/dynamics/expanders/Expander.cpp"
-#include "src/dsp/dynamics/expanders/ExpanderVCA.cpp"
 #include "src/dsp/dynamics/leveldetectors/LevelDetector.cpp"
 #include "src/dsp/dynamics/leveldetectors/LevelDetector1176.cpp"
 #include "src/dsp/dynamics/leveldetectors/LevelDetectorModernBus.cpp"
@@ -27,3 +21,4 @@
 #include "src/ui/ApexThumbSlider.cpp"
 #include "src/ui/ApexToggleButton.cpp"
 #include "src/utils/Error.cpp"
+#include "src/utils/Logger.cpp"

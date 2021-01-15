@@ -85,10 +85,10 @@ namespace apex::ui {
 			= text.dropLastCharacters(text.length() - (textUntilDecimal.length() + 2));
 		mPopupTextBox->setSize(
 			static_cast<int>(
-				juce::jmax(math::roundU(SliderFloatingTextBoxStartWidth * mXScaleFactor
-										* gsl::narrow_cast<float>(newText.length())),
-						   math::roundU(SliderFloatingTextBoxStartWidth * mXScaleFactor * 3))),
-			static_cast<int>(math::roundU(SliderFloatingTextBoxStartHeight * mYScaleFactor)));
+				juce::jmax(General<>::roundU(SliderFloatingTextBoxStartWidth * mXScaleFactor
+											 * gsl::narrow_cast<float>(newText.length())),
+						   General<>::roundU(SliderFloatingTextBoxStartWidth * mXScaleFactor * 3))),
+			static_cast<int>(General<>::roundU(SliderFloatingTextBoxStartHeight * mYScaleFactor)));
 		size_t left = size_t(e.getPosition().x - mPopupTextBox->getWidth() / 2);
 		size_t top = size_t(e.getPosition().y - mPopupTextBox->getHeight() / 2);
 		mPopupTextBox->setTopLeftPosition(static_cast<int>(left), static_cast<int>(top));
@@ -142,7 +142,7 @@ namespace apex::ui {
 	///
 	/// @param g - The graphics context to use for drawing
 	auto ApexSlider::paint(juce::Graphics& g) noexcept -> void {
-		double sliderPos = getProportionFromValue(getValue());
+		double sliderPos = getValue();
 		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
 		auto style = getSliderStyle();

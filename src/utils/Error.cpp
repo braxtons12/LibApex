@@ -1,7 +1,7 @@
 #include "Error.h"
 
 namespace apex::utils {
-	Error::Error(juce::String message) noexcept : mMessage(std::move(message)) {
+	constexpr Error::Error(const char* message) noexcept : mMessage(message) {
 	}
 
 	Error::~Error() noexcept {
@@ -16,15 +16,15 @@ namespace apex::utils {
 	///
 	/// @param message - The error message
 	/// @param source - The source/cause `Error`
-	Error::Error(juce::String message, gsl::owner<Error*> source) noexcept
-		: mHasSource(true), mSource(source), mMessage(std::move(message)) {
+	constexpr Error::Error(const char* message, gsl::owner<Error*> source) noexcept
+		: mHasSource(true), mSource(source), mMessage(message) {
 	}
 
 	/// @brief Returns the source/cause `Error` of this error if there is one,
 	/// passing ownership to the containing `Option`.
 	///
 	/// @return sourceError, if there is one, or nullptr
-	auto Error::source() const noexcept -> const Error* {
+	constexpr auto Error::source() const noexcept -> const Error* {
 		if(mHasSource) {
 			return mSource;
 		}
@@ -36,22 +36,23 @@ namespace apex::utils {
 	/// @brief Returns the error message for this `Error`
 	///
 	/// @return The error message
-	auto Error::message() const noexcept -> juce::String {
+	constexpr auto Error::message() const noexcept -> const char* {
 		return mMessage;
 	}
 
-	/// @brief Converts this `Error` to a `juce::String`.
+	/// @brief Converts this `Error` to a `const char*`.
 	/// Generally implemented by combining the `source`'s `toString` and
 	/// this `Error`'s `message`
 	///
-	/// @return this `Error` formatted as a `juce::String`
-	auto Error::toString() const noexcept -> juce::String {
+	/// @return this `Error` formatted as a `const char*`
+	constexpr auto Error::toString() const noexcept -> const char* {
 		if(mHasSource) {
-			return TRANS("Error: ") + mMessage + juce::String("\n") + TRANS("Source: ")
-				   + mSource->toString() + juce::String("\n");
+			return (new std::string("Error: " + std::string(mMessage) + "\n"
+									+ "Source: " + mSource->toString() + "\n"))
+				->c_str();
 		}
 		else {
-			return TRANS("Error: ") + mMessage + juce::String("\n");
+			return (new std::string("Error: " + std::string(mMessage) + "\n"))->c_str();
 		}
 	}
 } // namespace apex::utils

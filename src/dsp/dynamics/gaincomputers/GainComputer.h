@@ -1,3 +1,4 @@
+// clang-format on
 #pragma once
 
 #include <type_traits>
@@ -12,26 +13,19 @@
 namespace apex::dsp {
 	/// @brief  Base Gain Computer behaviors for use in a dynamic range processor's `Sidechain`
 	///
-	/// @tparam T - The floating point type to back operations
+	/// @tparam FloatType - The floating point type to back operations
 	/// @tparam AttackKind - The attack type used by the shared `DynamicsState`
 	/// @tparam ReleaseKind - The release type used by the shared `DynamicsState`
-	template<typename T, typename AttackKind, typename ReleaseKind>
+	template<
+		typename FloatType = float,
+		typename AttackKind = FloatType,
+		typename ReleaseKind = FloatType,
+		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class GainComputer {
 	  protected:
-		using Field = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>::Field;
-		using DynamicsState = typename apex::dsp::DynamicsState<T, AttackKind, ReleaseKind>;
+		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-		static_assert((std::is_floating_point<AttackKind>::value
-					   && std::is_same<T, AttackKind>::value)
-						  || std::is_enum<AttackKind>::value,
-					  "AttackKind must be the same floating point type as T, or an enum");
-		static_assert((std::is_floating_point<ReleaseKind>::value
-					   && std::is_same<T, ReleaseKind>::value)
-						  || std::is_enum<ReleaseKind>::value,
-					  "ReleaseKind must be the same floating point type as T, or an enum");
-
 		/// @brief Constructs a `GainComputer` with zeroed shared state
 		GainComputer() noexcept = default;
 
@@ -39,12 +33,15 @@ namespace apex::dsp {
 		///
 		/// @param state - The shared state
 		explicit GainComputer(DynamicsState* state) noexcept : mState(state) {
+	#ifdef TESTING_GAIN_COMPUTER
+			apex::utils::Logger::LogMessage("Creating Base Gain Computer");
+	#endif
 		}
 
 		/// @brief Move constructs the given `GainComputer`
 		///
 		/// @param computer - The `GainComputer` to move
-		GainComputer(GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept = default;
+		GainComputer(GainComputer&& computer) noexcept = default;
 		virtual ~GainComputer() noexcept = default;
 
 		/// @brief Calculates the target gain reduction value
@@ -54,11 +51,10 @@ namespace apex::dsp {
 		/// @return - The target gain reduction
 		[[nodiscard]] virtual auto process(Decibels input) noexcept -> Decibels = 0;
 
-		auto operator=(GainComputer<T, AttackKind, ReleaseKind>&& computer) noexcept
-			-> GainComputer<T, AttackKind, ReleaseKind>& = default;
+		auto operator=(GainComputer&& computer) noexcept -> GainComputer& = default;
 
 	  protected:
-		DynamicsState DEFAULT_STATE = DynamicsState();
+		static const constexpr DynamicsState DEFAULT_STATE = DynamicsState();
 		DynamicsState* mState = &DEFAULT_STATE;
 
 	  private:

@@ -37,13 +37,13 @@ namespace apex::ui {
 						 std::function<double(double)> valueToProportionFunc,
 						 juce::Image thumbImage) noexcept
 		: ApexSlider(style, std::move(proportionToValueFunc), std::move(valueToProportionFunc)),
-		  mThumbImage(std::move(thumbImage)), mUsesThumbImage(true), mIsThumbOnly(true) {
+		  mThumbImage(std::move(thumbImage)), mUsesThumbImage(true), mIsThumbOnly(true),
+		  mInitialThumbWidth(static_cast<size_t>(mThumbImage.getWidth())),
+		  mInitialThumbHeight(static_cast<size_t>(mThumbImage.getHeight())) {
 		mThumbComponent.setImage(mThumbImage);
 		mThumbComponent.setImagePlacement(juce::RectanglePlacement(
 			juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
 		addAndMakeVisible(mThumbComponent);
-		mInitialThumbWidth = static_cast<size_t>(mThumbImage.getWidth());
-		mInitialThumbHeight = static_cast<size_t>(mThumbImage.getHeight());
 	}
 
 	/// @brief Constructs an `ApexFader` with the given parameters. This will use drawn graphics
@@ -108,27 +108,27 @@ namespace apex::ui {
 		double sliderPos = getProportionFromValue(getValue());
 		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-		size_t thumbWidth = math::roundU(mInitialThumbWidth * mXScaleFactor);
-		size_t thumbHeight = math::roundU(mInitialThumbHeight * mYScaleFactor);
+		size_t thumbWidth
+			= General<>::roundU(narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
+		size_t thumbHeight
+			= General<>::roundU(narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
 
 		if(isHorizontal()) {
-			int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0F));
-			int thumbY = static_cast<int>(gsl::narrow_cast<float>(getHeight()) * 0.5F
-										  - (thumbHeight / 2.0F));
-			juce::Rectangle<int> bounds = {thumbX,
-										   thumbY,
-										   gsl::narrow_cast<int>(thumbWidth),
-										   gsl::narrow_cast<int>(thumbHeight)};
+			int thumbX = static_cast<int>(sliderPos * getWidth()
+										  - (narrow_cast<float>(thumbWidth) / 2.0F));
+			int thumbY = static_cast<int>(narrow_cast<float>(getHeight()) * 0.5F
+										  - (narrow_cast<float>(thumbHeight) / 2.0F));
+			juce::Rectangle<int> bounds
+				= {thumbX, thumbY, narrow_cast<int>(thumbWidth), narrow_cast<int>(thumbHeight)};
 			mThumbComponent.setBounds(bounds);
 		}
 		else {
-			int thumbX = static_cast<int>(gsl::narrow_cast<float>(getWidth()) * 0.5F
-										  - (thumbWidth / 2.0F));
-			int thumbY = static_cast<int>(sliderPos * getHeight() - (thumbHeight / 2.0F));
-			juce::Rectangle<int> bounds = {thumbX,
-										   thumbY,
-										   gsl::narrow_cast<int>(thumbWidth),
-										   gsl::narrow_cast<int>(thumbHeight)};
+			int thumbX = static_cast<int>(narrow_cast<float>(getWidth()) * 0.5F
+										  - (narrow_cast<float>(thumbWidth) / 2.0F));
+			int thumbY = static_cast<int>(sliderPos * getHeight()
+										  - (narrow_cast<float>(thumbHeight) / 2.0F));
+			juce::Rectangle<int> bounds
+				= {thumbX, thumbY, narrow_cast<int>(thumbWidth), narrow_cast<int>(thumbHeight)};
 			mThumbComponent.setBounds(bounds);
 		}
 	}
@@ -153,19 +153,23 @@ namespace apex::ui {
 			double sliderPos = getProportionFromValue(getValue());
 			jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-			size_t thumbWidth = math::roundU(mInitialThumbWidth * mXScaleFactor);
-			size_t thumbHeight = math::roundU(mInitialThumbHeight * mYScaleFactor);
+			size_t thumbWidth
+				= General<>::roundU(narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
+			size_t thumbHeight
+				= General<>::roundU(narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
 			size_t thumbX = 0;
 			size_t thumbY = 0;
 			if(isHorizontal()) {
-				thumbX = static_cast<size_t>(sliderPos * width - (thumbWidth / 2.0F));
-				thumbY = static_cast<size_t>(gsl::narrow_cast<float>(height) * 0.5F
-											 - (thumbHeight / 2.0F));
+				thumbX = static_cast<size_t>(sliderPos * narrow_cast<float>(width)
+											 - (narrow_cast<float>(thumbWidth) / 2.0F));
+				thumbY = static_cast<size_t>(narrow_cast<float>(height) * 0.5F
+											 - (narrow_cast<float>(thumbHeight) / 2.0F));
 			}
 			else {
-				thumbX = static_cast<size_t>(gsl::narrow_cast<float>(width) * 0.5F
-											 - (thumbWidth / 2.0F));
-				thumbY = static_cast<size_t>(sliderPos * height - (thumbHeight / 2.0F));
+				thumbX = static_cast<size_t>(narrow_cast<float>(width) * 0.5F
+											 - (narrow_cast<float>(thumbWidth) / 2.0F));
+				thumbY = static_cast<size_t>(sliderPos * narrow_cast<float>(height)
+											 - (narrow_cast<float>(thumbHeight) / 2.0F));
 			}
 			return (x >= thumbX && x <= thumbX + thumbWidth && y >= thumbY
 					&& y <= thumbY + thumbWidth);

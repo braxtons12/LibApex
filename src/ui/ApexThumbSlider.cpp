@@ -14,13 +14,13 @@ namespace apex::ui {
 									 std::function<double(double)> valueToProportionFunc,
 									 juce::Image thumbImage) noexcept
 		: ApexSlider(style, std::move(proportionToValueFunc), std::move(valueToProportionFunc)),
-		  mThumbImage(std::move(thumbImage)), mUsesThumbImage(true) {
+		  mThumbImage(std::move(thumbImage)), mUsesThumbImage(true),
+		  mInitialThumbWidth(static_cast<size_t>(mThumbImage.getWidth())),
+		  mInitialThumbHeight(static_cast<size_t>(mThumbImage.getHeight())) {
 		mThumbComponent.setImage(mThumbImage);
 		mThumbComponent.setImagePlacement(juce::RectanglePlacement(
 			juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
 		addAndMakeVisible(mThumbComponent);
-		mInitialThumbWidth = mThumbImage.getWidth();
-		mInitialThumbHeight = mThumbImage.getHeight();
 	}
 
 	/// @brief Constructs an `ApexThumbSlider` with the given style and initial width and height
@@ -35,8 +35,8 @@ namespace apex::ui {
 	ApexThumbSlider::ApexThumbSlider(juce::Slider::SliderStyle style,
 									 std::function<double(double)> proportionToValueFunc,
 									 std::function<double(double)> valueToProportionFunc,
-									 int initialThumbWidth,
-									 int initialThumbHeight) noexcept
+									 size_t initialThumbWidth,
+									 size_t initialThumbHeight) noexcept
 		: ApexSlider(style, std::move(proportionToValueFunc), std::move(valueToProportionFunc)),
 		  mInitialThumbWidth(initialThumbWidth), mInitialThumbHeight(initialThumbHeight) {
 	}
@@ -67,8 +67,10 @@ namespace apex::ui {
 		double sliderPos = getProportionFromValue(getValue());
 		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-		int thumbWidth = math::round(gsl::narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
-		int thumbHeight = math::round(gsl::narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
+		int thumbWidth
+			= General<>::round(gsl::narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
+		int thumbHeight
+			= General<>::round(gsl::narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
 
 		if(isHorizontal()) {
 			int thumbX = static_cast<int>(sliderPos * getWidth() - (thumbWidth / 2.0));
@@ -98,8 +100,10 @@ namespace apex::ui {
 		double sliderPos = getProportionFromValue(getValue());
 		jassert(sliderPos >= 0.00 && sliderPos <= 1.00);
 
-		int thumbWidth = math::round(gsl::narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
-		int thumbHeight = math::round(gsl::narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
+		int thumbWidth
+			= General<>::round(gsl::narrow_cast<float>(mInitialThumbWidth) * mXScaleFactor);
+		int thumbHeight
+			= General<>::round(gsl::narrow_cast<float>(mInitialThumbHeight) * mYScaleFactor);
 		int thumbX = 0;
 		int thumbY = 0;
 		if(isHorizontal()) {

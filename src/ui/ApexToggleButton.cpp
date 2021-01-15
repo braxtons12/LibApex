@@ -6,7 +6,7 @@ namespace apex::ui {
 	///
 	/// @param filmStrip - The film strip asset to use to draw this button
 	ApexToggleButton::ApexToggleButton(ApexFilmStrip filmStrip) noexcept
-		: juce::ToggleButton(), mFilmStrip(std::move(filmStrip)), mUsesFilmStrip(true) {
+		: mFilmStrip(std::move(filmStrip)), mUsesFilmStrip(true) {
 	}
 
 	/// @brief Constructs an `ApexToggleButton` with the given text label
@@ -24,9 +24,8 @@ namespace apex::ui {
 	ApexToggleButton::ApexToggleButton(juce::Image buttonToggled,
 									   juce::Image buttonHovered,
 									   juce::Image buttonNormal) noexcept
-		: juce::ToggleButton(), mToggledImage(std::move(buttonToggled)),
-		  mHoveredImage(std::move(buttonHovered)), mNormalImage(std::move(buttonNormal)),
-		  mUsesImages(true) {
+		: mToggledImage(std::move(buttonToggled)), mHoveredImage(std::move(buttonHovered)),
+		  mNormalImage(std::move(buttonNormal)), mUsesImages(true) {
 	}
 
 	/// @brief Draws this button to the screen

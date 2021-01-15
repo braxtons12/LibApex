@@ -1,23 +1,20 @@
 #pragma once
 
-namespace apex::math {
-	static const constexpr float pif = 3.1415926535897932384626433F;
-	static const constexpr float twoPif = 2.0F * pif;
-	static const constexpr float twoOverPif = 2.0F / pif;
-	static const constexpr float piOver2f = pif / 2.0F;
-	static const constexpr float threePiOver2f = 3.0F * piOver2f;
-	static const constexpr float fourOverPif = 4.0F / pif;
-	static const constexpr float piOver4f = pif / 4.0F;
-	static const constexpr float piOver6f = pif / 6.0F;
-	static const constexpr float piOver12f = pif / 12.0F;
+#include <type_traits>
 
-	static const constexpr double pi = 3.1415926535897932384626433;
-	static const constexpr double twoPi = 2.0 * pi;
-	static const constexpr double twoOverPi = 2.0 / pi;
-	static const constexpr double piOver2 = pi / 2.0;
-	static const constexpr double threePiOver2 = 3.0 * piOver2;
-	static const constexpr double fourOverPi = 4.0 / pi;
-	static const constexpr double piOver4 = pi / 4.0;
-	static const constexpr double piOver6 = pi / 6.0;
-	static const constexpr double piOver12 = pi / 12.0;
+namespace apex::math {
+	template<typename FloatType = float,
+			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+	class Constants {
+	  public:
+		static const constexpr FloatType pi = static_cast<FloatType>(3.1415926535897932384626433);
+		static const constexpr FloatType twoPi = static_cast<FloatType>(2.0) * pi;
+		static const constexpr FloatType twoOverPi = static_cast<FloatType>(2.0) / pi;
+		static const constexpr FloatType piOver2 = pi / static_cast<FloatType>(2.0);
+		static const constexpr FloatType threePiOver2 = static_cast<FloatType>(3.0) * piOver2;
+		static const constexpr FloatType fourOverPi = static_cast<FloatType>(4.0) / pi;
+		static const constexpr FloatType piOver4 = pi / static_cast<FloatType>(4.0);
+		static const constexpr FloatType piOver6 = pi / static_cast<FloatType>(6.0);
+		static const constexpr FloatType piOver12 = pi / static_cast<FloatType>(12.0);
+	};
 } // namespace apex::math

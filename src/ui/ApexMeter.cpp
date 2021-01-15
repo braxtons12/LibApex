@@ -12,8 +12,7 @@ namespace apex::ui {
 	ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 						 std::function<double(double)> valueToProportionOfHeightFunc,
 						 double clipLevelProportional) noexcept
-		: juce::Component(),
-		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		: mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
 		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
 		  mClipLevelProportion(clipLevelProportional) {
 	}
@@ -31,8 +30,7 @@ namespace apex::ui {
 						 std::function<double(double)> valueToProportionOfHeightFunc,
 						 double clipLevelProportional,
 						 size_t numSteps) noexcept
-		: juce::Component(),
-		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		: mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
 		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
 		  mNumSteps(numSteps), mClipLevelProportion(clipLevelProportional) {
 	}
@@ -47,8 +45,7 @@ namespace apex::ui {
 	ApexMeter::ApexMeter(std::function<double(double)> proportionOfFilmStripToValueFunc,
 						 std::function<double(double)> valueToProportionOfFilmStripFunc,
 						 ApexFilmStrip filmStrip) noexcept
-		: juce::Component(),
-		  mProportionOfHeightToValueFunc(std::move(proportionOfFilmStripToValueFunc)),
+		: mProportionOfHeightToValueFunc(std::move(proportionOfFilmStripToValueFunc)),
 		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfFilmStripFunc)),
 		  mFilmStrip(std::move(filmStrip)), mUsesFilmStrip(true) {
 	}
@@ -64,8 +61,7 @@ namespace apex::ui {
 	ApexMeter::ApexMeter(std::function<double(double)> proportionOfHeightToValueFunc,
 						 std::function<double(double)> valueToProportionOfHeightFunc,
 						 juce::Image maxedMeterImage) noexcept
-		: juce::Component(),
-		  mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
+		: mProportionOfHeightToValueFunc(std::move(proportionOfHeightToValueFunc)),
 		  mValueToProportionOfHeightFunc(std::move(valueToProportionOfHeightFunc)),
 		  mMaxedMeterImage(std::move(maxedMeterImage)), mUsesMaxedImage(true) {
 	}

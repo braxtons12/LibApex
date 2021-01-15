@@ -42,8 +42,13 @@ namespace apex::dsp {
 		/// @param riseTimeSeconds - The rise time, in seconds
 		explicit GainReduction(DynamicsState* state, T riseTimeSeconds = 0) noexcept
 			: mState(state), mRiseTimeSeconds(riseTimeSeconds) {
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage("Creating Base Gain Reduction");
+	#endif
 			mState->template registerCallback<Hertz, Field::SampleRate>(
 				[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
+			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
+				-1.0 / (mRiseTimeSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Move constructs the given `GainReduction`
@@ -59,20 +64,20 @@ namespace apex::dsp {
 		/// @return The adjusted gain reduction
 		[[nodiscard]] virtual auto
 		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels {
-			if(mCurrentSample > mNumSamplesToTransitionGain) {
-				mCurrentSample = 0;
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage(
+				"Base Gain Reduction Calculating Adjusted Gain Reduction");
+	#endif
+			T sign = 1.0;
+			if(gainReduction < 0.0) {
+				sign = -sign;
+				gainReduction *= sign;
 			}
 
-			if(mNumSamplesToTransitionGain != 0) {
-				Decibels gainReductionStep
-					= (gainReduction - mCurrentGainReduction)
-					  / static_cast<T>(mNumSamplesToTransitionGain - mCurrentSample);
-				mCurrentGainReduction += gainReductionStep;
-				mCurrentSample++;
-			}
-			else {
-				mCurrentGainReduction = gainReduction;
-			}
+			mCurrentGainReduction = sign
+									* (mRiseCoefficient * mCurrentGainReduction
+									   + (gsl::narrow_cast<T>(1.0) - mRiseCoefficient)
+											 * gsl::narrow_cast<T>(gainReduction));
 			return mCurrentGainReduction;
 		}
 
@@ -80,31 +85,42 @@ namespace apex::dsp {
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
 		inline virtual auto reset(T currentGainReduction = 0) noexcept -> void {
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage("Base Gain Reduction Resetting");
+	#endif
 			mCurrentGainReduction = currentGainReduction;
-			mCurrentSample = 0;
 		}
 
 		/// @brief Sets the sample rate to use for calculations to the given value
 		///
 		/// @param sampleRate - The new sample rate to use
 		inline virtual auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mNumSamplesToTransitionGain = static_cast<size_t>(
-				static_cast<T>(sampleRate * mRiseTimeSeconds + static_cast<T>(0.5)));
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Sample Rate");
+	#endif
+			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
+				-1.0 / (mRiseTimeSeconds * static_cast<double>(sampleRate))));
 		}
 
 		/// @brief Sets the slew rate to use for calculations to the given value
 		///
 		/// @param seconds - The new slew rate
 		inline virtual auto setRiseTimeSeconds(T seconds) noexcept -> void {
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Rise Time");
+	#endif
 			mRiseTimeSeconds = seconds;
-			mNumSamplesToTransitionGain = static_cast<size_t>(
-				static_cast<T>(mState->getSampleRate() * mRiseTimeSeconds + static_cast<T>(0.5)));
+			mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
+				-1.0 / (mRiseTimeSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the shared state to the given one
 		///
 		/// @param state - The shared state to use
 		inline auto setState(DynamicsState* state) noexcept -> void {
+	#ifdef TESTING_GAIN_REDUCTION
+			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Dynamics State");
+	#endif
 			mState = state;
 		}
 
@@ -116,14 +132,11 @@ namespace apex::dsp {
 		/// just to get our zeroed state
 		DynamicsState DEFAULT_STATE = DynamicsState();
 		DynamicsState* mState = &DEFAULT_STATE;
-		/// The current sample in the slew
-		size_t mCurrentSample = 0;
-		/// The number of samples the slew takes to complete
-		size_t mNumSamplesToTransitionGain = 0;
+		T mRiseCoefficient = gsl::narrow_cast<T>(0.1);
 		/// The current gain reduction value
-		Decibels mCurrentGainReduction = static_cast<T>(0.0);
+		Decibels mCurrentGainReduction = gsl::narrow_cast<T>(0.0);
 		/// The slew rate
-		T mRiseTimeSeconds = static_cast<T>(0.0);
+		T mRiseTimeSeconds = gsl::narrow_cast<T>(0.00001);
 
 	  private:
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainReduction)

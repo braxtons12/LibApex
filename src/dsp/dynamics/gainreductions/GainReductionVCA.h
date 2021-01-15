@@ -37,9 +37,13 @@ namespace apex::dsp {
 		/// @brief Constructs a default `GainReductionVCA`
 		/// (zeroed shared state, rise time = 0.4ms)
 		GainReductionVCA() noexcept : GainReduction<T, AttackKind, ReleaseKind>() {
+	#ifdef TESTING_GAIN_REDUCTION_VCA
+			apex::utils::Logger::LogMessage("Creating Gain Reduction VCA");
+	#endif
 			this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
-			this->mNumSamplesToTransitionGain = static_cast<size_t>(
-				this->mRiseTimeSeconds * this->mState->getSampleRate() + static_cast<T>(0.5));
+			this->mRiseCoefficient = gsl::narrow_cast<T>(math::exp(
+				-1.0
+				/ (this->mRiseTimeSeconds * static_cast<double>(this->mState->getSampleRate()))));
 		}
 
 		/// @brief Constructs a `GainReductionVCA` with the given shared state and rise time
@@ -49,6 +53,9 @@ namespace apex::dsp {
 		explicit GainReductionVCA(DynamicsState* state,
 								  T riseTimeSeconds = DEFAULT_RISE_TIME) noexcept
 			: GainReduction<T, AttackKind, ReleaseKind>(state, riseTimeSeconds) {
+	#ifdef TESTING_GAIN_REDUCTION_VCA
+			apex::utils::Logger::LogMessage("Creating Gain Reduction VCA");
+	#endif
 		}
 
 		/// @brief Move constructs the given `GainReductionVCA`
@@ -66,25 +73,23 @@ namespace apex::dsp {
 		/// @return - The adjusted gain reduction
 		[[nodiscard]] auto
 		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
-			T samplesToTransition = static_cast<T>(this->mNumSamplesToTransitionGain);
-
-			if(gainReduction < this->mCurrentGainReduction) {
-				samplesToTransition *= static_cast<T>(2.0);
+	#ifdef TESTING_GAIN_REDUCTION_VCA
+			apex::utils::Logger::LogMessage(
+				"Gain Reduction VCA Calculating Adjusted Gain Reduction");
+	#endif
+			T sign = 1.0;
+			if(gainReduction < 0.0) {
+				sign = -sign;
+				gainReduction *= sign;
 			}
-
-			if(this->mCurrentSample > samplesToTransition) {
-				this->mCurrentSample = 0;
-			}
-
-			T gainReductionStep = (gainReduction - this->mCurrentGainReduction)
-								  / static_cast<T>(samplesToTransition - this->mCurrentSample);
-
-			this->mCurrentGainReduction += gainReductionStep;
-			this->mCurrentSample++;
-
-			return waveshapers::softSaturation(this->mCurrentGainReduction,
-											   WAVE_SHAPER_AMOUNT,
-											   WAVE_SHAPER_SLOPE);
+			this->mCurrentGainReduction = sign
+										  * (this->mCurrentGainReduction * this->mRiseCoefficient
+											 + (gsl::narrow_cast<T>(1.0) - this->mRiseCoefficient)
+												   * gsl::narrow_cast<T>(gainReduction));
+			return Decibels::fromLinear(
+				waveshapers::softSaturation(gsl::narrow_cast<T>(sign * this->mCurrentGainReduction),
+											WAVE_SHAPER_AMOUNT,
+											WAVE_SHAPER_SLOPE));
 		}
 
 		auto operator=(GainReductionVCA<T, AttackKind, ReleaseKind>&& reduction) noexcept

@@ -12,6 +12,6 @@ SET(CMAKE_CXX_FLAGS_DEBUG "")
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -fms-extensions -fms-compatibility -fdelayed-template-parsing ${CMAKE_LINKER} -target ${TARGET_ARCH}")
 
 SET(CMAKE_C_FLAGS_RELEASE "")
-SET(CMAKE_C_FLAGS_RELEASE "-flto -Ofast -DNDEBUG -fms-extensions -fms-compatibility ${CMAKE_LINKER} -target ${TARGET_ARCH}")
+SET(CMAKE_C_FLAGS_RELEASE "-flto -Ofast -ffast-math -DNDEBUG -fms-extensions -fms-compatibility ${CMAKE_LINKER} -target ${TARGET_ARCH}")
 SET(CMAKE_CXX_FLAGS_RELEASE "")
-SET(CMAKE_CXX_FLAGS_RELEASE "-flto -Ofast -DNDEBUG -fms-extensions -fms-compatibility -fdelayed-template-parsing ${CMAKE_LINKER} -target ${TARGET_ARCH}")
+SET(CMAKE_CXX_FLAGS_RELEASE "-flto -Ofast -ffast-math -DNDEBUG -fms-extensions -fms-compatibility -fdelayed-template-parsing ${CMAKE_LINKER} -target ${TARGET_ARCH}")

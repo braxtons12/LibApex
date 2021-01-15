@@ -17,7 +17,7 @@ namespace apex::dsp {
 	///
 	/// @tparam T - The floating point type to back operations
 	template<typename T>
-	class Sidechain1176 : Sidechain<T> {
+	class Sidechain1176 final : public Sidechain<T> {
 	  public:
 		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -27,7 +27,7 @@ namespace apex::dsp {
 
 	/// @brief 1176-style dynamics processor sidechain
 	template<>
-	class Sidechain1176<float> : Sidechain<float> {
+	class Sidechain1176<float> final : public Sidechain<float> {
 	  private:
 		using Field = typename apex::dsp::DynamicsState<float, float, float>::Field;
 		using DynamicsState = typename apex::dsp::DynamicsState<float, float, float>;
@@ -53,46 +53,50 @@ namespace apex::dsp {
 		Sidechain1176() noexcept;
 
 		Sidechain1176(Sidechain1176<float>&& sidechain) noexcept = default;
-		~Sidechain1176() noexcept override = default;
+		~Sidechain1176() noexcept final = default;
 
 		/// @brief Calculates the target gain reduction to apply to the input value
 		///
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(float input) noexcept -> Decibels override;
+		auto process(float input) noexcept -> Decibels final;
 
 		/// @brief Sets the attack to the given value
 		/// Valid values are in [20uS (20 microseconds), 800uS (800 microseconds)]
 		///
 		/// @param attackMS - The attack time in milliseconds
-		auto setAttackTime(float attackMS) noexcept -> void override;
+		auto setAttackTime(float attackMS) noexcept -> void final;
 
 		/// @brief Returns the attack
 		///
 		/// @return - The attack time in milliseconds
-		[[nodiscard]] auto getAttackTime() const noexcept -> float override;
+		[[nodiscard]] auto getAttackTime() const noexcept -> float final;
 
 		/// @brief Sets the release to the given value
 		/// Valid values are in [50mS (50 milliseconds), 1.1s (1.1 seconds)]
 		///
 		/// @param releaseMS - The release time in milliseconds
-		auto setReleaseTime(float releaseMS) noexcept -> void override;
+		auto setReleaseTime(float releaseMS) noexcept -> void final;
 
 		/// @brief Returns the release
 		///
 		/// @return - The release time in milliseconds
-		[[nodiscard]] auto getReleaseTime() const noexcept -> float override;
+		[[nodiscard]] auto getReleaseTime() const noexcept -> float final;
 
 		/// @brief Sets the ratio to the given value
 		///
 		/// @param ratio - The ratio
 		auto setRatio(Ratio ratio) noexcept -> void;
 
+		[[nodiscard]] auto getEnumRatio() const noexcept -> Ratio {
+			return mRatio;
+		}
+
 		/// @brief Sets the DynamicsType
 		///
 		/// @param type - The dynamics type
-		auto setDynamicsType(DynamicsType type) noexcept -> void override;
+		auto setDynamicsType(DynamicsType type) noexcept -> void final;
 
 		auto
 		operator=(Sidechain1176<float>&& sidechain) noexcept -> Sidechain1176<float>& = default;
@@ -135,35 +139,35 @@ namespace apex::dsp {
 			= GainComputerCompressor<float, float, float>(&mState);
 		GainComputer<float, float, float>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardReturnToZero(float input) noexcept -> Decibels override;
+		auto processFeedForwardReturnToZero(float input) noexcept -> Decibels final;
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
-		setRatio(float ratio) noexcept -> void override {
+		setRatio(float ratio) noexcept -> void final {
 			juce::ignoreUnused(ratio);
 		}
 
 		/// @deprecated DO NOT USE, threshold is fixed for this `Sidechain`
 		[[deprecated("Don't use, threshold is fixed for this `Sidechain`")]] auto
-		setThreshold(Decibels threshold) noexcept -> void override {
+		setThreshold(Decibels threshold) noexcept -> void final {
 			juce::ignoreUnused(threshold);
 		}
 
 		/// @deprecated DO NOT USE, knee width is fixed for this `Sidechain`
 		[[deprecated("Don't use, knee width is fixed for this `Sidechain`")]] auto
-		setKneeWidth(Decibels kneeWidth) noexcept -> void override {
+		setKneeWidth(Decibels kneeWidth) noexcept -> void final {
 			juce::ignoreUnused(kneeWidth);
 		}
 
 		/// @deprecated DO NOT USE, computer topology is fixed for this `Sidechain`
 		[[deprecated("Don't use, computer topology is fixed for this `Sidechain`")]] auto
-		setComputerTopology(ComputerTopology topology) noexcept -> void override {
+		setComputerTopology(ComputerTopology topology) noexcept -> void final {
 			juce::ignoreUnused(topology);
 		}
 
 		/// @deprected DO NOT USE, detector topology is fixed for this `Sidechain`
 		[[deprecated("Don't use, detector topology is fixed for this `Sidechain`")]] auto
-		setDetectorTopology(DetectorTopology topology) noexcept -> void override {
+		setDetectorTopology(DetectorTopology topology) noexcept -> void final {
 			juce::ignoreUnused(topology);
 		}
 
@@ -172,7 +176,7 @@ namespace apex::dsp {
 
 	/// @brief 1176-style dynamics processor sidechain
 	template<>
-	class Sidechain1176<double> : Sidechain<double> {
+	class Sidechain1176<double> final : public Sidechain<double> {
 	  private:
 		using Field = typename apex::dsp::DynamicsState<double, double, double>::Field;
 		using DynamicsState = typename apex::dsp::DynamicsState<double, double, double>;
@@ -198,46 +202,50 @@ namespace apex::dsp {
 		Sidechain1176() noexcept;
 
 		Sidechain1176(Sidechain1176<double>&& sidechain) noexcept = default;
-		~Sidechain1176() noexcept override = default;
+		~Sidechain1176() noexcept final = default;
 
 		/// @brief Calculates the target gain reduction to apply to the input value
 		///
 		/// @param input - The input value to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		auto process(double input) noexcept -> Decibels override;
+		auto process(double input) noexcept -> Decibels final;
 
 		/// @brief Sets the attack to the given value
 		/// Valid values are in [20uS (20 microseconds), 800uS (800 microseconds)]
 		///
 		/// @param attackMS - The attack time in milliseconds
-		auto setAttackTime(double attackMS) noexcept -> void override;
+		auto setAttackTime(double attackMS) noexcept -> void final;
 
 		/// @brief Returns the attack
 		///
 		/// @return - The attack time in milliseconds
-		[[nodiscard]] auto getAttackTime() const noexcept -> double override;
+		[[nodiscard]] auto getAttackTime() const noexcept -> double final;
 
 		/// @brief Sets the release to the given value
 		/// Valid values are in [50mS (50 milliseconds), 1.1s (1.1 seconds)]
 		///
 		/// @param releaseMS - The release time in milliseconds
-		auto setReleaseTime(double releaseMS) noexcept -> void override;
+		auto setReleaseTime(double releaseMS) noexcept -> void final;
 
 		/// @brief Returns the release
 		///
 		/// @return - The release time in milliseconds
-		[[nodiscard]] auto getReleaseTime() const noexcept -> double override;
+		[[nodiscard]] auto getReleaseTime() const noexcept -> double final;
 
 		/// @brief Sets the ratio to the given value
 		///
 		/// @param ratio - The ratio
 		auto setRatio(Ratio ratio) noexcept -> void;
 
+		[[nodiscard]] auto getEnumRatio() const noexcept -> Ratio {
+			return mRatio;
+		}
+
 		/// @brief Sets the DynamicsType
 		///
 		/// @param type - The dynamics type
-		auto setDynamicsType(DynamicsType type) noexcept -> void override;
+		auto setDynamicsType(DynamicsType type) noexcept -> void final;
 
 		auto
 		operator=(Sidechain1176<double>&& sidechain) noexcept -> Sidechain1176<double>& = default;
@@ -280,35 +288,35 @@ namespace apex::dsp {
 			= GainComputerCompressor<double, double, double>(&mState);
 		GainComputer<double, double, double>* mGainComputer = &mCompressorComputer;
 
-		auto processFeedForwardReturnToZero(double input) noexcept -> Decibels override;
+		auto processFeedForwardReturnToZero(double input) noexcept -> Decibels final;
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
-		setRatio(double ratio) noexcept -> void override {
+		setRatio(double ratio) noexcept -> void final {
 			juce::ignoreUnused(ratio);
 		}
 
 		/// @deprecated DO NOT USE, threshold is fixed for this `Sidechain`
 		[[deprecated("Don't use, threshold is fixed for this `Sidechain`")]] auto
-		setThreshold(Decibels threshold) noexcept -> void override {
+		setThreshold(Decibels threshold) noexcept -> void final {
 			juce::ignoreUnused(threshold);
 		}
 
 		/// @deprecated DO NOT USE, knee width is fixed for this `Sidechain`
 		[[deprecated("Don't use, knee width is fixed for this `Sidechain`")]] auto
-		setKneeWidth(Decibels kneeWidth) noexcept -> void override {
+		setKneeWidth(Decibels kneeWidth) noexcept -> void final {
 			juce::ignoreUnused(kneeWidth);
 		}
 
 		/// @deprecated DO NOT USE, computer topology is fixed for this `Sidechain`
 		[[deprecated("Don't use, computer topology is fixed for this `Sidechain`")]] auto
-		setComputerTopology(ComputerTopology topology) noexcept -> void override {
+		setComputerTopology(ComputerTopology topology) noexcept -> void final {
 			juce::ignoreUnused(topology);
 		}
 
 		/// @deprected DO NOT USE, detector topology is fixed for this `Sidechain`
 		[[deprecated("Don't use, detector topology is fixed for this `Sidechain`")]] auto
-		setDetectorTopology(DetectorTopology topology) noexcept -> void override {
+		setDetectorTopology(DetectorTopology topology) noexcept -> void final {
 			juce::ignoreUnused(topology);
 		}
 

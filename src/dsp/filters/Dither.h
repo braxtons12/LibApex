@@ -10,36 +10,44 @@ namespace apex::dsp {
 	/// @brief Class used to apply dither along with bit-depth reduction (eg 32bit to 24 bit)
 	/// See http://www.musicdsp.org/showone.php?id=77 for more details on the algorithm
 	///
-	/// @tparam T - The floating point type used to back operations, either float or double
-	template<typename T>
+	/// @tparam FloatType - The FloatTypeing point type used to back operations, either FloatType or
+	/// double
+	template<typename FloatType = float,
+			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
 	class Dither {
 	  public:
-		static_assert(std::is_floating_point<T>::value,
-					  "T must be a floating point type (float or double)");
-
-	  private:
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Dither)
-	};
-
-	/// @brief Class used to apply dither along with bit-depth reduction (eg 32bit to 24 bit)
-	/// See http://www.musicdsp.org/showone.php?id=77 for more details on the algorithm
-	template<>
-	class Dither<float> {
-	  public:
-		Dither() noexcept;
+		Dither() noexcept {
+			updateState();
+		}
 
 		/// @brief Constructs a `Dither` targeting the given bit-depth with the given noise shaping
 		///
 		/// @param numBits - The bit-depth to convert to
 		/// @param noiseShaping - The noise shaping to use
-		explicit Dither(size_t numBits, float noiseShaping = 0.5F) noexcept;
+		explicit Dither(size_t numBits,
+						FloatType noiseShaping = narrow_cast<FloatType>(0.5)) noexcept
+			: mNumBits(numBits), mNoiseShaping(noiseShaping) {
+			if constexpr(std::is_same_v<FloatType, FloatType>) {
+				jassert(numBits <= 24);
+			}
+			else {
+				jassert(numBits <= 48);
+			}
+
+			updateState();
+		}
 		~Dither() noexcept = default;
 
 		/// @brief Sets the bit-depth of this `Dither` to the given value
 		///
 		/// @param numBits - The new bit-depth to use
 		inline auto setNumBits(size_t numBits) noexcept -> void {
-			jassert(numBits <= 24);
+			if constexpr(std::is_same_v<FloatType, FloatType>) {
+				jassert(numBits <= 24);
+			}
+			else {
+				jassert(numBits <= 48);
+			}
 			mNumBits = numBits;
 			updateState();
 		}
@@ -47,7 +55,7 @@ namespace apex::dsp {
 		/// @brief Sets the noise shaping to use to the given value
 		///
 		/// @param noiseShaping - The noise shaping to use
-		inline auto setNoiseShaping(float noiseShaping) noexcept -> void {
+		inline auto setNoiseShaping(FloatType noiseShaping) noexcept -> void {
 			mNoiseShaping = noiseShaping;
 			updateState();
 		}
@@ -57,7 +65,20 @@ namespace apex::dsp {
 		/// @param input - The input to dither
 		///
 		/// @return - The dithered, bit-depth reduced result
-		[[nodiscard]] auto dither(float input) noexcept -> float;
+		[[nodiscard]] inline auto dither(FloatType input) noexcept -> FloatType {
+			auto output = input + mNoiseShaping * (mFeedbackOne + mFeedbackOne - mFeedbackTwo);
+			auto outputTemp
+				= output + mDCOffset + mAmplitude * narrow_cast<FloatType>(mRandomOne - mRandomTwo);
+			auto outputTruncated = narrow_cast<int>(mWordLength * outputTemp);
+
+			if(outputTemp < narrow_cast<FloatType>(0.0)) {
+				--outputTruncated;
+			}
+			mFeedbackTwo = mFeedbackOne;
+			mFeedbackOne = output - mWordLengthInverse * narrow_cast<FloatType>(outputTruncated);
+
+			return output;
+		}
 
 	  private:
 		/// Random number generator
@@ -69,88 +90,40 @@ namespace apex::dsp {
 		/// The bit depth to use
 		size_t mNumBits = 24;
 		/// The first running feedback error value
-		float mFeedbackOne = 0.0F;
+		FloatType mFeedbackOne = narrow_cast<FloatType>(0.0);
 		/// The second running feedback error value
-		float mFeedbackTwo = 0.0F;
+		FloatType mFeedbackTwo = narrow_cast<FloatType>(0.0);
 		/// Noise shaping amount
-		float mNoiseShaping = 0.5F;
+		FloatType mNoiseShaping = narrow_cast<FloatType>(0.5);
 		/// Resulting word length
-		float mWordLength = math::pow2f(static_cast<float>(mNumBits - 1));
+		FloatType mWordLength = Exponentials<FloatType>::pow2(static_cast<FloatType>(mNumBits - 1));
 		/// Inverse of the word length
-		float mWordLengthInverse = 1.0F / mWordLength;
+		FloatType mWordLengthInverse = narrow_cast<FloatType>(1.0) / mWordLength;
 		/// Dither amplitude
-		float mAmplitude = mWordLengthInverse / static_cast<float>(math::Random::MAX);
+		FloatType mAmplitude = mWordLengthInverse / static_cast<FloatType>(math::Random::MAX);
 		/// DC Offset adjustment
-		float mDCOffset = mWordLengthInverse * 0.5F;
+		FloatType mDCOffset = mWordLengthInverse * narrow_cast<FloatType>(0.5);
 
-		auto updateState() noexcept -> void;
+		inline auto updateState() noexcept -> void {
+			mRandom.srand(10956489098);
+			size_t rand = mRandom.rand();
+			auto seedTemp = narrow_cast<size_t>(mNumBits * mNoiseShaping);
+			size_t seed = rand / seedTemp;
+			mRandom.srand(seed);
+			mRandomOne = mRandom.rand();
+			mRandom.srand(mRandomOne);
+			mRandomTwo = mRandom.rand();
 
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Dither)
-	};
+			mFeedbackOne = narrow_cast<FloatType>(0.0);
+			mFeedbackTwo = narrow_cast<FloatType>(0.0);
 
-	/// @brief Class used to apply dither along with bit-depth reduction (eg 32bit to 24 bit)
-	/// See http://www.musicdsp.org/showone.php?id=77 for more details on the algorithm
-	template<>
-	class Dither<double> {
-	  public:
-		Dither() noexcept;
+			mWordLength = Exponentials<FloatType>::pow2(narrow_cast<FloatType>(mNumBits - 1));
+			mWordLengthInverse = narrow_cast<FloatType>(1.0) / mWordLength;
 
-		/// @brief Constructs a `Dither` targeting the given bit-depth with the given noise shaping
-		///
-		/// @param numBits - The bit-depth to convert to
-		/// @param noiseShaping - The noise shaping to use
-		explicit Dither(size_t numBits, double noiseShaping = 0.5) noexcept;
-		~Dither() noexcept = default;
+			mAmplitude = mWordLengthInverse / narrow_cast<FloatType>(math::Random::MAX);
 
-		/// @brief Sets the bit-depth of this `Dither` to the given value
-		///
-		/// @param numBits - The new bit-depth to use
-		inline auto setNumBits(size_t numBits) noexcept -> void {
-			jassert(numBits <= 48);
-			mNumBits = numBits;
-			updateState();
+			mDCOffset = mWordLengthInverse * narrow_cast<FloatType>(0.5);
 		}
-
-		/// @brief Sets the noise shaping to use to the given value
-		///
-		/// @param noiseShaping - The noise shaping to use
-		inline auto setNoiseShaping(double noiseShaping) noexcept -> void {
-			mNoiseShaping = noiseShaping;
-			updateState();
-		}
-
-		/// @brief Dithers and bit-depth reduces the input based on this `Dither`'s parameters
-		///
-		/// @param input - The input to dither
-		///
-		/// @return - The dithered, bit-depth reduced result
-		[[nodiscard]] auto dither(double input) noexcept -> double;
-
-	  private:
-		/// Random number generator
-		math::Random mRandom = math::Random();
-		/// Runnning Random number one
-		size_t mRandomOne = 0;
-		/// Running Random number two
-		size_t mRandomTwo = 0;
-		/// The bit depth to use
-		size_t mNumBits = 48;
-		/// The first running feedback error value
-		double mFeedbackOne = 0.0;
-		/// The second running feedback error value
-		double mFeedbackTwo = 0.0;
-		/// Noise shaping amount
-		double mNoiseShaping = 0.5;
-		/// Resulting word length
-		double mWordLength = math::pow2(static_cast<double>(mNumBits - 1));
-		/// Inverse of the word length
-		double mWordLengthInverse = 1.0 / mWordLength;
-		/// Dither amplitude
-		double mAmplitude = mWordLengthInverse / static_cast<double>(math::Random::MAX);
-		/// DC Offset adjustment
-		double mDCOffset = mWordLengthInverse * 0.5;
-
-		auto updateState() noexcept -> void;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Dither)
 	};

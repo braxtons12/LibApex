@@ -11,38 +11,52 @@
 	#define DYNAMICS_STATE
 
 namespace apex::dsp {
+	/// @brief The fields in the State callbacks can be registered for
+	enum class DynamicsField
+	{
+		Attack,
+		Release,
+		Ratio,
+		Threshold,
+		KneeWidth,
+		SampleRate,
+		AutoRelease
+	};
+
+	template<typename FloatType = float,
+			 typename AttackKind = FloatType,
+			 typename ReleaseKind = FloatType>
+	static constexpr auto areDynamicsParamsValid() noexcept -> bool {
+		auto constexpr isFloat = std::is_floating_point_v<FloatType>;
+		auto constexpr isAttackValid
+			= std::is_same_v<FloatType, AttackKind> || std::is_enum_v<AttackKind>;
+		auto constexpr isReleaseValid
+			= std::is_same_v<FloatType, ReleaseKind> || std::is_enum_v<ReleaseKind>;
+		return isFloat && isAttackValid && isReleaseValid;
+	}
+
 	/// @brief Type to own and maintain all of a dynamics processor's shared state
 	///
-	/// @tparam T - The floating point type used for parameters
+	/// @tparam FloatType - The floating point type used for parameters
 	/// @tparam AttackKind - The floating point or enum type used for attack times
 	/// @tparam ReleaseKind - The floating point or enum type used for release times
-	template<typename T, typename AttackKind, typename ReleaseKind>
+	template<
+		typename FloatType = float,
+		typename AttackKind = FloatType,
+		typename ReleaseKind = FloatType,
+		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class DynamicsState {
 	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-		static_assert((std::is_floating_point<AttackKind>::value
-					   && std::is_same<T, AttackKind>::value)
-						  || std::is_enum<AttackKind>::value,
-					  "AttackKind must be the same floating point type as T, or an enum");
-		static_assert((std::is_floating_point<ReleaseKind>::value
-					   && std::is_same<T, ReleaseKind>::value)
-						  || std::is_enum<ReleaseKind>::value,
-					  "ReleaseKind must be the same floating point type as T, or an enum");
-
-		/// @brief The fields in the State callbacks can be registered for
-		enum class Field
-		{
-			Attack,
-			Release,
-			Ratio,
-			Threshold,
-			KneeWidth,
-			SampleRate,
-			AutoRelease
-		};
+		using AttackCallback = std::function<void(AttackKind)>;
+		using ReleaseCallback = std::function<void(ReleaseKind)>;
+		using RatioCallback = std::function<void(FloatType)>;
+		using ThresholdCallback = std::function<void(Decibels)>;
+		using KneeWidthCallback = std::function<void(Decibels)>;
+		using SampleRateCallback = std::function<void(Hertz)>;
+		using AutoReleaseEnableCallback = std::function<void(bool)>;
 
 		/// @brief Constructs a blank `DynamicsState` with everything zeroed
-		DynamicsState() noexcept = default;
+		constexpr DynamicsState() noexcept = default;
 
 		/// @brief Constructs a `DynamicsState` with the given parameters
 		///
@@ -54,7 +68,7 @@ namespace apex::dsp {
 		/// @param sampleRate - The sample rate, in Hertz
 		DynamicsState(AttackKind attack,
 					  ReleaseKind release,
-					  T ratio,
+					  FloatType ratio,
 					  Decibels threshold,
 					  Decibels kneeWidth,
 					  Hertz sampleRate) noexcept
@@ -65,12 +79,12 @@ namespace apex::dsp {
 		/// @brief Copy onstructs a `DynamicsState` from the given one
 		///
 		/// @param state - The `DynamicsState` to copy
-		DynamicsState(const DynamicsState<T, AttackKind, ReleaseKind>& state) noexcept = default;
+		DynamicsState(const DynamicsState& state) noexcept = default;
 
 		/// @brief Move constructs the given `DynamicsState`
 		///
 		/// @param state - The `DynamicsState` to move
-		DynamicsState(DynamicsState<T, AttackKind, ReleaseKind>&& state) noexcept = default;
+		DynamicsState(DynamicsState&& state) noexcept = default;
 
 		~DynamicsState() noexcept = default;
 
@@ -113,7 +127,7 @@ namespace apex::dsp {
 		/// @brief Sets the ratio to the given value
 		///
 		/// @param ratio - The new ratio
-		inline auto setRatio(T ratio) noexcept -> void {
+		inline auto setRatio(FloatType ratio) noexcept -> void {
 			mRatio = ratio;
 
 			for(const auto& callback : mRatioCallbacks) {
@@ -124,7 +138,7 @@ namespace apex::dsp {
 		/// @brief Returns the current ratio
 		///
 		/// @return - The ratio
-		[[nodiscard]] inline auto getRatio() const noexcept -> T {
+		[[nodiscard]] inline auto getRatio() const noexcept -> FloatType {
 			return mRatio;
 		}
 
@@ -226,14 +240,14 @@ namespace apex::dsp {
 		/// @brief Sets the first attack coefficient to the given value
 		///
 		/// @param attack - The new first attack coefficient
-		inline auto setAttackCoefficient1(T attack) noexcept -> void {
+		inline auto setAttackCoefficient1(FloatType attack) noexcept -> void {
 			mAttackCoefficient1 = attack;
 		}
 
 		/// @brief Sets the second attack coefficient to the given value
 		///
 		/// @param attack - The new second attack coefficient
-		inline auto setAttackCoefficient2(T attack) noexcept -> void {
+		inline auto setAttackCoefficient2(FloatType attack) noexcept -> void {
 			mAttackCoefficient2 = attack;
 		}
 
@@ -241,7 +255,7 @@ namespace apex::dsp {
 		///
 		/// @param attack1 - The new first attack coefficient
 		/// @param attack2 - The new second attack coefficient
-		inline auto setAttackCoefficients(T attack1, T attack2) noexcept -> void {
+		inline auto setAttackCoefficients(FloatType attack1, FloatType attack2) noexcept -> void {
 			mAttackCoefficient1 = attack1;
 			mAttackCoefficient2 = attack2;
 		}
@@ -249,35 +263,36 @@ namespace apex::dsp {
 		/// @brief Returns the current first attack coefficient
 		///
 		/// @return - The first attack coefficient
-		[[nodiscard]] inline auto getAttackCoefficient1() const noexcept -> T {
+		[[nodiscard]] inline auto getAttackCoefficient1() const noexcept -> FloatType {
 			return mAttackCoefficient1;
 		}
 
 		/// @brief Returns the current second attack coefficient
 		///
 		/// @return - The second attack coefficient
-		[[nodiscard]] inline auto getAttackCoefficient2() const noexcept -> T {
+		[[nodiscard]] inline auto getAttackCoefficient2() const noexcept -> FloatType {
 			return mAttackCoefficient2;
 		}
 
 		/// @brief Returns the current attack coefficients
 		///
 		/// @return - The first and second attack coefficients, as a std::tuple
-		[[nodiscard]] inline auto getAttackCoefficients() const noexcept -> std::tuple<T, T> {
+		[[nodiscard]] inline auto
+		getAttackCoefficients() const noexcept -> std::tuple<FloatType, FloatType> {
 			return {mAttackCoefficient1, mAttackCoefficient2};
 		}
 
 		/// @brief Sets the first release coefficient to the given value
 		///
 		/// @param release - The new first release coefficient
-		inline auto setReleaseCoefficient1(T release) noexcept -> void {
+		inline auto setReleaseCoefficient1(FloatType release) noexcept -> void {
 			mReleaseCoefficient1 = release;
 		}
 
 		/// @brief Sets the second release coefficient to the given value
 		///
 		/// @param release - The new second release coefficient
-		inline auto setReleaseCoefficient2(T release) noexcept -> void {
+		inline auto setReleaseCoefficient2(FloatType release) noexcept -> void {
 			mReleaseCoefficient2 = release;
 		}
 
@@ -285,7 +300,8 @@ namespace apex::dsp {
 		///
 		/// @param release1 - The new first release coefficient
 		/// @param release2 - The new seconds release coefficient
-		inline auto setReleaseCoefficients(T release1, T release2) noexcept -> void {
+		inline auto
+		setReleaseCoefficients(FloatType release1, FloatType release2) noexcept -> void {
 			mReleaseCoefficient1 = release1;
 			mReleaseCoefficient2 = release2;
 		}
@@ -293,21 +309,22 @@ namespace apex::dsp {
 		/// @brief Returns the current first release coefficient
 		///
 		/// @return - The first release coefficient
-		[[nodiscard]] inline auto getReleaseCoefficient1() const noexcept -> T {
+		[[nodiscard]] inline auto getReleaseCoefficient1() const noexcept -> FloatType {
 			return mReleaseCoefficient1;
 		}
 
 		/// @brief Returns the current second release coefficient
 		///
 		/// @return - The second release coefficient
-		[[nodiscard]] inline auto getReleaseCoefficient2() const noexcept -> T {
+		[[nodiscard]] inline auto getReleaseCoefficient2() const noexcept -> FloatType {
 			return mReleaseCoefficient2;
 		}
 
 		/// @brief Returns the current release coefficients
 		///
 		/// @return  - The first and second release coefficients, as a std::tuple
-		[[nodiscard]] inline auto getReleaseCoefficients() const noexcept -> std::tuple<T, T> {
+		[[nodiscard]] inline auto
+		getReleaseCoefficients() const noexcept -> std::tuple<FloatType, FloatType> {
 			return {mReleaseCoefficient1, mReleaseCoefficient2};
 		}
 
@@ -322,14 +339,17 @@ namespace apex::dsp {
 		/// @tparam field - The field to register the callback on
 		///
 		/// @param callback - The callback to register
-		template<typename F, Field field>
+		template<typename F,
+				 DynamicsField Field,
+				 std::enable_if_t<isRegisterFuncEnabled<F, Field>(), bool> = true>
 		auto registerCallback(const std::function<void(F)>& callback) noexcept -> void;
 
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<AttackKind, Field::Attack>(
-			const std::function<void(AttackKind)>& callback) noexcept -> void {
+		inline auto
+		registerCallback<AttackKind, DynamicsField::Attack>(const AttackCallback& callback) noexcept
+			-> void {
 			callback(mAttack);
 			mAttackCallbacks.push_back(callback);
 		}
@@ -337,8 +357,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<ReleaseKind, Field::Release>(
-			const std::function<void(ReleaseKind)>& callback) noexcept -> void {
+		inline auto registerCallback<ReleaseKind, DynamicsField::Release>(
+			const ReleaseCallback& callback) noexcept -> void {
 			callback(mRelease);
 			mReleaseCallbacks.push_back(callback);
 		}
@@ -347,7 +367,8 @@ namespace apex::dsp {
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
 		inline auto
-		registerCallback<T, Field::Ratio>(const std::function<void(T)>& callback) noexcept -> void {
+		registerCallback<FloatType, DynamicsField::Ratio>(const RatioCallback& callback) noexcept
+			-> void {
 			callback(mRatio);
 			mRatioCallbacks.push_back(callback);
 		}
@@ -355,8 +376,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<Decibels, Field::Threshold>(
-			const std::function<void(Decibels)>& callback) noexcept -> void {
+		inline auto registerCallback<Decibels, DynamicsField::Threshold>(
+			const ThresholdCallback& callback) noexcept -> void {
 			callback(mThreshold);
 			mThresholdCallbacks.push_back(callback);
 		}
@@ -364,8 +385,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<Decibels, Field::KneeWidth>(
-			const std::function<void(Decibels)>& callback) noexcept -> void {
+		inline auto registerCallback<Decibels, DynamicsField::KneeWidth>(
+			const KneeWidthCallback& callback) noexcept -> void {
 			callback(mKneeWidth);
 			mKneeWidthCallbacks.push_back(callback);
 		}
@@ -373,8 +394,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<Hertz, Field::SampleRate>(
-			const std::function<void(Hertz)>& callback) noexcept -> void {
+		inline auto registerCallback<Hertz, DynamicsField::SampleRate>(
+			const SampleRateCallback& callback) noexcept -> void {
 			callback(mSampleRate);
 			mSampleRateCallbacks.push_back(callback);
 		}
@@ -382,16 +403,14 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<bool, Field::AutoRelease>(
-			const std::function<void(bool)>& callback) noexcept -> void {
+		inline auto registerCallback<bool, DynamicsField::AutoRelease>(
+			const AutoReleaseEnableCallback& callback) noexcept -> void {
 			callback(mAutoReleaseEnabled);
 			mAutoReleaseCallbacks.push_back(callback);
 		}
 
-		auto operator=(const DynamicsState<T, AttackKind, ReleaseKind>& state) noexcept
-			-> DynamicsState<T, AttackKind, ReleaseKind>& = default;
-		auto operator=(DynamicsState<T, AttackKind, ReleaseKind>&& state) noexcept
-			-> DynamicsState<T, AttackKind, ReleaseKind>& = default;
+		auto operator=(const DynamicsState& state) noexcept -> DynamicsState& = default;
+		auto operator=(DynamicsState&& state) noexcept -> DynamicsState& = default;
 
 	  private:
 		/// State variables
@@ -401,40 +420,63 @@ namespace apex::dsp {
 		/// The release, can be `float, `double`, or an associated `enum`
 		ReleaseKind mRelease = static_cast<ReleaseKind>(0);
 		/// The ratio, `float` or `double`
-		T mRatio = static_cast<T>(1.1);
+		FloatType mRatio = narrow_cast<FloatType>(1.1);
 		/// The threshold in Decibels, `float` or `double`
 		Decibels mThreshold = -12.0_dB;
 		/// The knee width in Decibels, `float` or `double`
 		Decibels mKneeWidth = 6.0_dB;
 		/// The first attack coefficient, `float` or `double`
-		T mAttackCoefficient1 = static_cast<T>(0.0);
+		FloatType mAttackCoefficient1 = narrow_cast<FloatType>(0.0);
 		/// The second attack coefficient, `float` or `double`
-		T mAttackCoefficient2 = static_cast<T>(0.0);
+		FloatType mAttackCoefficient2 = narrow_cast<FloatType>(0.0);
 		/// The first release coefficient, `float` or `double`
-		T mReleaseCoefficient1 = static_cast<T>(0.0);
+		FloatType mReleaseCoefficient1 = narrow_cast<FloatType>(0.0);
 		/// The second release coefficient, `float` or `double`
-		T mReleaseCoefficient2 = static_cast<T>(0.0);
+		FloatType mReleaseCoefficient2 = narrow_cast<FloatType>(0.0);
 		/// The sample rate in Hertz
-		Hertz mSampleRate = 44100_Hz;
+		Hertz mSampleRate = 44.1_kHz;
 		bool mHasAutoRelease = false;
 		bool mAutoReleaseEnabled = false;
 
 		/// Callback containers
 
 		/// Attack callbacks
-		std::vector<std::function<void(AttackKind)>> mAttackCallbacks;
+		std::vector<AttackCallback> mAttackCallbacks;
 		/// Release callbacks
-		std::vector<std::function<void(ReleaseKind)>> mReleaseCallbacks;
+		std::vector<ReleaseCallback> mReleaseCallbacks;
 		/// Ratio callbacks
-		std::vector<std::function<void(T)>> mRatioCallbacks;
+		std::vector<RatioCallback> mRatioCallbacks;
 		/// Threshold callbacks
-		std::vector<std::function<void(Decibels)>> mThresholdCallbacks;
+		std::vector<ThresholdCallback> mThresholdCallbacks;
 		/// Knee width callbacks
-		std::vector<std::function<void(Decibels)>> mKneeWidthCallbacks;
+		std::vector<KneeWidthCallback> mKneeWidthCallbacks;
 		/// Sample rate callbacks
-		std::vector<std::function<void(Hertz)>> mSampleRateCallbacks;
+		std::vector<SampleRateCallback> mSampleRateCallbacks;
 		/// AutoRelease callbacks
-		std::vector<std::function<void(bool)>> mAutoReleaseCallbacks;
+		std::vector<AutoReleaseEnableCallback> mAutoReleaseCallbacks;
+
+		template<typename F, DynamicsField Field>
+		inline static constexpr auto isRegisterFuncEnabled() noexcept -> bool {
+			if constexpr(Field == DynamicsField::Attack) {
+				return std::is_same_v<F, AttackKind>;
+			}
+			else if constexpr(Field == DynamicsField::Release) {
+				return std::is_same_v<F, ReleaseKind>;
+			}
+			else if constexpr(Field == DynamicsField::Ratio) {
+				return std::is_same_v<F, FloatType>;
+			}
+			else if constexpr(Field == DynamicsField::Threshold
+							  || Field == DynamicsField::KneeWidth) {
+				return std::is_same_v<F, Decibels>;
+			}
+			else if constexpr(Field == DynamicsField::SampleRate) {
+				return std::is_same_v<F, Hertz>;
+			}
+			else {
+				return std::is_same_v<F, bool>;
+			}
+		}
 	};
 } // namespace apex::dsp
 

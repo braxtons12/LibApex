@@ -8,6 +8,9 @@ namespace apex::dsp {
 	/// @param type - The detector type
 	LevelDetector<float>::LevelDetector(DynamicsState* state, DetectorType type) noexcept
 		: mType(type), mState(state) {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Creating Base Level Detector");
+#endif
 		mState->registerCallback<float, DynamicsState::Field::Attack>(
 			[this](float attack) { this->setAttackTime(attack); });
 		mState->registerCallback<float, DynamicsState::Field::Release>(
@@ -22,6 +25,9 @@ namespace apex::dsp {
 	///
 	/// @return - The detected level
 	auto LevelDetector<float>::process(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Input");
+#endif
 		switch(mType) {
 			case DetectorType::NonCorrected: return processNonCorrected(input);
 			case DetectorType::Branching: return processBranching(input);
@@ -33,14 +39,21 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<float>::processNonCorrected(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing NonCorrected");
+#endif
 		// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-		float yn = mState->getReleaseCoefficient1() * mYOut1
-				   + (1.0F - mState->getAttackCoefficient1()) * math::max(input - mYOut1, 0.0F);
+		float yn
+			= mState->getReleaseCoefficient1() * mYOut1
+			  + (1.0F - mState->getAttackCoefficient1()) * General<>::max(input - mYOut1, 0.0F);
 		mYOut1 = yn;
 		return yn;
 	}
 
 	auto LevelDetector<float>::processBranching(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Branching");
+#endif
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n], x[n] > y[n-1]
 		// y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 		//       {
@@ -52,9 +65,12 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<float>::processDecoupled(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Decoupled");
+#endif
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		float ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
+		float ytempn = General<>::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
 		float yn = mState->getAttackCoefficient1() * mYOut1
 				   + (1.0F - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
@@ -63,6 +79,9 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<float>::processBranchingSmooth(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Branching Smooth");
+#endif
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n],   x[n] > y[n-1]
 		// y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 		//       {
@@ -75,11 +94,14 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<float>::processDecoupledSmooth(float input) noexcept -> float {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Decoupled Smooth");
+#endif
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		float ytempn = math::max(input,
-								 mState->getReleaseCoefficient1() * mYTempStage1
-									 + (1.0F - mState->getReleaseCoefficient1()) * input);
+		float ytempn = General<>::max(input,
+									  mState->getReleaseCoefficient1() * mYTempStage1
+										  + (1.0F - mState->getReleaseCoefficient1()) * input);
 		float yn = mState->getAttackCoefficient1() * mYOut1
 				   + (1.0F - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
@@ -94,6 +116,9 @@ namespace apex::dsp {
 	/// @param type - The detector type
 	LevelDetector<double>::LevelDetector(DynamicsState* state, DetectorType type) noexcept
 		: mType(type), mState(state) {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Creating Base Level Detector");
+#endif
 		mState->registerCallback<double, DynamicsState::Field::Attack>(
 			[this](double attack) { this->setAttackTime(attack); });
 		mState->registerCallback<double, DynamicsState::Field::Release>(
@@ -108,6 +133,9 @@ namespace apex::dsp {
 	///
 	/// @return - The detected level
 	auto LevelDetector<double>::process(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Input");
+#endif
 		switch(mType) {
 			case DetectorType::NonCorrected: return processNonCorrected(input);
 			case DetectorType::Branching: return processBranching(input);
@@ -119,14 +147,21 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<double>::processNonCorrected(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing NonCorrected");
+#endif
 		// y[n] = releaseCoeff * y[n-1] + (1 - attackCoeff) * max(x[n] - y[n-1], 0)
-		double yn = mState->getReleaseCoefficient1() * mYOut1
-					+ (1.0 - mState->getAttackCoefficient1()) * math::max(input - mYOut1, 0.0);
+		double yn
+			= mState->getReleaseCoefficient1() * mYOut1
+			  + (1.0 - mState->getAttackCoefficient1()) * General<double>::max(input - mYOut1, 0.0);
 		mYOut1 = yn;
 		return yn;
 	}
 
 	auto LevelDetector<double>::processBranching(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Branching");
+#endif
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n], x[n] > y[n-1]
 		// y[n] = { releaseCoeff * y[n-1],                           x[n] <= y[n-1]
 		//       {
@@ -138,9 +173,13 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<double>::processDecoupled(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Decoupled");
+#endif
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1])
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		double ytempn = math::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
+		double ytempn
+			= General<double>::max(input, mState->getReleaseCoefficient1() * mYTempStage1);
 		double yn = mState->getAttackCoefficient1() * mYOut1
 					+ (1.0 - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;
@@ -149,6 +188,9 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<double>::processBranchingSmooth(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Branching Smooth");
+#endif
 		//       { attackCoeff * y[n-1] + (1 - attackCoeff) * x[n],   x[n] > y[n-1]
 		// y[n] = { releaseCoeff * y[n-1] + (1 - releaseCoeff) * x[n], x[n] <= y[n-1]
 		//       {
@@ -161,11 +203,15 @@ namespace apex::dsp {
 	}
 
 	auto LevelDetector<double>::processDecoupledSmooth(double input) noexcept -> double {
+#ifdef TESTING_LEVELDETECTOR
+		Logger::LogMessage("Base Level Detector Processing Decoupled Smooth");
+#endif
 		// y_1[n] = max(x[n], releaseCoeff * y_1[n-1] + (1 - releaseCoeff) * input)
 		// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
-		double ytempn = math::max(input,
-								  mState->getReleaseCoefficient1() * mYTempStage1
-									  + (1.0 - mState->getReleaseCoefficient1()) * input);
+		double ytempn
+			= General<double>::max(input,
+								   mState->getReleaseCoefficient1() * mYTempStage1
+									   + (1.0 - mState->getReleaseCoefficient1()) * input);
 		double yn = mState->getAttackCoefficient1() * mYOut1
 					+ (1.0 - mState->getAttackCoefficient1()) * ytempn;
 		mYTempStage1 = ytempn;

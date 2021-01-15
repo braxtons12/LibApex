@@ -26,7 +26,7 @@ namespace apex::dsp {
 	auto
 	SidechainModernBus<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept
 		-> Decibels {
-		float rectified = math::fabsf(input);
+		float rectified = General<>::abs(input);
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(static_cast<float>(gainReduction));
@@ -59,7 +59,7 @@ namespace apex::dsp {
 	auto
 	SidechainModernBus<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
 		-> Decibels {
-		double rectified = math::fabs(input);
+		double rectified = General<double>::abs(input);
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));

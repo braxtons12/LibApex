@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <juce_core/juce_core.h>
 #include <type_traits>
 
 #include "Error.h"
@@ -26,8 +27,8 @@ namespace apex::utils {
 	template<typename T, bool copyable = std::is_copy_constructible_v<T> && !std::is_pointer_v<T>>
 	class [[nodiscard]] Option {
 	  public:
-		Option(const Option<T, copyable>& option) = default;
-		Option(Option<T, copyable>&& option) noexcept = default;
+		constexpr Option(const Option<T, copyable>& option) = default;
+		constexpr Option(Option<T, copyable>&& option) noexcept = default;
 		~Option() noexcept = default;
 
 		/// @brief Constructs an `Option<T>` containing `some`, aka a `Some` variant
@@ -36,28 +37,28 @@ namespace apex::utils {
 		/// @param some - The value to store in this `Option<T>`
 		///
 		/// @return `Some(some)`
-		[[nodiscard]] static inline auto Some(T some) noexcept -> Option<T, copyable> {
+		[[nodiscard]] constexpr static inline auto Some(T some) noexcept -> Option<T, copyable> {
 			return Option<T, copyable>(some);
 		}
 
 		/// @brief Constructs an empty `Option<T>`, aka a `None`
 		///
 		/// @return `None`
-		[[nodiscard]] static inline auto None() noexcept -> Option<T, copyable> {
+		[[nodiscard]] constexpr static inline auto None() noexcept -> Option<T, copyable> {
 			return Option<T, copyable>();
 		}
 
 		/// @brief Returns `true` if this is `Some`, `false` if this is `None`
 		///
 		/// @return Whether this is `Some`
-		[[nodiscard]] inline auto isSome() const noexcept -> bool {
+		[[nodiscard]] constexpr inline auto isSome() const noexcept -> bool {
 			return mIsSome;
 		}
 
 		/// @brief Returns `true` if this is `None`, `false` if this is `Some`
 		///
 		/// @return Whether this is `None`
-		[[nodiscard]] inline auto isNone() const noexcept -> bool {
+		[[nodiscard]] constexpr inline auto isNone() const noexcept -> bool {
 			return !mIsSome;
 		}
 
@@ -133,7 +134,7 @@ namespace apex::utils {
 		///
 		/// @return `Ok(T)` if this is `Some`, `Err(error)` if this is `None`
 		template<typename E, typename Enable = std::enable_if_t<std::is_base_of_v<Error, E>, E>>
-		[[nodiscard]] inline auto okOr(E error) noexcept -> Result<T, E> {
+		[[nodiscard]] constexpr inline auto okOr(E error) noexcept -> Result<T, E> {
 			if(mIsSome) {
 				auto res = Result<T, E>::Ok(std::move(mSome));
 				mIsSome = false;
@@ -174,7 +175,7 @@ namespace apex::utils {
 		/// If this is not `Some`, then `std::terminate` is called
 		///
 		/// @return The contained `T`
-		[[nodiscard]] inline auto unwrap() noexcept -> T {
+		[[nodiscard]] constexpr inline auto unwrap() noexcept -> T {
 			if(mIsSome) {
 				auto some = std::move(mSome);
 				mIsSome = false;
@@ -192,7 +193,7 @@ namespace apex::utils {
 		/// @param defaultValue - The value to return if this is `None`
 		///
 		/// @return The contained `T` if this is `Some`, or `defaultValue`
-		[[nodiscard]] inline auto unwrapOr(T defaultValue) noexcept -> T {
+		[[nodiscard]] constexpr inline auto unwrapOr(T defaultValue) noexcept -> T {
 			if(mIsSome) {
 				auto some = std::move(mSome);
 				mIsSome = false;
@@ -233,7 +234,7 @@ namespace apex::utils {
 		/// `std::terminate`
 		///
 		/// @return A pointer to the contained `T`
-		[[nodiscard]] inline auto getMut() noexcept -> T* {
+		[[nodiscard]] constexpr inline auto getMut() noexcept -> T* {
 			if(mIsSome) {
 				return &mSome;
 			}
@@ -247,7 +248,7 @@ namespace apex::utils {
 		/// `std::terminate`
 		///
 		/// @return An immutable pointer to the contained `T`
-		[[nodiscard]] inline auto getConst() const noexcept -> const T* {
+		[[nodiscard]] constexpr inline auto getConst() const noexcept -> const T* {
 			if(mIsSome) {
 				return &mSome;
 			}
@@ -256,13 +257,15 @@ namespace apex::utils {
 			}
 		}
 
-		auto operator=(const Option<T, copyable>& option) -> Option<T, copyable>& = default;
-		auto operator=(Option<T, copyable>&& option) noexcept -> Option<T, copyable>& = default;
+		constexpr auto
+		operator=(const Option<T, copyable>& option) -> Option<T, copyable>& = default;
+		constexpr auto
+		operator=(Option<T, copyable>&& option) noexcept -> Option<T, copyable>& = default;
 
 	  private:
-		explicit Option(T some) noexcept : mSome(some), mIsSome(true) {
+		constexpr explicit Option(T some) noexcept : mSome(some), mIsSome(true) {
 		}
-		Option() = default;
+		constexpr Option() = default;
 
 		/// The contained value
 		T mSome;
@@ -335,14 +338,17 @@ namespace apex::utils {
 		/// @param some - The value to store in this `Option<T>`
 		///
 		/// @return `Some(some)`
-		[[nodiscard]] static inline auto Some(gsl::owner<T*> some) noexcept -> Option<T*>;
+		[[nodiscard]] constexpr static inline auto
+		Some(gsl::owner<T*> some) noexcept -> Option<T*> {
+			return Option<T*, false>(some);
+		}
 
 		/// @brief Similar to `unwrap`, except doesn't consume this `Option`.
 		/// Returns a pointer to the mutable `T` if this is `Some`, otherwise calls
 		/// `std::terminate`
 		///
 		/// @return A pointer to the contained `T`
-		[[nodiscard]] inline auto getMut() noexcept -> T* {
+		[[nodiscard]] constexpr inline auto getMut() noexcept -> T* {
 			if(mIsSome) {
 				return gsl::not_null<T*>(mSome);
 			}
@@ -356,7 +362,7 @@ namespace apex::utils {
 		/// `std::terminate`
 		///
 		/// @return A pointer to the contained `T`
-		[[nodiscard]] inline auto getConst() const noexcept -> const T* {
+		[[nodiscard]] constexpr inline auto getConst() const noexcept -> const T* {
 			if(mIsSome) {
 				return gsl::not_null<T*>(mSome);
 			}
@@ -366,9 +372,9 @@ namespace apex::utils {
 		}
 
 	  private:
-		explicit Option(gsl::owner<T*> some) noexcept : mSome(some), mIsSome(true) {
+		constexpr explicit Option(gsl::owner<T*> some) noexcept : mSome(some), mIsSome(true) {
 		}
-		Option() noexcept = default;
+		constexpr Option() noexcept = default;
 
 		/// The contained value
 		gsl::owner<T*> mSome = nullptr;

@@ -5,6 +5,7 @@
 #include "TrigFuncs.h"
 
 namespace apex::math {
+	using gsl::narrow_cast;
 	class Radians;
 
 	/// @brief Basic class for working with frequency values in Hertz and converting from Hertz to
@@ -43,7 +44,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Radians
 		[[nodiscard]] static inline constexpr auto hertzToRadians(float hertz) noexcept -> float {
-			return hertz / math::twoPif;
+			return hertz / Constants<>::twoPi;
 		}
 
 		/// @brief Converts the given Hertz value to Radians
@@ -52,7 +53,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Radians
 		[[nodiscard]] static inline constexpr auto hertzToRadians(double hertz) noexcept -> double {
-			return hertz / math::twoPi;
+			return hertz / Constants<double>::twoPi;
 		}
 
 		/// @brief Converts the given Hertz value to Radians
@@ -68,7 +69,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Hertz
 		[[nodiscard]] static constexpr auto fromRadians(float radians) noexcept -> Hertz {
-			return Hertz(radians * math::twoPif);
+			return Hertz(radians * Constants<>::twoPi);
 		}
 
 		/// @brief Converts the given Radians value to Hertz
@@ -77,7 +78,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Hertz
 		[[nodiscard]] static constexpr auto fromRadians(double radians) noexcept -> Hertz {
-			return Hertz(radians * math::twoPi);
+			return Hertz(radians * Constants<double>::twoPi);
 		}
 
 		/// @brief Converts the given Radians value to Hertz
@@ -124,14 +125,14 @@ namespace apex::math {
 		///
 		/// @param radians - The new value, in Radians
 		constexpr inline auto setFromRadians(float radians) noexcept -> void {
-			mValue = radians * math::twoPif;
+			mValue = radians * Constants<>::twoPi;
 		}
 
 		/// @brief Sets the value of this to the given Radians value
 		///
 		/// @param radians - The new value, in Radians
 		constexpr inline auto setFromRadians(double radians) noexcept -> void {
-			mValue = radians * math::twoPi;
+			mValue = radians * Constants<double>::twoPi;
 		}
 
 		/// @brief Sets the value of this to the given Radians value
@@ -148,11 +149,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator+(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue + rhs);
+			return Hertz(lhs.mValue + narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator+(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue + rhs);
+			return Hertz(lhs.mValue + narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator+(float lhs, const Hertz& rhs) noexcept -> Hertz {
@@ -164,11 +165,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator+(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs + rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) + rhs.mValue);
 		}
 
 		friend constexpr inline auto operator+(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs + rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) + rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -187,12 +188,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator+=(int64_t x) noexcept -> Hertz& {
-			mValue += x;
+			mValue += narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator+=(size_t x) noexcept -> Hertz& {
-			mValue += x;
+			mValue += narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -210,11 +211,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator-(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue - rhs);
+			return Hertz(lhs.mValue - narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator-(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue - rhs);
+			return Hertz(lhs.mValue - narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator-(float lhs, const Hertz& rhs) noexcept -> Hertz {
@@ -226,11 +227,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator-(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs - rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) - rhs.mValue);
 		}
 
 		friend constexpr inline auto operator-(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs - rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) - rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -249,12 +250,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator-=(int64_t x) noexcept -> Hertz& {
-			mValue -= x;
+			mValue -= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator-=(size_t x) noexcept -> Hertz& {
-			mValue -= x;
+			mValue -= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -276,11 +277,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator*(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue * rhs);
+			return Hertz(lhs.mValue * narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator*(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue * rhs);
+			return Hertz(lhs.mValue * narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator*(float lhs, const Hertz& rhs) noexcept -> Hertz {
@@ -292,11 +293,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator*(int64_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs * rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) * rhs.mValue);
 		}
 
 		friend constexpr inline auto operator*(size_t lhs, const Hertz& rhs) noexcept -> Hertz {
-			return Hertz(lhs * rhs.mValue);
+			return Hertz(narrow_cast<double>(lhs) * rhs.mValue);
 		}
 
 		constexpr inline auto operator*=(float x) noexcept -> Hertz& {
@@ -310,12 +311,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator*=(int64_t x) noexcept -> Hertz& {
-			mValue *= x;
+			mValue *= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator*=(size_t x) noexcept -> Hertz& {
-			mValue *= x;
+			mValue *= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -328,15 +329,15 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator/(const Hertz& lhs, int64_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue / rhs);
+			return Hertz(lhs.mValue / narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator/(const Hertz& lhs, size_t rhs) noexcept -> Hertz {
-			return Hertz(lhs.mValue / rhs);
+			return Hertz(lhs.mValue / narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator/(float lhs, const Hertz& rhs) noexcept -> float {
-			return gsl::narrow_cast<float>(lhs / rhs.mValue);
+			return narrow_cast<float>(lhs / rhs.mValue);
 		}
 
 		friend constexpr inline auto operator/(double lhs, const Hertz& rhs) noexcept -> double {
@@ -344,11 +345,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator/(int64_t lhs, const Hertz& rhs) noexcept -> int64_t {
-			return static_cast<int64_t>(lhs / rhs.mValue);
+			return static_cast<int64_t>(narrow_cast<double>(lhs) / rhs.mValue);
 		}
 
 		friend constexpr inline auto operator/(size_t lhs, const Hertz& rhs) noexcept -> size_t {
-			return static_cast<size_t>(lhs / rhs.mValue);
+			return static_cast<size_t>(narrow_cast<double>(lhs) / rhs.mValue);
 		}
 
 		constexpr inline auto operator/=(float x) noexcept -> Hertz& {
@@ -362,12 +363,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator/=(int64_t x) noexcept -> Hertz& {
-			mValue /= x;
+			mValue /= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator/=(size_t x) noexcept -> Hertz& {
-			mValue /= x;
+			mValue /= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -454,11 +455,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator==(const Hertz& lhs, int64_t rhs) noexcept -> bool {
-			return lhs.mValue == rhs;
+			return lhs.mValue == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator==(const Hertz& lhs, size_t rhs) noexcept -> bool {
-			return lhs.mValue == rhs;
+			return lhs.mValue == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator==(float lhs, const Hertz& rhs) noexcept -> bool {
@@ -470,11 +471,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator==(int64_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs == rhs.mValue;
+			return narrow_cast<double>(lhs) == rhs.mValue;
 		}
 
 		friend constexpr inline auto operator==(size_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs == rhs.mValue;
+			return narrow_cast<double>(lhs) == rhs.mValue;
 		}
 
 		friend constexpr inline auto
@@ -491,11 +492,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator<=(const Hertz& lhs, int64_t rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator<=(const Hertz& lhs, size_t rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator<=(float lhs, const Hertz& rhs) noexcept -> bool {
@@ -507,11 +508,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator<=(int64_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto operator<=(size_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto
@@ -528,11 +529,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator>=(const Hertz& lhs, int64_t rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator>=(const Hertz& lhs, size_t rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator>=(float lhs, const Hertz& rhs) noexcept -> bool {
@@ -544,11 +545,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator>=(int64_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto operator>=(size_t lhs, const Hertz& rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto
@@ -567,12 +568,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator=(const int64_t& x) noexcept -> Hertz& {
-			mValue = x;
+			mValue = narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator=(const size_t& x) noexcept -> Hertz& {
-			mValue = x;
+			mValue = narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -580,7 +581,7 @@ namespace apex::math {
 		constexpr inline auto operator=(Hertz&& rhs) noexcept -> Hertz& = default;
 
 		explicit constexpr inline operator float() const noexcept {
-			return gsl::narrow_cast<float>(mValue);
+			return narrow_cast<float>(mValue);
 		}
 
 		explicit constexpr inline operator double() const noexcept {
@@ -588,15 +589,15 @@ namespace apex::math {
 		}
 
 		explicit constexpr inline operator int() const noexcept {
-			return gsl::narrow_cast<int>(mValue);
+			return narrow_cast<int>(mValue);
 		}
 
 		explicit constexpr inline operator int64_t() const noexcept {
-			return gsl::narrow_cast<int64_t>(mValue);
+			return narrow_cast<int64_t>(mValue);
 		}
 
 		explicit constexpr inline operator size_t() const noexcept {
-			return gsl::narrow_cast<size_t>(mValue);
+			return narrow_cast<size_t>(mValue);
 		}
 
 		explicit constexpr inline operator Radians() const noexcept;
@@ -641,7 +642,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Hertz
 		[[nodiscard]] static inline constexpr auto radiansToHertz(float radians) noexcept -> float {
-			return radians * math::twoPif;
+			return radians * Constants<>::twoPi;
 		}
 
 		/// @brief Converts the given Radians value to Hertz
@@ -651,7 +652,7 @@ namespace apex::math {
 		/// @return - The corresponding value in Hertz
 		[[nodiscard]] static inline constexpr auto
 		radiansToHertz(double radians) noexcept -> double {
-			return radians * math::twoPi;
+			return radians * Constants<double>::twoPi;
 		}
 
 		/// @brief Converts the given Radians value to Hertz
@@ -660,7 +661,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding value in Hertz
 		[[nodiscard]] static inline constexpr auto toHertz(Radians radians) noexcept -> Hertz {
-			return Hertz(math::twoPi * static_cast<double>(radians));
+			return Hertz(Constants<double>::twoPi * static_cast<double>(radians));
 		}
 
 		/// @brief Converts the given Hertz value to Radians
@@ -669,7 +670,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding Radians Value
 		[[nodiscard]] static inline constexpr auto fromHertz(float hertz) noexcept -> Radians {
-			return Radians(hertz / math::twoPif);
+			return Radians(hertz / Constants<>::twoPi);
 		}
 
 		/// @brief Converts the given Hertz value to Radians
@@ -678,7 +679,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding Radians Value
 		[[nodiscard]] static inline constexpr auto fromHertz(double hertz) noexcept -> Radians {
-			return Radians(hertz / math::twoPi);
+			return Radians(hertz / Constants<double>::twoPi);
 		}
 
 		/// @brief Converts the given Hertz value to Radians
@@ -687,7 +688,7 @@ namespace apex::math {
 		///
 		/// @return - The corresponding Radians Value
 		[[nodiscard]] static inline constexpr auto fromHertz(Hertz hertz) noexcept -> Radians {
-			return Radians(static_cast<double>(hertz) / math::twoPi);
+			return Radians(static_cast<double>(hertz) / Constants<double>::twoPi);
 		}
 
 		/// @brief Returns the Radians value of this
@@ -729,21 +730,21 @@ namespace apex::math {
 		///
 		/// @param hertz - The new value, in Hertz
 		constexpr inline auto setFromHertz(float hertz) noexcept -> void {
-			mValue = hertz / math::twoPif;
+			mValue = hertz / Constants<>::twoPi;
 		}
 
 		/// @brief Sets the value fo this to the given Hertz value
 		///
 		/// @param hertz - The new value, in Hertz
 		constexpr inline auto setFromHertz(double hertz) noexcept -> void {
-			mValue = hertz / math::twoPi;
+			mValue = hertz / Constants<double>::twoPi;
 		}
 
 		/// @brief Sets the value fo this to the given Hertz value
 		///
 		/// @param hertz - The new value, in Hertz
 		constexpr inline auto setFromHertz(Hertz hertz) noexcept -> void {
-			mValue = static_cast<double>(hertz / math::twoPi);
+			mValue = static_cast<double>(hertz / Constants<double>::twoPi);
 		}
 
 		friend constexpr inline auto operator+(const Radians& lhs, float rhs) noexcept -> Radians {
@@ -756,11 +757,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator+(const Radians& lhs, int64_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue + rhs);
+			return Radians(lhs.mValue + narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator+(const Radians& lhs, size_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue + rhs);
+			return Radians(lhs.mValue + narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator+(float lhs, const Radians& rhs) noexcept -> Radians {
@@ -773,11 +774,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator+(int64_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(lhs + rhs.mValue);
+			return Radians(narrow_cast<double>(lhs) + rhs.mValue);
 		}
 
 		friend constexpr inline auto operator+(size_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(lhs + rhs.mValue);
+			return Radians(narrow_cast<double>(lhs) + rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -796,12 +797,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator+=(int64_t x) noexcept -> Radians& {
-			mValue += x;
+			mValue += narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator+=(size_t x) noexcept -> Radians& {
-			mValue += x;
+			mValue += narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -820,11 +821,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator-(const Radians& lhs, int64_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue - rhs);
+			return Radians(lhs.mValue - narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator-(const Radians& lhs, size_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue - rhs);
+			return Radians(lhs.mValue - narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator-(float lhs, const Radians& rhs) noexcept -> Radians {
@@ -837,11 +838,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator-(int64_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(lhs - rhs.mValue);
+			return Radians(narrow_cast<double>(lhs) - rhs.mValue);
 		}
 
 		friend constexpr inline auto operator-(size_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(lhs - rhs.mValue);
+			return Radians(narrow_cast<double>(lhs) - rhs.mValue);
 		}
 
 		friend constexpr inline auto
@@ -860,12 +861,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator-=(int64_t x) noexcept -> Radians& {
-			mValue -= x;
+			mValue -= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator-=(size_t x) noexcept -> Radians& {
-			mValue -= x;
+			mValue -= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -888,11 +889,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator*(const Radians& lhs, int64_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue * rhs);
+			return Radians(lhs.mValue * narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator*(const Radians& lhs, size_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue * rhs);
+			return Radians(lhs.mValue * narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator*(float lhs, const Radians& rhs) noexcept -> Radians {
@@ -905,11 +906,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator*(int64_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(rhs.mValue * lhs);
+			return Radians(rhs.mValue * narrow_cast<double>(lhs));
 		}
 
 		friend constexpr inline auto operator*(size_t lhs, const Radians& rhs) noexcept -> Radians {
-			return Radians(rhs.mValue * lhs);
+			return Radians(rhs.mValue * narrow_cast<double>(lhs));
 		}
 
 		constexpr inline auto operator*=(float x) noexcept -> Radians& {
@@ -923,12 +924,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator*=(int64_t x) noexcept -> Radians& {
-			mValue *= x;
+			mValue *= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator*=(size_t x) noexcept -> Radians& {
-			mValue *= x;
+			mValue *= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -942,15 +943,15 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator/(const Radians& lhs, int64_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue / rhs);
+			return Radians(lhs.mValue / narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator/(const Radians& lhs, size_t rhs) noexcept -> Radians {
-			return Radians(lhs.mValue / rhs);
+			return Radians(lhs.mValue / narrow_cast<double>(rhs));
 		}
 
 		friend constexpr inline auto operator/(float lhs, const Radians& rhs) noexcept -> float {
-			return gsl::narrow_cast<float>(lhs / rhs.mValue);
+			return narrow_cast<float>(lhs / rhs.mValue);
 		}
 
 		friend constexpr inline auto operator/(double lhs, const Radians& rhs) noexcept -> double {
@@ -959,11 +960,11 @@ namespace apex::math {
 
 		friend constexpr inline auto
 		operator/(int64_t lhs, const Radians& rhs) noexcept -> int64_t {
-			return static_cast<int64_t>(lhs / rhs.mValue);
+			return static_cast<int64_t>(narrow_cast<double>(lhs) / rhs.mValue);
 		}
 
 		friend constexpr inline auto operator/(size_t lhs, const Radians& rhs) noexcept -> size_t {
-			return static_cast<size_t>(lhs / rhs.mValue);
+			return static_cast<size_t>(narrow_cast<double>(lhs) / rhs.mValue);
 		}
 
 		constexpr inline auto operator/=(float x) noexcept -> Radians& {
@@ -977,12 +978,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator/=(int64_t x) noexcept -> Radians& {
-			mValue /= x;
+			mValue /= narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator/=(size_t x) noexcept -> Radians& {
-			mValue /= x;
+			mValue /= narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -1069,11 +1070,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator==(const Radians& lhs, int64_t rhs) noexcept -> bool {
-			return lhs.mValue == rhs;
+			return lhs.mValue == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator==(const Radians& lhs, size_t rhs) noexcept -> bool {
-			return lhs.mValue == rhs;
+			return lhs.mValue == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator==(float lhs, const Radians& rhs) noexcept -> bool {
@@ -1085,11 +1086,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator==(int64_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs == rhs.mValue;
+			return narrow_cast<double>(lhs) == rhs.mValue;
 		}
 
 		friend constexpr inline auto operator==(size_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs == rhs.mValue;
+			return narrow_cast<double>(lhs) == rhs.mValue;
 		}
 
 		friend constexpr inline auto
@@ -1106,11 +1107,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator<=(const Radians& lhs, int64_t rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator<=(const Radians& lhs, size_t rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator<=(float lhs, const Radians& rhs) noexcept -> bool {
@@ -1122,11 +1123,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator<=(int64_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto operator<=(size_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs < rhs || lhs == rhs;
+			return lhs < rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto
@@ -1143,11 +1144,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator>=(const Radians& lhs, int64_t rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator>=(const Radians& lhs, size_t rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || lhs == narrow_cast<double>(rhs);
 		}
 
 		friend constexpr inline auto operator>=(float lhs, const Radians& rhs) noexcept -> bool {
@@ -1159,11 +1160,11 @@ namespace apex::math {
 		}
 
 		friend constexpr inline auto operator>=(int64_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto operator>=(size_t lhs, const Radians& rhs) noexcept -> bool {
-			return lhs > rhs || lhs == rhs;
+			return lhs > rhs || narrow_cast<double>(lhs) == rhs;
 		}
 
 		friend constexpr inline auto
@@ -1182,12 +1183,12 @@ namespace apex::math {
 		}
 
 		constexpr inline auto operator=(const int64_t& x) noexcept -> Radians& {
-			mValue = x;
+			mValue = narrow_cast<double>(x);
 			return *this;
 		}
 
 		constexpr inline auto operator=(const size_t& x) noexcept -> Radians& {
-			mValue = x;
+			mValue = narrow_cast<double>(x);
 			return *this;
 		}
 
@@ -1195,7 +1196,7 @@ namespace apex::math {
 		constexpr inline auto operator=(Radians&& rhs) noexcept -> Radians& = default;
 
 		explicit constexpr inline operator float() const noexcept {
-			return gsl::narrow_cast<float>(mValue);
+			return narrow_cast<float>(mValue);
 		}
 
 		explicit constexpr inline operator double() const noexcept {
@@ -1203,19 +1204,19 @@ namespace apex::math {
 		}
 
 		explicit constexpr inline operator int() const noexcept {
-			return gsl::narrow_cast<int>(mValue);
+			return narrow_cast<int>(mValue);
 		}
 
 		explicit constexpr inline operator int64_t() const noexcept {
-			return gsl::narrow_cast<int64_t>(mValue);
+			return narrow_cast<int64_t>(mValue);
 		}
 
 		explicit constexpr inline operator size_t() const noexcept {
-			return gsl::narrow_cast<size_t>(mValue);
+			return narrow_cast<size_t>(mValue);
 		}
 
 		explicit constexpr inline operator Hertz() const noexcept {
-			return Hertz(mValue * math::twoPi);
+			return Hertz(mValue * Constants<double>::twoPi);
 		}
 
 	  private:
@@ -1227,7 +1228,7 @@ namespace apex::math {
 	}
 
 	inline constexpr auto Hertz::fromRadians(Radians radians) noexcept -> Hertz {
-		return Hertz(static_cast<double>(radians) * math::twoPi);
+		return Hertz(static_cast<double>(radians) * Constants<double>::twoPi);
 	}
 
 	inline constexpr auto Hertz::getRadians() const noexcept -> Radians {
@@ -1235,26 +1236,34 @@ namespace apex::math {
 	}
 
 	inline constexpr auto Hertz::setFromRadians(Radians radians) noexcept -> void {
-		mValue = static_cast<double>(radians) * math::twoPi;
+		mValue = static_cast<double>(radians) * Constants<double>::twoPi;
 	}
 
 	inline constexpr Hertz::operator Radians() const noexcept {
-		return Radians(mValue / math::twoPi);
+		return Radians(mValue / Constants<double>::twoPi);
 	}
 
 	constexpr inline auto operator"" _Hz(long double x) noexcept -> Hertz {
-		return Hertz(gsl::narrow_cast<double>(x));
+		return Hertz(narrow_cast<double>(x));
 	}
 
 	constexpr inline auto operator""_Hz(unsigned long long x) noexcept -> Hertz {
-		return Hertz(gsl::narrow_cast<double>(x));
+		return Hertz(narrow_cast<double>(x));
+	}
+
+	constexpr inline auto operator""_kHz(long double x) noexcept -> Hertz {
+		return Hertz(narrow_cast<double>(x) * 1000.0);
+	}
+
+	constexpr inline auto operator""_kHz(unsigned long long x) noexcept -> Hertz {
+		return Hertz(narrow_cast<double>(x * 1000));
 	}
 
 	constexpr inline auto operator"" _rad(long double x) noexcept -> Radians {
-		return Radians(gsl::narrow_cast<double>(x));
+		return Radians(narrow_cast<double>(x));
 	}
 
 	constexpr inline auto operator""_rad(unsigned long long x) noexcept -> Radians {
-		return Radians(gsl::narrow_cast<double>(x));
+		return Radians(narrow_cast<double>(x));
 	}
 } // namespace apex::math

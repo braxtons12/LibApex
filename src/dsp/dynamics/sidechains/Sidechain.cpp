@@ -7,6 +7,9 @@ namespace apex::dsp {
 	///
 	/// @return - The target gain reduction
 	auto Sidechain<float>::process(float input) noexcept -> Decibels {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing Input");
+#endif
 		Decibels x = 0.0_dB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
@@ -47,6 +50,9 @@ namespace apex::dsp {
 	///
 	/// @param attackMS - The attack time, in milliseconds
 	auto Sidechain<float>::setAttackTime(float attackMS) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Attack Time");
+#endif
 		mState.setAttack(attackMS * MS_TO_SECS_MULT);
 	}
 
@@ -61,6 +67,9 @@ namespace apex::dsp {
 	///
 	/// @param releaseMS - The release time, in milliseconds
 	auto Sidechain<float>::setReleaseTime(float releaseMS) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Release Time");
+#endif
 		mState.setRelease(releaseMS * MS_TO_SECS_MULT);
 	}
 
@@ -75,6 +84,9 @@ namespace apex::dsp {
 	///
 	/// @param ratio - The ratio
 	auto Sidechain<float>::setRatio(float ratio) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Ratio");
+#endif
 		mState.setRatio(ratio);
 	}
 
@@ -89,6 +101,9 @@ namespace apex::dsp {
 	///
 	/// @param threshold - The threshold, in decibels
 	auto Sidechain<float>::setThreshold(Decibels threshold) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Threshold");
+#endif
 		mState.setThreshold(threshold);
 	}
 
@@ -103,6 +118,9 @@ namespace apex::dsp {
 	///
 	/// @param kneeWidth - The knee width, in decibels
 	auto Sidechain<float>::setKneeWidth(Decibels kneeWidth) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating KneeWidth");
+#endif
 		mState.setKneeWidth(kneeWidth);
 	}
 
@@ -117,6 +135,9 @@ namespace apex::dsp {
 	///
 	/// @param type - The dynamics type
 	auto Sidechain<float>::setDynamicsType(DynamicsType type) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Dynamics Type");
+#endif
 		mDynamicsType = type;
 		if(mDynamicsType == DynamicsType::Compressor) {
 			mGainComputer = &mCompressorComputer;
@@ -137,6 +158,9 @@ namespace apex::dsp {
 	///
 	/// @param sampleRate - The sample rate, in Hertz
 	auto Sidechain<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Sample Rate");
+#endif
 		mState.setSampleRate(sampleRate);
 	}
 
@@ -159,6 +183,9 @@ namespace apex::dsp {
 	/// @param type - The type of the `LevelDetector`
 	auto Sidechain<float>::setLevelDetectorType(LevelDetector<float>::DetectorType type) noexcept
 		-> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating LevelDetector Type");
+#endif
 		mDetectorType = type;
 		mLevelDetector = LevelDetector<float>(&mState, mDetectorType);
 	}
@@ -175,6 +202,9 @@ namespace apex::dsp {
 	///
 	/// @param topology - The macro-level topology of the gain reduction computer
 	auto Sidechain<float>::setComputerTopology(ComputerTopology topology) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Gain Computer Topology");
+#endif
 		mComputerTopology = topology;
 	}
 
@@ -190,6 +220,9 @@ namespace apex::dsp {
 	///
 	/// @param topology - The macro-level topology of the level detector
 	auto Sidechain<float>::setDetectorTopology(DetectorTopology topology) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating LevelDetector Topology");
+#endif
 		mDetectorTopology = topology;
 	}
 
@@ -206,11 +239,17 @@ namespace apex::dsp {
 	/// @param reduction - The new `GainReduction`
 	auto Sidechain<float>::setGainReductionProcessor(
 		GainReduction<float, float, float>&& reduction) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating GainReduction Processor");
+#endif
 		mGainReductionProcessor = std::move(reduction);
 	}
 
 	auto Sidechain<float>::processFeedForwardReturnToZero(float input) noexcept -> Decibels {
-		float rectified = math::fabsf(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardReturnToZero");
+#endif
+		float rectified = General<>::abs(input);
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
@@ -219,7 +258,10 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<float>::processFeedForwardReturnToThreshold(float input) noexcept -> Decibels {
-		float rectified = math::fabsf(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardReturnToThreshold");
+#endif
+		float rectified = General<>::abs(input);
 		auto thresholdLinear = gsl::narrow_cast<float>(mState.getThreshold().getLinear());
 		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
@@ -230,8 +272,11 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<float>::processFeedForwardAlternateReturnToThreshold(float input) noexcept
-		-> Decibels {
-		float rectified = math::fabsf(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardAlternateReturnToThreshold");
+#endif
+	->Decibels {
+		float rectified = General<>::abs(input);
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(gsl::narrow_cast<float>(gainReduction));
@@ -240,8 +285,11 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<float>::processFeedBackReturnToZero(float input) noexcept -> Decibels {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackReturnToZero");
+#endif
 		float rectified
-			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+			= General<>::abs(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
 		float detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
@@ -250,8 +298,11 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<float>::processFeedBackReturnToThreshold(float input) noexcept -> Decibels {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackReturnToThreshold");
+#endif
 		float rectified
-			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+			= General<>::abs(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
 		auto thresholdLinear = gsl::narrow_cast<float>(mState.getThreshold().getLinear());
 		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
@@ -263,8 +314,11 @@ namespace apex::dsp {
 
 	auto
 	Sidechain<float>::processFeedBackAlternateReturnToThreshold(float input) noexcept -> Decibels {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackAlternateReturnToThreshold");
+#endif
 		float rectified
-			= math::fabsf(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
+			= General<>::abs(input) * gsl::narrow_cast<float>(mGainReductionDB.getLinear());
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction
 			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;
@@ -279,6 +333,9 @@ namespace apex::dsp {
 	///
 	/// @return - The target gain reduction
 	auto Sidechain<double>::process(double input) noexcept -> Decibels {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing Input");
+#endif
 		Decibels x = 0.0_dB;
 		switch(mComputerTopology) {
 			case ComputerTopology::FeedForward:
@@ -319,6 +376,9 @@ namespace apex::dsp {
 	///
 	/// @param attackMS - The attack time, in milliseconds
 	auto Sidechain<double>::setAttackTime(double attackMS) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Attack Time");
+#endif
 		mState.setAttack(attackMS * MS_TO_SECS_MULT);
 	}
 
@@ -333,6 +393,9 @@ namespace apex::dsp {
 	///
 	/// @param releaseMS - The release time, in milliseconds
 	auto Sidechain<double>::setReleaseTime(double releaseMS) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Release Time");
+#endif
 		mState.setRelease(releaseMS * MS_TO_SECS_MULT);
 	}
 
@@ -347,6 +410,9 @@ namespace apex::dsp {
 	///
 	/// @param ratio - The ratio
 	auto Sidechain<double>::setRatio(double ratio) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Ratio");
+#endif
 		mState.setRatio(ratio);
 	}
 
@@ -361,6 +427,9 @@ namespace apex::dsp {
 	///
 	/// @param threshold - The threshold, in decibels
 	auto Sidechain<double>::setThreshold(Decibels threshold) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Threshold");
+#endif
 		mState.setThreshold(threshold);
 	}
 
@@ -375,6 +444,9 @@ namespace apex::dsp {
 	///
 	/// @param kneeWidth - The knee width, in decibels
 	auto Sidechain<double>::setKneeWidth(Decibels kneeWidth) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating KneeWidth");
+#endif
 		mState.setKneeWidth(kneeWidth);
 	}
 
@@ -389,6 +461,9 @@ namespace apex::dsp {
 	///
 	/// @param type - The dynamics type
 	auto Sidechain<double>::setDynamicsType(DynamicsType type) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Dynamics Type");
+#endif
 		mDynamicsType = type;
 		if(mDynamicsType == DynamicsType::Compressor) {
 			mGainComputer = &mCompressorComputer;
@@ -409,6 +484,9 @@ namespace apex::dsp {
 	///
 	/// @param sampleRate - The sample rate, in Hertz
 	auto Sidechain<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Sample Rate");
+#endif
 		mState.setSampleRate(sampleRate);
 	}
 
@@ -431,6 +509,9 @@ namespace apex::dsp {
 	/// @param type - The type of the `LevelDetector`
 	auto Sidechain<double>::setLevelDetectorType(LevelDetector<double>::DetectorType type) noexcept
 		-> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating LevelDetector Type");
+#endif
 		mDetectorType = type;
 		mLevelDetector = LevelDetector<double>(&mState, mDetectorType);
 	}
@@ -447,6 +528,9 @@ namespace apex::dsp {
 	///
 	/// @param topology - The macro-level topology of the gain reduction computer
 	auto Sidechain<double>::setComputerTopology(ComputerTopology topology) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating Gain Computer Topology");
+#endif
 		mComputerTopology = topology;
 	}
 
@@ -462,6 +546,9 @@ namespace apex::dsp {
 	///
 	/// @param topology - The macro-level topology of the level detector
 	auto Sidechain<double>::setDetectorTopology(DetectorTopology topology) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating LevelDetector Topology");
+#endif
 		mDetectorTopology = topology;
 	}
 
@@ -478,11 +565,17 @@ namespace apex::dsp {
 	/// @param reduction - The new `GainReduction`
 	auto Sidechain<double>::setGainReductionProcessor(
 		GainReduction<double, double, double>&& reduction) noexcept -> void {
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Updating GainReduction Processor");
+#endif
 		mGainReductionProcessor = std::move(reduction);
 	}
 
 	auto Sidechain<double>::processFeedForwardReturnToZero(double input) noexcept -> Decibels {
-		double rectified = math::fabs(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardReturnToZero");
+#endif
+		double rectified = General<double>::abs(input);
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
@@ -491,7 +584,10 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<double>::processFeedForwardReturnToThreshold(double input) noexcept -> Decibels {
-		double rectified = math::fabs(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardReturnToThreshold");
+#endif
+		double rectified = General<double>::abs(input);
 		double thresholdLinear = mState.getThreshold().getLinear();
 		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
@@ -503,7 +599,10 @@ namespace apex::dsp {
 
 	auto Sidechain<double>::processFeedForwardAlternateReturnToThreshold(double input) noexcept
 		-> Decibels {
-		double rectified = math::fabs(input);
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedForwardAlternateReturnToThreshold");
+#endif
+		double rectified = General<double>::abs(input);
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction = mGainComputer->process(rectifiedDB) - rectifiedDB;
 		mGainReductionDB = mLevelDetector.process(static_cast<double>(gainReduction));
@@ -512,7 +611,10 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<double>::processFeedBackReturnToZero(double input) noexcept -> Decibels {
-		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackReturnToZero");
+#endif
+		double rectified = General<double>::abs(input) * mGainReductionDB.getLinear();
 		Decibels detectedDB = math::Decibels::linearToDecibels(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB += outputDB - detectedDB;
@@ -521,7 +623,10 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain<double>::processFeedBackReturnToThreshold(double input) noexcept -> Decibels {
-		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackReturnToThreshold");
+#endif
+		double rectified = General<double>::abs(input) * mGainReductionDB.getLinear();
 		double thresholdLinear = mState.getThreshold().getLinear();
 		Decibels detectedDB = Decibels::fromLinear(
 			mLevelDetector.process(rectified - thresholdLinear) + thresholdLinear);
@@ -533,7 +638,10 @@ namespace apex::dsp {
 
 	auto Sidechain<double>::processFeedBackAlternateReturnToThreshold(double input) noexcept
 		-> Decibels {
-		double rectified = math::fabs(input) * mGainReductionDB.getLinear();
+#ifdef TESTING_SIDECHAIN
+		Logger::LogMessage("Base Sidechain Processing FeedBackAlternateReturnToThreshold");
+#endif
+		double rectified = General<double>::abs(input) * mGainReductionDB.getLinear();
 		Decibels rectifiedDB = Decibels::fromLinear(rectified);
 		Decibels gainReduction
 			= mGainReductionDB + mGainComputer->process(rectifiedDB) - rectifiedDB;

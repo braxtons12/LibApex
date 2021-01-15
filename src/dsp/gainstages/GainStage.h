@@ -9,18 +9,17 @@ namespace apex::dsp {
 	///@brief Base Interface describing behavior of a `GainStage`
 	///
 	///@tparam T - The floating point type to back operations
-	template<typename T>
+	template<typename FloatType = float,
+			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
 	class GainStage {
 	  public:
-		static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-
 		///@brief Constructs a default `GainStage`
 		GainStage() noexcept = default;
 
 		///@brief Move constructs a `GainStage` from the given one
 		///
 		///@param stage - The `GainStage` to move
-		GainStage(GainStage<T>&& stage) noexcept = default;
+		GainStage(GainStage&& stage) noexcept = default;
 		virtual ~GainStage() noexcept = default;
 
 		///@brief Processes the input according to this `GainStage`'s parameters
@@ -28,9 +27,22 @@ namespace apex::dsp {
 		///@param input - The input to process
 		///
 		///@return - The processed output
-		[[nodiscard]] virtual auto process(T input) noexcept -> T = 0;
+		[[nodiscard]] virtual auto process(FloatType input) noexcept -> FloatType = 0;
 
-		auto operator=(GainStage<T>&& stage) noexcept -> GainStage<T>& = default;
+		/// @brief Processes the input according to this `GainStage`'s parameters'
+		///
+		/// @param input - The input to process
+		/// @param output - The processed output
+		virtual auto process(Span<FloatType> input, Span<FloatType> output) noexcept -> void = 0;
+
+		/// @brief Processes the input according to this `GainStage`'s parameters'
+		///
+		/// @param input - The input to process
+		/// @param output - The processed output
+		virtual auto process(Span<const FloatType> input, Span<FloatType> output) noexcept -> void
+			= 0;
+
+		auto operator=(GainStage&& stage) noexcept -> GainStage& = default;
 
 	  private:
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GainStage)

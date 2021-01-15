@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gsl/gsl>
-#include <juce_core/juce_core.h>
+#include <string>
 #include <type_traits>
 
 #include "MiscMacros.h"
@@ -18,35 +18,35 @@ namespace apex::utils {
 		/// @brief Constructs an `Error` with the given message
 		///
 		/// @param message - The error message
-		explicit Error(juce::String message) noexcept;
+		constexpr explicit Error(const char* message) noexcept;
 
 		/// @brief Constructs an `Error` with the given message and source.
 		/// Takes ownership of `source`
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		Error(juce::String message, gsl::owner<Error*> source) noexcept;
-		Error(const Error& error) = default;
-		Error(Error&& error) noexcept = default;
+		constexpr Error(const char* message, gsl::owner<Error*> source) noexcept;
+		constexpr Error(const Error& error) = default;
+		constexpr Error(Error&& error) noexcept = default;
 		virtual ~Error() noexcept;
 
 		/// @brief Returns the source/cause `Error` of this error if there is one,
 		/// passing ownership to the containing `Option`.
 		///
 		/// @return sourceError, if there is one, or nullptr
-		[[nodiscard]] virtual auto source() const noexcept -> const Error*;
+		[[nodiscard]] constexpr auto source() const noexcept -> const Error*;
 
 		/// @brief Returns the error message for this `Error`
 		///
 		/// @return The error message
-		[[nodiscard]] virtual auto message() const noexcept -> juce::String;
+		[[nodiscard]] constexpr auto message() const noexcept -> const char*;
 
-		/// @brief Converts this `Error` to a `juce::String`.
+		/// @brief Converts this `Error` to a `const char*`.
 		/// Generally implemented by combining the `source`'s `toString` and
 		/// this `Error`'s `message`
 		///
-		/// @return this `Error` formatted as a `juce::String`
-		[[nodiscard]] virtual auto toString() const noexcept -> juce::String;
+		/// @return this `Error` formatted as a `const char*`
+		[[nodiscard]] constexpr auto toString() const noexcept -> gsl::owner<const char*>;
 
 		auto operator=(const Error& error) -> Error& = default;
 		auto operator=(Error&& error) noexcept -> Error& = default;
@@ -64,12 +64,12 @@ namespace apex::utils {
 		}
 
 	  protected:
-		Error() noexcept = default;
+		constexpr Error() noexcept = default;
 		/// whether this `Error` has a source `Error`
 		bool mHasSource = false;
 		/// the source `Error` of this one
 		gsl::owner<Error*> mSource = nullptr;
 		/// the error message
-		juce::String mMessage = "";
+		const char* mMessage = "";
 	};
 } // namespace apex::utils

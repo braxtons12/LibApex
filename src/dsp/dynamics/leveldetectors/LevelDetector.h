@@ -11,6 +11,8 @@
 #include "../../../base/StandardIncludes.h"
 #include "../DynamicsState.h"
 
+//#define TESTING_LEVELDETECTOR
+
 namespace apex::dsp {
 	/// @brief Base Level Detector used for the level detection portion of a
 	/// Dynamic Range Processor's Sidechain
@@ -70,6 +72,9 @@ namespace apex::dsp {
 
 		/// @brief Resets this level detector to an initial state
 		virtual inline auto reset() noexcept -> void {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Resetting");
+#endif
 			mYOut1 = 0.0F;
 			mYTempStage1 = 0.0F;
 		}
@@ -78,26 +83,52 @@ namespace apex::dsp {
 		///
 		/// @param attackSeconds - The new attack time, in seconds
 		virtual inline auto setAttackTime(float attackSeconds) noexcept -> void {
-			mState->setAttackCoefficient1(
-				math::expf(-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Attack Time");
+#endif
+			mState->setAttackCoefficient1(Exponentials<>::exp(
+				-1.0F / (attackSeconds * static_cast<float>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the release time to the given value
 		///
 		/// @param releaseSeconds - The new release time, in seconds
 		virtual inline auto setReleaseTime(float releaseSeconds) noexcept -> void {
-			mState->setReleaseCoefficient1(
-				math::expf(-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Release Time");
+#endif
+			mState->setReleaseCoefficient1(Exponentials<>::exp(
+				-1.0F / (releaseSeconds * static_cast<float>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
 		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mState->setAttackCoefficient1(
-				math::expf(-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
-			mState->setReleaseCoefficient1(
-				math::expf(-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
+			mState->setAttackCoefficient1(Exponentials<>::exp(
+				-1.0F / (mState->getAttack() * static_cast<float>(sampleRate))));
+			mState->setReleaseCoefficient1(Exponentials<>::exp(
+				-1.0F / (mState->getRelease() * static_cast<float>(sampleRate))));
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage(
+				"Base LevelDetector AttackSeconds: " + juce::String(mState->getAttack())
+				+ "\nBase LevelDetector ReleaseSeconds: " + juce::String(mState->getRelease())
+				+ "\nBase LevelDetector AttackCoeff: "
+				+ juce::String(mState->getAttackCoefficient1())
+				+ "\nBase LevelDetector ReleaseCoeff: "
+				+ juce::String(mState->getReleaseCoefficient1()));
+#endif
+		}
+
+		virtual inline auto setDetectorType(DetectorType type) noexcept -> void {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Detector Type");
+#endif
+			mType = type;
+		}
+
+		[[nodiscard]] virtual inline auto getDetectorType() const noexcept -> DetectorType {
+			return mType;
 		}
 
 		auto operator=(LevelDetector<float>&& detector) noexcept -> LevelDetector<float>& = default;
@@ -166,6 +197,9 @@ namespace apex::dsp {
 
 		/// @brief Resets this level detector to an initial state
 		virtual inline auto reset() noexcept -> void {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Resetting");
+#endif
 			mYOut1 = 0.0;
 			mYTempStage1 = 0.0;
 		}
@@ -174,26 +208,43 @@ namespace apex::dsp {
 		///
 		/// @param attackSeconds - The new attack time, in seconds
 		virtual inline auto setAttackTime(double attackSeconds) noexcept -> void {
-			mState->setAttackCoefficient1(
-				math::exp(-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Attack Time");
+#endif
+			mState->setAttackCoefficient1(Exponentials<double>::exp(
+				-1.0 / (attackSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the release time to the given value
 		///
 		/// @param releaseSeconds - The new release time, in seconds
 		virtual inline auto setReleaseTime(double releaseSeconds) noexcept -> void {
-			mState->setReleaseCoefficient1(
-				math::exp(-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Release Time");
+#endif
+			mState->setReleaseCoefficient1(Exponentials<double>::exp(
+				-1.0 / (releaseSeconds * static_cast<double>(mState->getSampleRate()))));
 		}
 
 		/// @brief Sets the sample rate to the given value
 		///
 		/// @param sampleRate - The new sample rate, in Hertz
 		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
-			mState->setAttackCoefficient1(
-				math::exp(-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
-			mState->setReleaseCoefficient1(
-				math::exp(-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
+			mState->setAttackCoefficient1(Exponentials<double>::exp(
+				-1.0 / (mState->getAttack() * static_cast<double>(sampleRate))));
+			mState->setReleaseCoefficient1(Exponentials<double>::exp(
+				-1.0 / (mState->getRelease() * static_cast<double>(sampleRate))));
+		}
+
+		virtual inline auto setDetectorType(DetectorType type) noexcept -> void {
+#ifdef TESTING_LEVELDETECTOR
+			Logger::LogMessage("Base Level Detector Updating Detector Type");
+#endif
+			mType = type;
+		}
+
+		[[nodiscard]] virtual inline auto getDetectorType() const noexcept -> DetectorType {
+			return mType;
 		}
 
 		auto

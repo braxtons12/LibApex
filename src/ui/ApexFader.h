@@ -71,7 +71,7 @@ namespace apex::ui {
 		[[nodiscard]] inline auto getTextFromValue(double value) noexcept -> juce::String override {
 			double val = getValueFromProportion(value);
 			juce::String temp = juce::String(val);
-			if(math::fabs(val) <= 0.010) {
+			if(General<double>::abs(val) <= 0.010) {
 				return juce::String("0.0");
 			}
 			else {

@@ -33,8 +33,8 @@ namespace apex::ui {
 		ApexThumbSlider(juce::Slider::SliderStyle style,
 						std::function<double(double)> proportionToValueFunc,
 						std::function<double(double)> valueToProportionFunc,
-						int initialThumbWidth,
-						int initialThumbHeight) noexcept;
+						size_t initialThumbWidth,
+						size_t initialThumbHeight) noexcept;
 
 		~ApexThumbSlider() noexcept override = default;
 
@@ -55,8 +55,8 @@ namespace apex::ui {
 		juce::ImageComponent mThumbComponent;
 		bool mUsesThumbImage = false;
 
-		int mInitialThumbWidth = 0;
-		int mInitialThumbHeight = 0;
+		size_t mInitialThumbWidth = 0;
+		size_t mInitialThumbHeight = 0;
 
 		/// @brief Resizes the thumb to fit the new bounds and value of the slider
 		void resizeThumb() noexcept;

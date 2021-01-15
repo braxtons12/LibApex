@@ -1,9 +1,11 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
-#include "../../base/StandardIncludes.h"
+#include "../Result.h"
 #include "ScopedLockGuard.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 namespace apex::utils::synchronization {
 	/// @brief Enum containing the possible errors that can occur when locking a ReadWriteLock
@@ -71,9 +73,10 @@ namespace apex::utils::synchronization {
 		///
 		/// @return - `Ok(ScopedLockGuard<T>)` if successful, otherwise, `Err(ReadWriteLockError)`
 		[[nodiscard]] inline auto try_lock() noexcept -> LockResult {
-			if(!*mLocked) {
-				*mLocked = true;
-				return LockResult::Ok(ScopedLockGuard<T>(mData, [this]() { this->unlock(); }));
+			if(!mLocked.load()) {
+				mLocked.store(true);
+				return LockResult::Ok(
+					std::move(ScopedLockGuard<T>(mData, [this]() { this->unlock(); })));
 			}
 			else {
 				return LockResult::Err(LockError());
@@ -85,9 +88,9 @@ namespace apex::utils::synchronization {
 		///
 		/// @return `ScopedLockGuard<T>` - The lock guard for the data
 		[[nodiscard]] inline auto lock() noexcept -> ScopedLockGuard<T> {
-			while(*mLocked) {
+			while(mLocked.load()) {
 			}
-			*mLocked = true;
+			mLocked.store(true);
 			return ScopedLockGuard<T>(mData, [this]() { this->unlock(); });
 		}
 
@@ -100,12 +103,12 @@ namespace apex::utils::synchronization {
 		/// @param newVal - The new data value
 		inline auto unlock() noexcept -> void {
 			mCached = *mData;
-			*mLocked = false;
+			mLocked.store(false);
 		}
 
 	  private:
 		T mCached = T();
 		std::shared_ptr<T> mData = std::make_shared<T>(mCached);
-		std::shared_ptr<bool> mLocked = std::make_shared<bool>(false);
+		std::atomic_bool mLocked = std::atomic_bool(false);
 	};
 } // namespace apex::utils::synchronization

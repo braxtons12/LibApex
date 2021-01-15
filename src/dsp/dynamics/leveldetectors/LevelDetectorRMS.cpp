@@ -25,7 +25,7 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<float>::process(float input) noexcept -> float {
 		float xn = LevelDetector<float>::process(input);
 		float y2n = mRMSCoeff * mYSquared1 + (1.0F - mRMSCoeff) * (xn * xn);
-		float yn = math::sqrtf(y2n);
+		float yn = General<>::sqrt(y2n);
 		mYSquared1 = y2n;
 		return yn;
 	}
@@ -49,7 +49,8 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<float>::setReleaseTime(float releaseSeconds) noexcept -> void {
 		LevelDetector<float>::setReleaseTime(releaseSeconds);
 		mRMSSeconds = releaseSeconds * 2.0F;
-		mRMSCoeff = math::expf(-1.0F / (mRMSSeconds * static_cast<float>(mState->getSampleRate())));
+		mRMSCoeff = Exponentials<>::exp(
+			-1.0F / (mRMSSeconds * static_cast<float>(mState->getSampleRate())));
 	}
 
 	/// @brief Sets the sample rate to the given value
@@ -57,7 +58,7 @@ namespace apex::dsp {
 	/// @param sampleRate - The new sample rate, in Hertz
 	auto LevelDetectorRMS<float>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		LevelDetector<float>::setSampleRate(sampleRate);
-		mRMSCoeff = math::expf(-1.0F / (mRMSSeconds * static_cast<float>(sampleRate)));
+		mRMSCoeff = Exponentials<>::exp(-1.0F / (mRMSSeconds * static_cast<float>(sampleRate)));
 	}
 
 	/// @brief Constructs a `LevelDetector` of the given type
@@ -84,7 +85,7 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<double>::process(double input) noexcept -> double {
 		double xn = LevelDetector<double>::process(input);
 		double y2n = mRMSCoeff * mYSquared1 + (1.0 - mRMSCoeff) * (xn * xn);
-		double yn = math::sqrt(y2n);
+		double yn = General<double>::sqrt(y2n);
 		mYSquared1 = y2n;
 		return yn;
 	}
@@ -108,7 +109,8 @@ namespace apex::dsp {
 	auto LevelDetectorRMS<double>::setReleaseTime(double releaseSeconds) noexcept -> void {
 		LevelDetector<double>::setReleaseTime(releaseSeconds);
 		mRMSSeconds = releaseSeconds * 2.0;
-		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds * static_cast<double>(mState->getSampleRate())));
+		mRMSCoeff = Exponentials<double>::exp(
+			-1.0 / (mRMSSeconds * static_cast<double>(mState->getSampleRate())));
 	}
 
 	/// @brief Sets the sample rate to the given value
@@ -116,6 +118,7 @@ namespace apex::dsp {
 	/// @param sampleRate - The new sample rate, in Hertz
 	auto LevelDetectorRMS<double>::setSampleRate(Hertz sampleRate) noexcept -> void {
 		LevelDetector<double>::setSampleRate(sampleRate);
-		mRMSCoeff = math::exp(-1.0 / (mRMSSeconds * static_cast<double>(sampleRate)));
+		mRMSCoeff
+			= Exponentials<double>::exp(-1.0 / (mRMSSeconds * static_cast<double>(sampleRate)));
 	}
 } // namespace apex::dsp

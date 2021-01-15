@@ -119,11 +119,21 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain1176<float>::processFeedForwardReturnToZero(float input) noexcept -> Decibels {
-		float rectified = math::fabsf(input);
+		float rectified = General<>::abs(input);
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
 		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
+#ifdef TESTING_SIDECHAIN_1176
+		Logger::LogMessage("SidechainInput: " + juce::String(input));
+		Logger::LogMessage("RectifiedInput: " + juce::String(rectified));
+		Logger::LogMessage("DetectedInput DB: " + juce::String(detectedDB.getDecibels()));
+		Logger::LogMessage("Computed output:" + juce::String(outputDB.getDecibels()));
+		Logger::LogMessage("Computed Gain Reduction: "
+						   + juce::String(mGainReductionDB.getDecibels()));
+		Logger::LogMessage("AdjustedGainReduction: "
+						   + juce::String(mGainReductionDB.getDecibels()));
+#endif
 		return mGainReductionDB;
 	}
 
@@ -245,11 +255,21 @@ namespace apex::dsp {
 	}
 
 	auto Sidechain1176<double>::processFeedForwardReturnToZero(double input) noexcept -> Decibels {
-		double rectified = math::fabs(input);
+		double rectified = General<double>::abs(input);
 		Decibels detectedDB = Decibels::fromLinear(mLevelDetector.process(rectified));
 		Decibels outputDB = mGainComputer->process(detectedDB);
 		mGainReductionDB = outputDB - detectedDB;
 		mGainReductionDB = mGainReductionProcessor.adjustedGainReduction(mGainReductionDB);
+#ifdef TESTING_SIDECHAIN_1176
+		Logger::LogMessage("SidechainInput: " + juce::String(input));
+		Logger::LogMessage("RectifiedInput: " + juce::String(rectified));
+		Logger::LogMessage("DetectedInput DB: " + juce::String(detectedDB.getDecibels()));
+		Logger::LogMessage("Computed output:" + juce::String(outputDB.getDecibels()));
+		Logger::LogMessage("Computed Gain Reduction: "
+						   + juce::String(mGainReductionDB.getDecibels()));
+		Logger::LogMessage("AdjustedGainReduction: "
+						   + juce::String(mGainReductionDB.getDecibels()));
+#endif
 		return mGainReductionDB;
 	}
 } // namespace apex::dsp

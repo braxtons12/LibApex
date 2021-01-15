@@ -37,9 +37,13 @@ namespace apex::dsp {
 		/// @brief Constructs a default `GainReductionFET`
 		/// (zeroed shared state, rise time = 0.2ms
 		GainReductionFET() noexcept : GainReduction<T, AttackKind, ReleaseKind>() {
+	#ifdef TESTING_GAIN_REDUCTION_FET
+			apex::utils::Logger::LogMessage("Creating Gain Reduction FET");
+	#endif
 			this->mRiseTimeSeconds = DEFAULT_RISE_TIME;
-			this->mNumSamplesToTransitionGain = static_cast<size_t>(
-				this->mRiseTimeSeconds * this->mState->getSampleRate() + static_cast<T>(0.5));
+			this->mRiseCoefficient = gsl::narrow_cast<T>(Exponentials<double>::exp(
+				-1.0
+				/ (this->mRiseTimeSeconds * static_cast<double>(this->mState->getSampleRate()))));
 		}
 
 		/// @brief Constructs a `GainReductonFET` with the given shared state and rise time
@@ -49,6 +53,9 @@ namespace apex::dsp {
 		explicit GainReductionFET(DynamicsState* state,
 								  T riseTimeSeconds = DEFAULT_RISE_TIME) noexcept
 			: GainReduction<T, AttackKind, ReleaseKind>(state, riseTimeSeconds) {
+	#ifdef TESTING_GAIN_REDUCTION_FET
+			apex::utils::Logger::LogMessage("Creating Gain Reduction FET");
+	#endif
 		}
 
 		/// @brief Move constructs the given `GainReductionFET`
@@ -66,30 +73,30 @@ namespace apex::dsp {
 		/// @return  - The adjusted gain reduction
 		[[nodiscard]] auto
 		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
-			if(this->mCurrentSample > this->mNumSamplesToTransitionGain) {
-				this->mCurrentSample = 0;
+	#ifdef TESTING_GAIN_REDUCTION_FET
+			apex::utils::Logger::LogMessage(
+				"Gain Reduction FET Calculating Adjusted Gain Reduction");
+	#endif
+			T sign = 1.0;
+			if(gainReduction < 0.0) {
+				sign = -sign;
+				gainReduction *= sign;
 			}
+			T gainReductionStep
+				= waveshapers::softSaturation(gsl::narrow_cast<T>(gainReduction.getLinear()),
+											  SLEW_RATE_AMOUNT,
+											  SLEW_RATE_SLOPE);
 
-			Decibels gainReductionStep
-				= (gainReduction - this->mCurrentGainReduction)
-				  / static_cast<T>(this->mNumSamplesToTransitionGain - this->mCurrentSample);
+			this->mCurrentGainReduction
+				= sign
+				  * (this->mCurrentGainReduction * this->mRiseCoefficient
+					 + (gsl::narrow_cast<T>(1.0) - this->mRiseCoefficient)
+						   * gsl::narrow_cast<T>(Decibels::fromLinear(gainReductionStep)));
 
-			if(math::fabs(static_cast<double>(gainReductionStep)) - static_cast<T>(0.001)
-			   > static_cast<T>(0.0)) {
-				gainReductionStep = waveshapers::softSaturation(
-					static_cast<T>(this->mCurrentGainReduction
-								   + (gainReductionStep > static_cast<T>(0.0) ? -SLEW_RATE_OFFSET :
-																				  SLEW_RATE_OFFSET)),
-					SLEW_RATE_AMOUNT,
-					SLEW_RATE_SLOPE);
-			}
-
-			this->mCurrentGainReduction += gainReductionStep;
-			this->mCurrentSample++;
-
-			return waveshapers::softSaturation(static_cast<T>(this->mCurrentGainReduction),
-											   WAVE_SHAPER_AMOUNT,
-											   WAVE_SHAPER_SLOPE);
+			return Decibels::fromLinear(
+				waveshapers::softSaturation(gsl::narrow_cast<T>(sign * this->mCurrentGainReduction),
+											WAVE_SHAPER_AMOUNT,
+											WAVE_SHAPER_SLOPE));
 		}
 
 		auto operator=(GainReductionFET<T, AttackKind, ReleaseKind>&& reduction) noexcept

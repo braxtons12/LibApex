@@ -9,10 +9,10 @@
 namespace apex::dsp {
 	/// @brief Basic RMS Meter
 	///
-	/// @tparam T - The floating point type to perform operations with
+	/// @tparam FloatType - The floating point type to perform operations with
 	/// @tparam Enable - disables the type of T is not a floating point type
-	template<typename T, typename Enable = std::enable_if_t<std::is_floating_point_v<T>, float>>
-	class RMSMeter final : public Meter<T, Enable> {
+	template<typename FloatType, std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
+	class RMSMeter final : public Meter<FloatType> {
 	  public:
 		/// @brief Constructs a default `RMSMeter`
 		RMSMeter() noexcept = default;
@@ -21,18 +21,21 @@ namespace apex::dsp {
 		///
 		/// @param sampleRate - The sample rate to use
 		explicit RMSMeter(Hertz sampleRate) noexcept : mSampleRate(sampleRate) {
-			mAveragingCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mAveragingLengthSeconds * static_cast<double>(mSampleRate))));
-			mAttackCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mAttackSeconds * static_cast<double>(mSampleRate))));
-			mReleaseCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mReleaseSeconds * static_cast<double>(mSampleRate))));
+			mAveragingCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mAveragingLengthSeconds * narrow_cast<FloatType>(mSampleRate)));
+			mAttackCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
+			mReleaseCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mReleaseSeconds * narrow_cast<FloatType>(mSampleRate)));
 		}
 
 		/// @brief Move contructs the given `RMSMeter`
 		///
 		/// @param meter - The `RMSMeter` to move
-		RMSMeter(RMSMeter<T, Enable>&& meter) noexcept = default;
+		RMSMeter(RMSMeter&& meter) noexcept = default;
 		~RMSMeter() noexcept final = default;
 
 		/// @brief Sets the sample rate to the given value
@@ -40,30 +43,36 @@ namespace apex::dsp {
 		/// @param SampleRate - The new sample rate
 		inline auto setSampleRate(Hertz sampleRate) noexcept -> void final {
 			mSampleRate = sampleRate;
-			mAveragingCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mAveragingLengthSeconds * static_cast<double>(mSampleRate))));
-			mAttackCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mAttackSeconds * static_cast<double>(mSampleRate))));
-			mReleaseCoeff = gsl::narrow_cast<T>(
-				math::exp(-1.0 / (mReleaseSeconds * static_cast<double>(mSampleRate))));
+			mAveragingCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mAveragingLengthSeconds * narrow_cast<FloatType>(mSampleRate)));
+			mAttackCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
+			mReleaseCoeff = Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mReleaseSeconds * narrow_cast<FloatType>(mSampleRate)));
 		}
 
 		/// @brief Resets the meter to an initial state
 		inline auto reset() noexcept -> void final {
-			mCurrentLevel = gsl::narrow_cast<T>(0.0);
-			mY2N1 = gsl::narrow_cast<T>(0.0);
-			mAverageN1 = gsl::narrow_cast<T>(0.0);
+			mCurrentLevel = narrow_cast<FloatType>(0.0);
+			mY2N1 = narrow_cast<FloatType>(0.0);
+			mAverageN1 = narrow_cast<FloatType>(0.0);
 		}
 
 		/// @brief Updates the meter with the given input
 		///
 		/// @param input - The input to meter
-		inline auto update(T input) noexcept -> void final {
-			T y2nAverage = mAveragingCoeff * mAverageN1 + (1.0 - mAveragingCoeff) * (input * input);
+		inline auto update(FloatType input) noexcept -> void final {
+			FloatType y2nAverage
+				= mAveragingCoeff * mAverageN1
+				  + (narrow_cast<FloatType>(1.0) - mAveragingCoeff) * (input * input);
 			mAverageN1 = y2nAverage;
-			T yn = gsl::narrow_cast<T>(math::sqrt(y2nAverage));
+			FloatType yn = General<FloatType>::sqrt(y2nAverage);
 			if(yn > mCurrentLevel) {
-				mCurrentLevel = mAttackCoeff * mCurrentLevel + (1.0 - mAttackCoeff) * yn;
+				mCurrentLevel = mAttackCoeff * mCurrentLevel
+								+ (narrow_cast<FloatType>(1.0) - mAttackCoeff) * yn;
 			}
 			else {
 				mCurrentLevel *= mReleaseCoeff;
@@ -73,7 +82,16 @@ namespace apex::dsp {
 		/// @brief Updates the meter with the given input
 		///
 		/// @param input - The input to meter
-		inline auto update(Span<T> input) noexcept -> void final {
+		inline auto update(Span<FloatType> input) noexcept -> void final {
+			for(auto& in : input) {
+				update(in);
+			}
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param input - The input to meter
+		inline auto update(Span<const FloatType> input) noexcept -> void final {
 			for(auto& in : input) {
 				update(in);
 			}
@@ -82,7 +100,7 @@ namespace apex::dsp {
 		/// @brief Returns the current linear level of the meter
 		///
 		/// @return - The linear level
-		[[nodiscard]] inline auto getLevel() const noexcept -> T final {
+		[[nodiscard]] inline auto getLevel() const noexcept -> FloatType final {
 			return mCurrentLevel;
 		}
 
@@ -93,21 +111,25 @@ namespace apex::dsp {
 			return Decibels::fromLinear(mCurrentLevel);
 		}
 
-		auto operator=(RMSMeter<T, Enable>&& meter) noexcept -> RMSMeter<T, Enable>& = default;
+		auto operator=(RMSMeter&& meter) noexcept -> RMSMeter& = default;
 
 	  private:
 		Hertz mSampleRate = 44100_Hz;
-		static const constexpr T mAveragingLengthSeconds = gsl::narrow_cast<T>(0.3);
-		static const constexpr T mAttackSeconds = gsl::narrow_cast<T>(0.01);
-		static const constexpr T mReleaseSeconds = gsl::narrow_cast<T>(1.0);
-		T mAveragingCoeff = gsl::narrow_cast<T>(0.9999244171);
-		T mAttackCoeff = gsl::narrow_cast<T>(0.9977349953);
-		T mReleaseCoeff = gsl::narrow_cast<T>(0.9999773245);
+		static const constexpr FloatType mAveragingLengthSeconds = narrow_cast<FloatType>(0.3);
+		static const constexpr FloatType mAttackSeconds = narrow_cast<FloatType>(0.01);
+		static const constexpr FloatType mReleaseSeconds = narrow_cast<FloatType>(0.3);
+		FloatType mAveragingCoeff = Exponentials<FloatType>::exp(
+			narrow_cast<FloatType>(-1.0)
+			/ (mAveragingLengthSeconds * narrow_cast<FloatType>(mSampleRate)));
+		FloatType mAttackCoeff = Exponentials<FloatType>::exp(
+			narrow_cast<FloatType>(-1.0) / (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
+		FloatType mReleaseCoeff = Exponentials<FloatType>::exp(
+			narrow_cast<FloatType>(-1.0) / (mReleaseSeconds * narrow_cast<FloatType>(mSampleRate)));
 
-		T mCurrentLevel = gsl::narrow_cast<T>(0.0);
+		FloatType mCurrentLevel = narrow_cast<FloatType>(0.0);
 
-		T mY2N1 = gsl::narrow_cast<T>(0.0);
-		T mAverageN1 = gsl::narrow_cast<T>(0.0);
+		FloatType mY2N1 = narrow_cast<FloatType>(0.0);
+		FloatType mAverageN1 = narrow_cast<FloatType>(0.0);
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RMSMeter)
 	};

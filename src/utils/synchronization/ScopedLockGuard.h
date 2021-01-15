@@ -11,7 +11,7 @@ namespace apex::utils::synchronization {
 	template<typename T>
 	class [[nodiscard]] ScopedLockGuard {
 	  public:
-		ScopedLockGuard() = delete;
+		ScopedLockGuard() = default;
 		ScopedLockGuard(const ScopedLockGuard<T>& guard) = delete;
 		ScopedLockGuard(ScopedLockGuard<T>&& guard) noexcept = default;
 
