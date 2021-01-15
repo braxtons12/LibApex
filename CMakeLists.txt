@@ -224,7 +224,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gainreductions/GainReductionOpto.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gainreductions/GainReductionVCA.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetector.h"
-	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorRMS.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorRMS.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetector1176.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorSSL.cpp"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorModernBus.h"
