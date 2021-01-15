@@ -55,7 +55,7 @@ namespace apex::dsp {
 		/// @param input - The input to detect on
 		///
 		/// @return - The detected level
-		[[nodiscard]] auto process(float input) noexcept -> float override {
+		[[nodiscard]] auto process(FloatType input) noexcept -> FloatType override {
 			auto xn = LevelDetector::process(input);
 			auto y2n
 				= mRMSCoeff * mYSquared1 + (narrow_cast<FloatType>(1.0) - mRMSCoeff) * (xn * xn);

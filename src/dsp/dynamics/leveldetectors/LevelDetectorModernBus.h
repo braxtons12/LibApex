@@ -46,7 +46,7 @@ namespace apex::dsp {
 		/// @brief Sets the attack time
 		///
 		/// @param attackSeconds - The attack time in seconds
-		auto setAttackTime(float attackSeconds) noexcept -> void override {
+		auto setAttackTime(FloatType attackSeconds) noexcept -> void override {
 			juce::ignoreUnused(attackSeconds);
 			LevelDetector::mState->setAttackCoefficient1(
 				calculateAttackCoefficient1(LevelDetector::mState->getSampleRate()));
@@ -59,7 +59,7 @@ namespace apex::dsp {
 		/// @brief Sets the release time
 		///
 		/// @param releaseSeconds - The release time in seconds
-		auto setReleaseTime(float releaseSeconds) noexcept -> void override {
+		auto setReleaseTime(FloatType releaseSeconds) noexcept -> void override {
 			juce::ignoreUnused(releaseSeconds);
 			auto sampleRate = LevelDetector::mState->getSampleRate();
 
@@ -106,7 +106,7 @@ namespace apex::dsp {
 		/// @param input - The input to detect on
 		///
 		/// @return - The detected level
-		[[nodiscard]] auto process(float input) noexcept -> float override {
+		[[nodiscard]] auto process(FloatType input) noexcept -> FloatType override {
 			if(!LevelDetector::mState->getAutoReleaseEnabled()) {
 				return LevelDetector::process(input);
 			}

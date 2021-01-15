@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 project(Apex VERSION 0.1.0)
 
@@ -226,7 +226,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetector.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorRMS.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetector1176.h"
-	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorSSL.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorSSL.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/leveldetectors/LevelDetectorModernBus.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputer.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerCompressor.h"
