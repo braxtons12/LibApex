@@ -143,6 +143,8 @@ namespace apex::dsp {
 		auto operator=(LevelDetector&& detector) noexcept -> LevelDetector& = default;
 
 	  protected:
+		DynamicsState DEFAULT_STATE = DynamicsState();
+		DynamicsState* mState = &DEFAULT_STATE;
 		// y[n-1]
 		FloatType mYOut1 = narrow_cast<FloatType>(0.0);
 		// used in decoupled calculations to store y_1[n-1]
@@ -241,9 +243,6 @@ namespace apex::dsp {
 				/ (mState->getRelease() * narrow_cast<FloatType>(sampleRate)));
 		}
 
-	  private:
-		DynamicsState DEFAULT_STATE = DynamicsState();
-		DynamicsState* mState = &DEFAULT_STATE;
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LevelDetector)
 	};
 } // namespace apex::dsp
