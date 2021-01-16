@@ -14,7 +14,7 @@
 
 namespace apex::dsp {
 	/// @brief The possible ratio values
-	enum class Ratio
+	enum class Ratio1176
 	{
 		FourToOne,
 		EightToOne,
@@ -105,38 +105,38 @@ namespace apex::dsp {
 		/// @brief Sets the ratio to the given value
 		///
 		/// @param ratio - The ratio
-		auto setRatio(Ratio ratio) noexcept -> void {
-			mRatio = ratio;
-			switch(mRatio) {
-				case Ratio::FourToOne:
+		auto setRatio(Ratio1176 ratio) noexcept -> void {
+			mRatio1176 = ratio;
+			switch(mRatio1176) {
+				case Ratio1176::FourToOne:
 					{
 						Sidechain::mState.setRatio(RATIO_4_TO_1);
 						Sidechain::mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
 						Sidechain::mState.setKneeWidth(KNEE_RATIO_4_TO_1);
 					}
 					break;
-				case Ratio::EightToOne:
+				case Ratio1176::EightToOne:
 					{
 						Sidechain::mState.setRatio(RATIO_8_TO_1);
 						Sidechain::mState.setThreshold(THRESHOLD_RATIO_8_TO_1);
 						Sidechain::mState.setKneeWidth(KNEE_RATIO_8_TO_1);
 					}
 					break;
-				case Ratio::TwelveToOne:
+				case Ratio1176::TwelveToOne:
 					{
 						Sidechain::mState.setRatio(RATIO_12_TO_1);
 						Sidechain::mState.setThreshold(THRESHOLD_RATIO_12_TO_1);
 						Sidechain::mState.setKneeWidth(KNEE_RATIO_12_TO_1);
 					}
 					break;
-				case Ratio::TwentyToOne:
+				case Ratio1176::TwentyToOne:
 					{
 						Sidechain::mState.setRatio(RATIO_20_TO_1);
 						Sidechain::mState.setThreshold(THRESHOLD_RATIO_20_TO_1);
 						Sidechain::mState.setKneeWidth(KNEE_RATIO_20_TO_1);
 					}
 					break;
-				case Ratio::AllButtonsIn:
+				case Ratio1176::AllButtonsIn:
 					{
 						Sidechain::mState.setRatio(RATIO_ALL_BUTTONS);
 						Sidechain::mState.setThreshold(THRESHOLD_RATIO_ALL_BUTTONS);
@@ -146,8 +146,8 @@ namespace apex::dsp {
 			}
 		}
 
-		[[nodiscard]] auto getEnumRatio() const noexcept -> Ratio {
-			return mRatio;
+		[[nodiscard]] auto getEnumRatio1176() const noexcept -> Ratio1176 {
+			return mRatio1176;
 		}
 
 		auto operator=(Sidechain1176&& sidechain) noexcept -> Sidechain1176& = default;
@@ -181,7 +181,7 @@ namespace apex::dsp {
 		static const constexpr FloatType KNEE_RATIO_20_TO_1 = narrow_cast<FloatType>(1.0);
 		static const constexpr FloatType KNEE_RATIO_ALL_BUTTONS = narrow_cast<FloatType>(0.5);
 
-		Ratio mRatio = Ratio::FourToOne;
+		Ratio1176 mRatio1176 = Ratio1176::FourToOne;
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
