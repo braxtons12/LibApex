@@ -30,7 +30,7 @@ namespace apex::dsp {
 			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
 	class Sidechain1176 final : public Sidechain<FloatType> {
 	  private:
-		using DynamicsState = DynamicsState<FloatType>;
+		using DynamicsState = DynamicsState<FloatType, FloatType, FloatType>;
 		using LevelDetector1176 = LevelDetector1176<FloatType>;
 		using GainReductionFET = GainReductionFET<FloatType>;
 		using Sidechain = Sidechain<FloatType>;
