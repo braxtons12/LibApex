@@ -31,19 +31,22 @@ namespace apex::dsp {
 		/// @param input - The input value to process
 		///
 		/// @return - The processed value
-		[[nodiscard]] auto processMono(FloatType input) noexcept -> FloatType;
+		[[nodiscard]] virtual auto processMono(FloatType input) noexcept -> FloatType = 0;
 
 		/// @brief Processes the array of input values
 		///
 		/// @param input - The input values to process
 		/// @param output - The processed values
-		auto processMono(Span<FloatType> input, Span<FloatType> output) noexcept -> void;
+		virtual auto processMono(Span<FloatType> input, Span<FloatType> output) noexcept -> void
+			= 0;
 
 		/// @brief Processes the array of input values
 		///
 		/// @param input - The input values to process
 		/// @param output - The processed values
-		auto processMono(Span<const FloatType> input, Span<FloatType> output) noexcept -> void;
+		virtual auto
+		processMono(Span<const FloatType> input, Span<FloatType> output) noexcept -> void
+			= 0;
 
 		/// @brief Processes the array of input values
 		///
