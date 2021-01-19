@@ -41,15 +41,17 @@ namespace apex::dsp {
 	///
 	/// @tparam FloatType - The floating point type to back operations
 	template<typename FloatType = float,
+			 typename AttackKind = FloatType,
+			 typename ReleaseKind = FloatType,
 			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
 	class Sidechain {
 	  private:
-		using DynamicsState = DynamicsState<FloatType, FloatType, FloatType>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 		using LevelDetector = LevelDetector<FloatType>;
-		using GainReduction = GainReduction<FloatType>;
-		using GainComputer = GainComputer<FloatType>;
-		using GainComputerCompressor = GainComputerCompressor<FloatType>;
-		using GainComputerExpander = GainComputerExpander<FloatType>;
+		using GainReduction = GainReduction<FloatType, AttackKind, ReleaseKind>;
+		using GainComputer = GainComputer<FloatType, AttackKind, ReleaseKind>;
+		using GainComputerCompressor = GainComputerCompressor<FloatType, AttackKind, ReleaseKind>;
+		using GainComputerExpander = GainComputerExpander<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
 		/// @brief Constructs a `Sidechain` with the following defaults:
@@ -115,7 +117,7 @@ namespace apex::dsp {
 		/// @brief Sets the attack to the given value
 		///
 		/// @param attackMS - The attack time, in milliseconds
-		virtual inline auto setAttackTime(FloatType attackMS) noexcept -> void {
+		virtual inline auto setAttackTime(AttackKind attackMS) noexcept -> void {
 #ifdef TESTING_SIDECHAIN
 			Logger::LogMessage("Base Sidechain Updating Attack Time");
 #endif
@@ -125,14 +127,14 @@ namespace apex::dsp {
 		/// @brief Returns the attack
 		///
 		/// @return - The attack time, in milliseconds
-		[[nodiscard]] virtual inline auto getAttackTime() const noexcept -> FloatType {
+		[[nodiscard]] virtual inline auto getAttackTime() const noexcept -> AttackKind {
 			return mState.getAttack() / MS_TO_SECS_MULT;
 		}
 
 		/// @brief Sets the release to the given value
 		///
 		/// @param releaseMS - The release time, in milliseconds
-		virtual inline auto setReleaseTime(FloatType releaseMS) noexcept -> void {
+		virtual inline auto setReleaseTime(ReleaseKind releaseMS) noexcept -> void {
 #ifdef TESTING_SIDECHAIN
 			Logger::LogMessage("Base Sidechain Updating Release Time");
 #endif
@@ -142,7 +144,7 @@ namespace apex::dsp {
 		/// @brief Returns the release
 		///
 		/// @return - The release time, in milliseconds
-		[[nodiscard]] virtual inline auto getReleaseTime() const noexcept -> FloatType {
+		[[nodiscard]] virtual inline auto getReleaseTime() const noexcept -> ReleaseKind {
 			return mState.getRelease() / MS_TO_SECS_MULT;
 		}
 

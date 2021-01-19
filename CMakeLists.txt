@@ -233,7 +233,7 @@ set(DSP
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/gaincomputers/GainComputerExpander.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/Sidechain.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/Sidechain1176.h"
-	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainModernBus.cpp"
+	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainModernBus.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/dynamics/sidechains/SidechainSSL.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/BiQuadFilter.h"
 	"${CMAKE_SOURCE_DIR}/src/dsp/filters/Dither.h"
