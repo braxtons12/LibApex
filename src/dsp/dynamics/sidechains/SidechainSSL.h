@@ -43,10 +43,10 @@ namespace apex::dsp {
 											  -12.0_dB,
 											  6.0_dB,
 											  44.1_kHz);
-			Sidechain::mLevelDetector = LevelDetectorSSL(&Sidechain::mState);
-			Sidechain::mGainReductionProcessor = GainReductionVCA(&Sidechain::mState);
-			Sidechain::mCompressorComputer = GainComputerCompressor(&Sidechain::mState);
-			Sidechain::mExpanderComputer = GainComputerExpander(&Sidechain::mState);
+			Sidechain::mLevelDetector = LevelDetectorSSL(&(Sidechain::mState));
+			Sidechain::mGainReductionProcessor = GainReductionVCA(&(Sidechain::mState));
+			Sidechain::mCompressorComputer = GainComputerCompressor(&(Sidechain::mState));
+			Sidechain::mExpanderComputer = GainComputerExpander(&(Sidechain::mState));
 			Sidechain::mGainComputer = &Sidechain::mCompressorComputer;
 		}
 

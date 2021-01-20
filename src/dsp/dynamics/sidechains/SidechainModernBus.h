@@ -34,7 +34,7 @@ namespace apex::dsp {
 		/// * knee width: 6dB
 		/// * sampleRate 44100Hz
 		SidechainModernBus() noexcept {
-			Sidechain::mLevelDetector = LevelDetectorModernBus(&Sidechain::mState);
+			Sidechain::mLevelDetector = LevelDetectorModernBus(&(Sidechain::mState));
 		}
 
 		/// @brief Move constructs the given `SidechainModernBus`

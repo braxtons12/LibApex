@@ -28,12 +28,12 @@ namespace apex::dsp {
 	/// @tparam FloatType - The floating point type to back operations
 	template<typename FloatType = float,
 			 std::enable_if_t<std::is_floating_point_v<FloatType>, bool> = true>
-	class Sidechain1176 final : public Sidechain<FloatType> {
+	class Sidechain1176 final : public Sidechain<FloatType, FloatType, FloatType> {
 	  private:
 		using DynamicsState = DynamicsState<FloatType, FloatType, FloatType>;
 		using LevelDetector1176 = LevelDetector1176<FloatType>;
-		using GainReductionFET = GainReductionFET<FloatType>;
-		using Sidechain = Sidechain<FloatType>;
+		using GainReductionFET = GainReductionFET<FloatType, FloatType, FloatType>;
+		using Sidechain = Sidechain<FloatType, FloatType, FloatType>;
 
 	  public:
 		/// @brief Constructs a `Sidechain1176` with the following defaults:
@@ -50,8 +50,8 @@ namespace apex::dsp {
 			Sidechain::mState.setThreshold(THRESHOLD_RATIO_4_TO_1);
 			Sidechain::mState.setKneeWidth(KNEE_RATIO_4_TO_1);
 
-			Sidechain::mLevelDetector = LevelDetector1176(&Sidechain::mState);
-			Sidechain::mGainReductionProcessor = GainReductionFET(&Sidechain::mState);
+			Sidechain::mLevelDetector = LevelDetector1176(&(Sidechain::mState));
+			Sidechain::mGainReductionProcessor = GainReductionFET(&(Sidechain::mState));
 		}
 
 		Sidechain1176(Sidechain1176&& sidechain) noexcept = default;
@@ -63,7 +63,7 @@ namespace apex::dsp {
 		///
 		/// @return - The target gain reduction
 		auto process(FloatType input) noexcept -> Decibels final {
-			return processFeedForwardReturnToZero(input);
+			return Sidechain::processFeedForwardReturnToZero(input);
 		}
 
 		/// @brief Sets the attack to the given value
@@ -146,7 +146,7 @@ namespace apex::dsp {
 			}
 		}
 
-		[[nodiscard]] auto getEnumRatio1176() const noexcept -> Ratio1176 {
+		[[nodiscard]] auto getEnumRatio() const noexcept -> Ratio1176 {
 			return mRatio1176;
 		}
 
@@ -185,7 +185,7 @@ namespace apex::dsp {
 
 		/// @deprecated DO NOT USE, ratio is fixed for this `Sidechain`
 		[[deprecated("Don't use, ratio is fixed for this `Sidechain`")]] auto
-		setRatio(float ratio) noexcept -> void final {
+		setRatio(FloatType ratio) noexcept -> void final {
 			juce::ignoreUnused(ratio);
 		}
 
