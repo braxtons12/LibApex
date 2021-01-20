@@ -22,9 +22,9 @@ namespace apex::dsp {
 		typename AttackKind = FloatType,
 		typename ReleaseKind = FloatType,
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
-	class GainReductionFET : public GainReduction<FloatType, AttackKind, ReleaseKind> {
+	class GainReductionFET final : public GainReduction<FloatType, AttackKind, ReleaseKind> {
 	  protected:
-		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 		using GainReduction = GainReduction<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
@@ -55,7 +55,7 @@ namespace apex::dsp {
 		///
 		/// @param reduction - The `GainReductionFET` to move
 		GainReductionFET(GainReductionFET&& reduction) noexcept = default;
-		~GainReductionFET() noexcept override = default;
+		~GainReductionFET() noexcept final = default;
 
 		/// @brief Calculates the adjusted gain reduction based on this `GainReductionFET`'s
 		/// parameters
@@ -63,8 +63,8 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return  - The adjusted gain reduction
-		[[nodiscard]] auto
-		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
+		[[nodiscard]] inline auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels final {
 	#ifdef TESTING_GAIN_REDUCTION_FET
 			apex::utils::Logger::LogMessage(
 				"Gain Reduction FET Calculating Adjusted Gain Reduction");
@@ -85,10 +85,10 @@ namespace apex::dsp {
 					 + (narrow_cast<FloatType>(1.0) - GainReduction::mRiseCoefficient)
 						   * narrow_cast<FloatType>(Decibels::fromLinear(gainReductionStep)));
 
-			return Decibels::fromLinear(
-				waveshapers::softSaturation<FloatType>(sign * GainReduction::mCurrentGainReduction,
-													   WAVE_SHAPER_AMOUNT,
-													   WAVE_SHAPER_SLOPE));
+			return Decibels::fromLinear(waveshapers::softSaturation<FloatType>(
+				narrow_cast<FloatType>(sign * GainReduction::mCurrentGainReduction),
+				WAVE_SHAPER_AMOUNT,
+				WAVE_SHAPER_SLOPE));
 		}
 
 		auto operator=(GainReductionFET&& reduction) noexcept -> GainReductionFET& = default;

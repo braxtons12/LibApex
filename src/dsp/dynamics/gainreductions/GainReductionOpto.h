@@ -23,7 +23,7 @@ namespace apex::dsp {
 		typename AttackKind = FloatType,
 		typename ReleaseKind = FloatType,
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
-	class GainReductionOptical : public GainReduction<FloatType, AttackKind, ReleaseKind> {
+	class GainReductionOptical final : public GainReduction<FloatType, AttackKind, ReleaseKind> {
 	  protected:
 		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
 		using GainReduction = GainReduction<FloatType, AttackKind, ReleaseKind>;
@@ -55,7 +55,7 @@ namespace apex::dsp {
 		///
 		/// @param reduction - The `GainReductionOptical` to move
 		GainReductionOptical(GainReductionOptical&& reduction) noexcept = default;
-		~GainReductionOptical() noexcept override = default;
+		~GainReductionOptical() noexcept final = default;
 
 		/// @brief Calculats the adjusted gain reduction based on this `GainReductionOptical`'s
 		/// parameters
@@ -63,8 +63,8 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return - The adjusted gain reduction
-		[[nodiscard]] auto
-		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels override {
+		[[nodiscard]] inline auto
+		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels final {
 	#ifdef TESTING_GAIN_REDUCTION_OPTO
 			apex::utils::Logger::LogMessage(
 				"Gain Reduction Opto Calculating Adjusted Gain Reduction");
@@ -99,7 +99,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to use for calculations to the given value
 		///
 		/// @param sampleRate - The new sample rate to use
-		auto setSampleRate(Hertz sampleRate) noexcept -> void override {
+		inline auto setSampleRate(Hertz sampleRate) noexcept -> void final {
 			for(size_t coefficient = 0; coefficient < NUM_COEFFICIENTS; ++coefficient) {
 				Decibels decibel = narrow_cast<FloatType>(coefficient)
 								   / narrow_cast<FloatType>(NUM_COEFFICIENTS_PER_STEP);

@@ -23,7 +23,7 @@ namespace apex::dsp {
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class GainReduction {
 	  protected:
-		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
 		/// @brief Constructs a default `GainReduction` - zeroed state, zero rise time
@@ -55,7 +55,7 @@ namespace apex::dsp {
 		/// @param gainReduction - The gain reduction determined by the gain computer
 		///
 		/// @return The adjusted gain reduction
-		[[nodiscard]] virtual auto
+		[[nodiscard]] virtual inline auto
 		adjustedGainReduction(Decibels gainReduction) noexcept -> Decibels {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage(
@@ -77,7 +77,7 @@ namespace apex::dsp {
 		/// @brief Resets this `GainReduction` to an initial state.
 		///
 		/// @param currentGainReduction - The gain reduction to use as the initial value
-		inline virtual auto
+		virtual inline auto
 		reset(FloatType currentGainReduction = narrow_cast<FloatType>(0.0)) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Resetting");
@@ -88,7 +88,7 @@ namespace apex::dsp {
 		/// @brief Sets the sample rate to use for calculations to the given value
 		///
 		/// @param sampleRate - The new sample rate to use
-		inline virtual auto setSampleRate(Hertz sampleRate) noexcept -> void {
+		virtual inline auto setSampleRate(Hertz sampleRate) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Sample Rate");
 	#endif
@@ -98,7 +98,7 @@ namespace apex::dsp {
 		/// @brief Sets the slew rate to use for calculations to the given value
 		///
 		/// @param seconds - The new slew rate
-		inline virtual auto setRiseTimeSeconds(FloatType seconds) noexcept -> void {
+		virtual inline auto setRiseTimeSeconds(FloatType seconds) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Rise Time");
 	#endif
@@ -109,11 +109,13 @@ namespace apex::dsp {
 		/// @brief Sets the shared state to the given one
 		///
 		/// @param state - The shared state to use
-		inline auto setState(DynamicsState* state) noexcept -> void {
+		virtual inline auto setState(DynamicsState* state) noexcept -> void {
 	#ifdef TESTING_GAIN_REDUCTION
 			apex::utils::Logger::LogMessage("Base Gain Reduction Updating Dynamics State");
 	#endif
 			mState = state;
+			mState->template registerCallback<Hertz, DynamicsField::SampleRate>(
+				[this](Hertz sampleRate) { this->setSampleRate(sampleRate); });
 		}
 
 		auto operator=(GainReduction&& reduction) noexcept -> GainReduction& = default;
