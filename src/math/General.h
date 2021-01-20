@@ -24,6 +24,16 @@ namespace apex::math {
 			return (left > right ? left : right);
 		}
 
+		/// @brief Calculates the minimum of the two values
+		///
+		/// @param x
+		/// @param y
+		/// @return The maximum of the two
+		[[nodiscard]] inline static constexpr auto
+		min(NumericType left, NumericType right) noexcept -> NumericType {
+			return (left < right ? left : right);
+		}
+
 		/// @brief Calculates the absolute value of x
 		///
 		/// @param x - The value to take the absolute value of

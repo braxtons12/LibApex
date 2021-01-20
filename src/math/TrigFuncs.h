@@ -16,10 +16,8 @@ namespace apex::math {
 		///
 		/// @param angle - The angle to calculate the cosine of
 		/// @return - The cosine of the angle
-		template<typename Type = FloatType,
-				 std::enable_if_t<std::is_same_v<FloatType, Type>, bool> = true>
-		[[nodiscard]] static constexpr inline auto cos(Type angle) noexcept -> Type {
-			if constexpr(std::is_same_v<Type, float>) {
+		[[nodiscard]] static constexpr inline auto cos(FloatType angle) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
 				return cosf_internal(angle);
 			}
 			else {
@@ -31,10 +29,8 @@ namespace apex::math {
 		///
 		/// @param angle - The angle to calculate the sine of
 		/// @return - The sine of the angle
-		template<typename Type = FloatType,
-				 std::enable_if_t<std::is_same_v<FloatType, Type>, bool> = true>
-		[[nodiscard]] static constexpr inline auto sin(Type angle) noexcept -> Type {
-			if constexpr(std::is_same_v<Type, float>) {
+		[[nodiscard]] static constexpr inline auto sin(FloatType angle) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
 				return sinf_internal(angle);
 			}
 			else {
@@ -46,10 +42,8 @@ namespace apex::math {
 		///
 		/// @param angle - The angle to calculate the tangent of
 		/// @return - The tangent of the angle
-		template<typename Type = FloatType,
-				 std::enable_if_t<std::is_same_v<FloatType, Type>, bool> = true>
-		[[nodiscard]] static constexpr inline auto tan(Type angle) noexcept -> Type {
-			if constexpr(std::is_same_v<Type, float>) {
+		[[nodiscard]] static constexpr inline auto tan(FloatType angle) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
 				return tanf_internal(angle);
 			}
 			else {
@@ -61,10 +55,8 @@ namespace apex::math {
 		///
 		/// @param angle - The angle to calculate the arctangent of
 		/// @return - The arctangent of the angle
-		template<typename Type = FloatType,
-				 std::enable_if_t<std::is_same_v<FloatType, Type>, bool> = true>
-		[[nodiscard]] static constexpr inline auto atan(Type angle) noexcept -> Type {
-			if constexpr(std::is_same_v<Type, float>) {
+		[[nodiscard]] static constexpr inline auto atan(FloatType angle) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
 				return atanf_internal(angle);
 			}
 			else {
@@ -76,10 +68,8 @@ namespace apex::math {
 		///
 		/// @param angle - The angle to calculate the hyperbolic tanget of
 		/// @return - The hyperbolic tangent of the angle
-		template<typename Type = FloatType,
-				 std::enable_if_t<std::is_same_v<FloatType, Type>, bool> = true>
-		[[nodiscard]] static constexpr inline auto tanh(Type angle) noexcept -> Type {
-			if constexpr(std::is_same_v<Type, float>) {
+		[[nodiscard]] static constexpr inline auto tanh(FloatType angle) noexcept -> FloatType {
+			if constexpr(std::is_same_v<FloatType, float>) {
 				return tanhf_internal(angle);
 			}
 			else {
