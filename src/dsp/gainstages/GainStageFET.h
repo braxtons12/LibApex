@@ -29,7 +29,7 @@ namespace apex::dsp {
 		/// @param input - The input to process
 		///
 		/// @return - The processed output
-		[[nodiscard]] inline auto process(FloatType input) noexcept -> float final {
+		[[nodiscard]] inline auto process(FloatType input) noexcept -> FloatType final {
 			return waveshapers::softSaturation<FloatType>(input,
 														  SATURATION_AMOUNT,
 														  SATURATION_SLOPE);

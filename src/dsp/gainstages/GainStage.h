@@ -27,20 +27,33 @@ namespace apex::dsp {
 		///@param input - The input to process
 		///
 		///@return - The processed output
-		[[nodiscard]] virtual auto process(FloatType input) noexcept -> FloatType = 0;
+		[[nodiscard]] virtual auto process(FloatType input) noexcept -> FloatType {
+			return input;
+		}
 
 		/// @brief Processes the input according to this `GainStage`'s parameters'
 		///
 		/// @param input - The input to process
 		/// @param output - The processed output
-		virtual auto process(Span<FloatType> input, Span<FloatType> output) noexcept -> void = 0;
+		virtual auto process(Span<FloatType> input, Span<FloatType> output) noexcept -> void {
+			jassert(input.size() == output.size());
+			auto size = input.size();
+			for(auto i = 0U; i < size; ++i) {
+				output.at(i) = input.at(i);
+			}
+		}
 
 		/// @brief Processes the input according to this `GainStage`'s parameters'
 		///
 		/// @param input - The input to process
 		/// @param output - The processed output
-		virtual auto process(Span<const FloatType> input, Span<FloatType> output) noexcept -> void
-			= 0;
+		virtual auto process(Span<const FloatType> input, Span<FloatType> output) noexcept -> void {
+			jassert(input.size() == output.size());
+			auto size = input.size();
+			for(auto i = 0U; i < size; ++i) {
+				output.at(i) = input.at(i);
+			}
+		}
 
 		auto operator=(GainStage&& stage) noexcept -> GainStage& = default;
 
