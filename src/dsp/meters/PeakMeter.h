@@ -23,13 +23,9 @@ namespace apex::dsp {
 		/// @brief Constructs an `PeakMeter` with the given sample rate
 		///
 		/// @param sampleRate - The sample rate to use
-		explicit PeakMeter(Hertz sampleRate) noexcept : mSampleRate(sampleRate) {
-			mAttackCoeff = Exponentials<FloatType>::exp(
-				narrow_cast<FloatType>(-1.0)
-				/ (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
-			mReleaseCoeff = Exponentials<FloatType>::exp(
-				narrow_cast<FloatType>(-1.0)
-				/ (mReleaseCoeff * narrow_cast<FloatType>(mSampleRate)));
+		explicit PeakMeter(Hertz sampleRate) noexcept
+			: mSampleRate(sampleRate), mAttackCoeff(calculateAttackCoeff(sampleRate)),
+			  mReleaseCoeff(calculateReleaseCoeff(sampleRate)) {
 		}
 
 		/// @brief Move contructs the given `PeakMeter`
@@ -43,12 +39,8 @@ namespace apex::dsp {
 		/// @param SampleRate - The new sample rate
 		inline auto setSampleRate(Hertz sampleRate) noexcept -> void final {
 			mSampleRate = sampleRate;
-			mAttackCoeff = Exponentials<FloatType>::exp(
-				narrow_cast<FloatType>(-1.0)
-				/ (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
-			mReleaseCoeff = Exponentials<FloatType>::exp(
-				narrow_cast<FloatType>(-1.0)
-				/ (mReleaseCoeff * narrow_cast<FloatType>(mSampleRate)));
+			mAttackCoeff = calculateAttackCoeff(mSampleRate);
+			mReleaseCoeff = calculateReleaseCoeff(mSampleRate);
 		}
 
 		/// @brief Resets the meter to an initial state
@@ -60,7 +52,7 @@ namespace apex::dsp {
 		///
 		/// @param input - The input to meter
 		inline auto update(FloatType input) noexcept -> void final {
-			auto in = General<FloatType>::fabs(input);
+			auto in = General<FloatType>::abs(input);
 			if(in > mCurrentLevel) {
 				mCurrentLevel = mAttackCoeff * mCurrentLevel
 								+ (narrow_cast<FloatType>(1.0) - mAttackCoeff) * in;
@@ -74,7 +66,7 @@ namespace apex::dsp {
 		///
 		/// @param input - The input to meter
 		inline auto update(Span<FloatType> input) noexcept -> void final {
-			for(auto& in : input) {
+			for(auto&& in : input) {
 				update(in);
 			}
 		}
@@ -83,8 +75,42 @@ namespace apex::dsp {
 		///
 		/// @param input - The input to meter
 		inline auto update(Span<const FloatType> input) noexcept -> void final {
-			for(auto& in : input) {
+			for(auto&& in : input) {
 				update(in);
+			}
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto update(FloatType inputLeft, FloatType inputRight) noexcept -> void final {
+			update(narrow_cast<FloatType>(0.5) * (inputLeft + inputRight));
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto
+		update(Span<FloatType> inputLeft, Span<FloatType> inputRight) noexcept -> void final {
+			jassert(inputLeft.size() == inputRight.size());
+			auto size = inputLeft.size();
+			for(auto i = 0U; i < size; ++i) {
+				update(inputLeft.at(i), inputRight.at(i));
+			}
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto update(Span<const FloatType> inputLeft,
+						   Span<const FloatType> inputRight) noexcept -> void final {
+			jassert(inputLeft.size() == inputRight.size());
+			auto size = inputLeft.size();
+			for(auto i = 0U; i < size; ++i) {
+				update(inputLeft.at(i), inputRight.at(i));
 			}
 		}
 
@@ -108,11 +134,21 @@ namespace apex::dsp {
 		Hertz mSampleRate = 44100_Hz;
 		static const constexpr FloatType mAttackSeconds = narrow_cast<FloatType>(0.001);
 		static const constexpr FloatType mReleaseSeconds = narrow_cast<FloatType>(0.3);
-		FloatType mAttackCoeff = Exponentials<FloatType>::exp(
-			narrow_cast<FloatType>(-1.0) / (mAttackSeconds * narrow_cast<FloatType>(mSampleRate)));
-		FloatType mReleaseCoeff = Exponentials<FloatType>::exp(
-			narrow_cast<FloatType>(-1.0) / (mReleaseSeconds * narrow_cast<FloatType>(mSampleRate)));
+		FloatType mAttackCoeff = calculateAttackCoeff(mSampleRate);
+		FloatType mReleaseCoeff = calculateReleaseCoeff(mSampleRate);
 		FloatType mCurrentLevel = narrow_cast<FloatType>(0.0);
+
+		[[nodiscard]] inline auto calculateAttackCoeff(Hertz sampleRate) noexcept -> FloatType {
+			return Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mAttackSeconds * narrow_cast<FloatType>(sampleRate)));
+		}
+
+		[[nodiscard]] inline auto calculateReleaseCoeff(Hertz sampleRate) noexcept -> FloatType {
+			return Exponentials<FloatType>::exp(
+				narrow_cast<FloatType>(-1.0)
+				/ (mReleaseSeconds * narrow_cast<FloatType>(sampleRate)));
+		}
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PeakMeter)
 	};

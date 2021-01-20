@@ -39,6 +39,27 @@ namespace apex::dsp {
 		/// @param input - The input to meter
 		virtual auto update(Span<const FloatType> input) noexcept -> void = 0;
 
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		virtual auto update(FloatType inputLeft, FloatType inputRight) noexcept -> void = 0;
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		virtual auto update(Span<FloatType> inputLeft, Span<FloatType> inputRight) noexcept -> void
+			= 0;
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		virtual auto
+		update(Span<const FloatType> inputLeft, Span<const FloatType> inputRight) noexcept -> void
+			= 0;
+
 		/// @brief Returns the current linear level of the meter
 		///
 		/// @return - The linear level

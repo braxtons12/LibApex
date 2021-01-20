@@ -97,6 +97,40 @@ namespace apex::dsp {
 			}
 		}
 
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto update(FloatType inputLeft, FloatType inputRight) noexcept -> void final {
+			update(narrow_cast<FloatType>(0.5) * (inputLeft + inputRight));
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto
+		update(Span<FloatType> inputLeft, Span<FloatType> inputRight) noexcept -> void final {
+			jassert(inputLeft.size() == inputRight.size());
+			auto size = inputLeft.size();
+			for(auto i = 0U; i < size; ++i) {
+				update(inputLeft.at(i), inputRight.at(i));
+			}
+		}
+
+		/// @brief Updates the meter with the given input
+		///
+		/// @param inputLeft - The left channel input to meter
+		/// @param inputRight - The right channel input to meter
+		inline auto update(Span<const FloatType> inputLeft,
+						   Span<const FloatType> inputRight) noexcept -> void final {
+			jassert(inputLeft.size() == inputRight.size());
+			auto size = inputLeft.size();
+			for(auto i = 0U; i < size; ++i) {
+				update(inputLeft.at(i), inputRight.at(i));
+			}
+		}
+
 		/// @brief Returns the current linear level of the meter
 		///
 		/// @return - The linear level
