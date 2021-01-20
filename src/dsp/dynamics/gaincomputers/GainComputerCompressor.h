@@ -21,9 +21,9 @@ namespace apex::dsp {
 		typename AttackKind = FloatType,
 		typename ReleaseKind = FloatType,
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
-	class GainComputerCompressor : public GainComputer<FloatType, AttackKind, ReleaseKind> {
+	class GainComputerCompressor final : public GainComputer<FloatType, AttackKind, ReleaseKind> {
 	  protected:
-		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 		using GainComputer = GainComputer<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
@@ -50,14 +50,14 @@ namespace apex::dsp {
 		///
 		/// @param computer - The `GainComputerCompressor` to move
 		GainComputerCompressor(GainComputerCompressor&& computer) noexcept = default;
-		~GainComputerCompressor() override = default;
+		~GainComputerCompressor() final = default;
 
 		/// @brief Calculates the target gain reduction value
 		///
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] auto process(Decibels input) noexcept -> Decibels override {
+		[[nodiscard]] inline auto process(Decibels input) noexcept -> Decibels final {
 	#ifdef TESTING_GAIN_COMPUTER_COMPRESSOR
 			apex::utils::Logger::LogMessage(
 				"Gain Computer Compressor Calculating Compressed Output");
@@ -76,11 +76,11 @@ namespace apex::dsp {
 				return threshold + (input - threshold) / ratio;
 			}
 			else {
-				return Decibels(
-					input
-					+ ((one / ratio) - one)
-						  * Exponentials<FloatType>::pow2(input - threshold + kneeWidth / two)
-						  / (two * kneeWidth));
+				return Decibels(input
+								+ ((one / ratio) - one)
+									  * Exponentials<FloatType>::pow2(narrow_cast<FloatType>(
+										  input - threshold + kneeWidth / two))
+									  / (two * kneeWidth));
 			}
 		}
 

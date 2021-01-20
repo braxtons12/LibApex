@@ -21,9 +21,9 @@ namespace apex::dsp {
 		typename AttackKind = FloatType,
 		typename ReleaseKind = FloatType,
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
-	class GainComputerExpander : public GainComputer<FloatType, AttackKind, ReleaseKind> {
+	class GainComputerExpander final : public GainComputer<FloatType, AttackKind, ReleaseKind> {
 	  protected:
-		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 		using GainComputer = GainComputer<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
@@ -50,14 +50,14 @@ namespace apex::dsp {
 		///
 		/// @param computer - The `GainComputerExpander` to move
 		GainComputerExpander(GainComputerExpander&& computer) noexcept = default;
-		~GainComputerExpander() override = default;
+		~GainComputerExpander() final = default;
 
 		/// @brief Calculates the target gain reduction value
 		///
 		/// @param input - The input to calculate gain reduction for
 		///
 		/// @return - The target gain reduction
-		[[nodiscard]] auto process(Decibels input) noexcept -> Decibels override {
+		[[nodiscard]] inline auto process(Decibels input) noexcept -> Decibels final {
 	#ifdef TESTING_GAIN_COMPUTER_EXPANDER
 			apex::utils::Logger::LogMessage("Gain Computer Expander Calculating Expanded Output");
 	#endif
@@ -77,7 +77,8 @@ namespace apex::dsp {
 			else {
 				return input
 					   + (one - ratio)
-							 * Exponentials<FloatType>::pow2(input - threshold - kneeWidth / two)
+							 * Exponentials<FloatType>::pow2(
+								 narrow_cast<FloatType>(input - threshold - kneeWidth / two))
 							 / (two * kneeWidth);
 			}
 		}

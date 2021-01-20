@@ -23,7 +23,7 @@ namespace apex::dsp {
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class GainComputer {
 	  protected:
-		using DynamicsState = typename apex::dsp::DynamicsState<FloatType, AttackKind, ReleaseKind>;
+		using DynamicsState = DynamicsState<FloatType, AttackKind, ReleaseKind>;
 
 	  public:
 		/// @brief Constructs a `GainComputer` with zeroed shared state
@@ -54,7 +54,7 @@ namespace apex::dsp {
 		auto operator=(GainComputer&& computer) noexcept -> GainComputer& = default;
 
 	  protected:
-		static const constexpr DynamicsState DEFAULT_STATE = DynamicsState();
+		DynamicsState DEFAULT_STATE = DynamicsState();
 		DynamicsState* mState = &DEFAULT_STATE;
 
 	  private:
