@@ -43,6 +43,44 @@ namespace apex::dsp {
 		return isFloat && isAttackValid && isReleaseValid;
 	}
 
+	/// @brief Determines if the `DynamicsState`'s `registerCallback` method should be enabled for
+	/// the given combination of template parameters
+	///
+	/// @tparam F - The type to be passed in the callback
+	/// @tparam Field - The `DynamicsField` of the callback
+	/// @tparam FloatType - The `FloatType` of the `DynamicsState`
+	/// @tparam AttackKind - The `AttackKind` of the `DynamicsState`
+	/// @tparam ReleaseKind - The `ReleaseKind` of the `DynamicsState`
+	///
+	/// @return `true`, if the `registerCallback` method should be enabled
+	template<
+		typename F,
+		DynamicsField Field,
+		typename FloatType = float,
+		typename AttackKind = FloatType,
+		typename ReleaseKind = FloatType,
+		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
+	inline static constexpr auto isRegisterFuncEnabled() noexcept -> bool {
+		if constexpr(Field == DynamicsField::Attack) {
+			return std::is_same_v<F, AttackKind>;
+		}
+		else if constexpr(Field == DynamicsField::Release) {
+			return std::is_same_v<F, ReleaseKind>;
+		}
+		else if constexpr(Field == DynamicsField::Ratio) {
+			return std::is_same_v<F, FloatType>;
+		}
+		else if constexpr(Field == DynamicsField::Threshold || Field == DynamicsField::KneeWidth) {
+			return std::is_same_v<F, Decibels>;
+		}
+		else if constexpr(Field == DynamicsField::SampleRate) {
+			return std::is_same_v<F, Hertz>;
+		}
+		else {
+			return std::is_same_v<F, bool>;
+		}
+	}
+
 	/// @brief Type to own and maintain all of a dynamics processor's shared state
 	///
 	/// @tparam FloatType - The floating point type used for parameters
@@ -55,13 +93,8 @@ namespace apex::dsp {
 		std::enable_if_t<areDynamicsParamsValid<FloatType, AttackKind, ReleaseKind>(), bool> = true>
 	class DynamicsState {
 	  public:
-		using AttackCallback = std::function<void(AttackKind)>;
-		using ReleaseCallback = std::function<void(ReleaseKind)>;
-		using RatioCallback = std::function<void(FloatType)>;
-		using ThresholdCallback = std::function<void(Decibels)>;
-		using KneeWidthCallback = std::function<void(Decibels)>;
-		using SampleRateCallback = std::function<void(Hertz)>;
-		using AutoReleaseEnableCallback = std::function<void(bool)>;
+		template<typename F>
+		using Callback = std::function<void(F)>;
 
 		/// @brief Constructs a blank `DynamicsState` with everything zeroed
 		constexpr DynamicsState() noexcept = default;
@@ -347,17 +380,18 @@ namespace apex::dsp {
 		/// @tparam field - The field to register the callback on
 		///
 		/// @param callback - The callback to register
-		template<typename F,
-				 DynamicsField Field,
-				 std::enable_if_t<isRegisterFuncEnabled<F, Field>(), bool> = true>
-		auto registerCallback(const std::function<void(F)>& callback) noexcept -> void;
+		template<
+			typename F,
+			DynamicsField Field,
+			std::enable_if_t<isRegisterFuncEnabled<F, Field, FloatType, AttackKind, ReleaseKind>(),
+							 bool> = true>
+		auto registerCallback(const Callback<F>& callback) noexcept -> void;
 
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto
-		registerCallback<AttackKind, DynamicsField::Attack>(const AttackCallback& callback) noexcept
-			-> void {
+		inline auto registerCallback<AttackKind, DynamicsField::Attack>(
+			const Callback<AttackKind>& callback) noexcept -> void {
 			callback(mAttack);
 			mAttackCallbacks.push_back(callback);
 		}
@@ -366,7 +400,7 @@ namespace apex::dsp {
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
 		inline auto registerCallback<ReleaseKind, DynamicsField::Release>(
-			const ReleaseCallback& callback) noexcept -> void {
+			const Callback<ReleaseKind>& callback) noexcept -> void {
 			callback(mRelease);
 			mReleaseCallbacks.push_back(callback);
 		}
@@ -374,9 +408,8 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto
-		registerCallback<FloatType, DynamicsField::Ratio>(const RatioCallback& callback) noexcept
-			-> void {
+		inline auto registerCallback<FloatType, DynamicsField::Ratio>(
+			const Callback<FloatType>& callback) noexcept -> void {
 			callback(mRatio);
 			mRatioCallbacks.push_back(callback);
 		}
@@ -385,7 +418,7 @@ namespace apex::dsp {
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
 		inline auto registerCallback<Decibels, DynamicsField::Threshold>(
-			const ThresholdCallback& callback) noexcept -> void {
+			const Callback<Decibels>& callback) noexcept -> void {
 			callback(mThreshold);
 			mThresholdCallbacks.push_back(callback);
 		}
@@ -394,7 +427,7 @@ namespace apex::dsp {
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
 		inline auto registerCallback<Decibels, DynamicsField::KneeWidth>(
-			const KneeWidthCallback& callback) noexcept -> void {
+			const Callback<Decibels>& callback) noexcept -> void {
 			callback(mKneeWidth);
 			mKneeWidthCallbacks.push_back(callback);
 		}
@@ -402,8 +435,9 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<Hertz, DynamicsField::SampleRate>(
-			const SampleRateCallback& callback) noexcept -> void {
+		inline auto
+		registerCallback<Hertz, DynamicsField::SampleRate>(const Callback<Hertz>& callback) noexcept
+			-> void {
 			callback(mSampleRate);
 			mSampleRateCallbacks.push_back(callback);
 		}
@@ -411,8 +445,9 @@ namespace apex::dsp {
 		/// @brief Registers the given callback to be called on changes to the given field.
 		/// The callback is called immediately to allow for synchronization with the current state.
 		template<>
-		inline auto registerCallback<bool, DynamicsField::AutoRelease>(
-			const AutoReleaseEnableCallback& callback) noexcept -> void {
+		inline auto
+		registerCallback<bool, DynamicsField::AutoRelease>(const Callback<bool>& callback) noexcept
+			-> void {
 			callback(mAutoReleaseEnabled);
 			mAutoReleaseCallbacks.push_back(callback);
 		}
@@ -449,42 +484,19 @@ namespace apex::dsp {
 		/// Callback containers
 
 		/// Attack callbacks
-		std::vector<AttackCallback> mAttackCallbacks;
+		std::vector<Callback<AttackKind>> mAttackCallbacks;
 		/// Release callbacks
-		std::vector<ReleaseCallback> mReleaseCallbacks;
+		std::vector<Callback<ReleaseKind>> mReleaseCallbacks;
 		/// Ratio callbacks
-		std::vector<RatioCallback> mRatioCallbacks;
+		std::vector<Callback<FloatType>> mRatioCallbacks;
 		/// Threshold callbacks
-		std::vector<ThresholdCallback> mThresholdCallbacks;
+		std::vector<Callback<Decibels>> mThresholdCallbacks;
 		/// Knee width callbacks
-		std::vector<KneeWidthCallback> mKneeWidthCallbacks;
+		std::vector<Callback<Decibels>> mKneeWidthCallbacks;
 		/// Sample rate callbacks
-		std::vector<SampleRateCallback> mSampleRateCallbacks;
+		std::vector<Callback<Hertz>> mSampleRateCallbacks;
 		/// AutoRelease callbacks
-		std::vector<AutoReleaseEnableCallback> mAutoReleaseCallbacks;
-
-		template<typename F, DynamicsField Field>
-		inline static constexpr auto isRegisterFuncEnabled() noexcept -> bool {
-			if constexpr(Field == DynamicsField::Attack) {
-				return std::is_same_v<F, AttackKind>;
-			}
-			else if constexpr(Field == DynamicsField::Release) {
-				return std::is_same_v<F, ReleaseKind>;
-			}
-			else if constexpr(Field == DynamicsField::Ratio) {
-				return std::is_same_v<F, FloatType>;
-			}
-			else if constexpr(Field == DynamicsField::Threshold
-							  || Field == DynamicsField::KneeWidth) {
-				return std::is_same_v<F, Decibels>;
-			}
-			else if constexpr(Field == DynamicsField::SampleRate) {
-				return std::is_same_v<F, Hertz>;
-			}
-			else {
-				return std::is_same_v<F, bool>;
-			}
-		}
+		std::vector<Callback<bool>> mAutoReleaseCallbacks;
 	};
 } // namespace apex::dsp
 
