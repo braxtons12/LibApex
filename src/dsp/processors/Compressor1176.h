@@ -70,7 +70,16 @@ namespace apex::dsp {
 			jassert(input.size() == output.size());
 			auto size = input.size();
 			for(auto i = 0U; i < size; ++i) {
-				output.at(i) = processSingleChannel<ProcessorChannel::Mono>(input.at(i));
+				output.at(i) = processMono(input.at(i));
+			}
+		}
+
+		inline auto
+		processMono(Span<const FloatType> input, Span<FloatType> output) noexcept -> void final {
+			jassert(input.size() == output.size());
+			auto size = input.size();
+			for(auto i = 0U; i < size; ++i) {
+				output.at(i) = processMono(input.at(i));
 			}
 		}
 
@@ -119,9 +128,27 @@ namespace apex::dsp {
 			jassert(input.size() == sidechain.size() == output.size());
 			auto size = input.size();
 			for(auto index = 0U; index < size; ++size) {
-				output.at(index)
-					= processSingleChannel<ProcessorChannel::Mono>(input.at(index),
-																   sidechain.at(index));
+				output.at(index) = processMonoSidechained(input.at(index), sidechain.at(index));
+			}
+		}
+
+		inline auto processMonoSidechained(Span<FloatType> input,
+										   Span<const FloatType> sidechain,
+										   Span<FloatType> output) noexcept -> void final {
+			jassert(input.size() == sidechain.size() == output.size());
+			auto size = input.size();
+			for(auto index = 0U; index < size; ++size) {
+				output.at(index) = processMonoSidechained(input.at(index), sidechain.at(index));
+			}
+		}
+
+		inline auto processMonoSidechained(Span<const FloatType> input,
+										   Span<const FloatType> sidechain,
+										   Span<FloatType> output) noexcept -> void final {
+			jassert(input.size() == sidechain.size() == output.size());
+			auto size = input.size();
+			for(auto index = 0U; index < size; ++size) {
+				output.at(index) = processMonoSidechained(input.at(index), sidechain.at(index));
 			}
 		}
 
@@ -143,7 +170,7 @@ namespace apex::dsp {
 			if(BaseCompressor::mSidechainHPFEnabled) {
 				sideLeft = BaseCompressor::mSidechainFilter.at(Processor::LEFT).process(sideLeft);
 				sideRight
-					= BaseCompressor::mSidechainFilter.at(Processor::Right).process(sideRight);
+					= BaseCompressor::mSidechainFilter.at(Processor::RIGHT).process(sideRight);
 			}
 			if(BaseCompressor::mPreEmphasisMode == SidechainPreEmphasisFilterMode::Soft) {
 				sideLeft
@@ -151,9 +178,9 @@ namespace apex::dsp {
 				sideLeft
 					= BaseCompressor::mSoftHighShelfFilter.at(Processor::LEFT).process(sideLeft);
 				sideRight
-					= BaseCompressor::mSoftLowShelfFilter.at(Processor::Right).process(sideRight);
+					= BaseCompressor::mSoftLowShelfFilter.at(Processor::RIGHT).process(sideRight);
 				sideRight
-					= BaseCompressor::mSoftHighShelfFilter.at(Processor::Right).process(sideRight);
+					= BaseCompressor::mSoftHighShelfFilter.at(Processor::RIGHT).process(sideRight);
 			}
 			else if(BaseCompressor::mPreEmphasisMode == SidechainPreEmphasisFilterMode::Hard) {
 				sideLeft
@@ -161,17 +188,17 @@ namespace apex::dsp {
 				sideLeft
 					= BaseCompressor::mHardHighShelfFilter.at(Processor::LEFT).process(sideLeft);
 				sideRight
-					= BaseCompressor::mHardLowShelfFilter.at(Processor::Right).process(sideRight);
+					= BaseCompressor::mHardLowShelfFilter.at(Processor::RIGHT).process(sideRight);
 				sideRight
-					= BaseCompressor::mHardHighShelfFilter.at(Processor::Right).process(sideRight);
+					= BaseCompressor::mHardHighShelfFilter.at(Processor::RIGHT).process(sideRight);
 			}
 #ifdef TESTING_COMPRESSOR_1176
 			Logger::LogMessage("Compressor1176: SidechainFilteredLeft:" + juce::String(sideLeft));
 #endif
 			BaseCompressor::mCompressionGain.at(Processor::LEFT)
 				= mSidechains.at(Processor::LEFT).process(sideLeft);
-			BaseCompressor::mCompressionGain.at(Processor::Right)
-				= mSidechains.at(Processor::Right).process(sideRight);
+			BaseCompressor::mCompressionGain.at(Processor::RIGHT)
+				= mSidechains.at(Processor::RIGHT).process(sideRight);
 #ifdef TESTING_COMPRESSOR_1176
 			Logger::LogMessage(
 				"Compressor1176: RawGainReductionLeft:"
@@ -179,12 +206,12 @@ namespace apex::dsp {
 #endif
 			Decibels leftGain = BaseCompressor::mCompressionGain.at(Processor::LEFT)
 								* BaseCompressor::mCompressionProportion;
-			Decibels rightGain = BaseCompressor::mCompressionGain.at(Processor::Right)
+			Decibels rightGain = BaseCompressor::mCompressionGain.at(Processor::RIGHT)
 								 * BaseCompressor::mCompressionProportion;
 			BaseCompressor::mCurrentGainReduction
 				= narrow_cast<FloatType>(0.5) * BaseCompressor::mCompressionProportion
 				  * (BaseCompressor::mCompressionGain.at(Processor::LEFT)
-					 + BaseCompressor::mCompressionGain.at(Processor::Right));
+					 + BaseCompressor::mCompressionGain.at(Processor::RIGHT));
 			Decibels leftGainLinked
 				= BaseCompressor::mStereoLinkProportion * rightGain
 				  + (narrow_cast<FloatType>(1.0) - BaseCompressor::mStereoLinkProportion)
@@ -236,10 +263,10 @@ namespace apex::dsp {
 					== sidechainRight.size() == outputLeft.size() == outputRight.size());
 			auto numSamples = inputLeft.size();
 			for(auto index = 0U; index < numSamples; ++index) {
-				auto [outLeft, outRight] = process(inputLeft.at(index),
-												   inputRight.at(index),
-												   sidechainLeft.at(index),
-												   sidechainRight.at(index));
+				auto [outLeft, outRight] = processStereoSidechained(inputLeft.at(index),
+																	inputRight.at(index),
+																	sidechainLeft.at(index),
+																	sidechainRight.at(index));
 #ifdef TESTING_COMPRESSOR_1176
 				Logger::LogMessage("Compressing Input");
 				Logger::LogMessage("Input Left:" + juce::String(inputLeft.at(index))
@@ -264,10 +291,38 @@ namespace apex::dsp {
 					== sidechainRight.size() == outputLeft.size() == outputRight.size());
 			auto numSamples = inputLeft.size();
 			for(auto index = 0U; index < numSamples; ++index) {
-				auto [outLeft, outRight] = process(inputLeft.at(index),
-												   inputRight.at(index),
-												   sidechainLeft.at(index),
-												   sidechainRight.at(index));
+				auto [outLeft, outRight] = processStereoSidechained(inputLeft.at(index),
+																	inputRight.at(index),
+																	sidechainLeft.at(index),
+																	sidechainRight.at(index));
+#ifdef TESTING_COMPRESSOR_1176
+				Logger::LogMessage("Compressing Input");
+				Logger::LogMessage("Input Left:" + juce::String(inputLeft.at(index))
+								   + " Input Right:" + juce::String(inputRight.at(index)));
+				Logger::LogMessage("SidechainLeft:" + juce::String(sidechainLeft.at(index))
+								   + " SidechainRight:" + juce::String(sidechainRight.at(index)));
+				Logger::LogMessage("OutputLeft:" + juce::String(outLeft)
+								   + " OutputRight:" + juce::String(outRight));
+#endif
+				outputLeft.at(index) = outLeft;
+				outputRight.at(index) = outRight;
+			}
+		}
+
+		inline auto processStereoSidechained(Span<FloatType> inputLeft,
+											 Span<FloatType> inputRight,
+											 Span<const FloatType> sidechainLeft,
+											 Span<const FloatType> sidechainRight,
+											 Span<FloatType> outputLeft,
+											 Span<FloatType> outputRight) noexcept -> void final {
+			jassert(inputLeft.size() == inputRight.size() == sidechainLeft.size()
+					== sidechainRight.size() == outputLeft.size() == outputRight.size());
+			auto numSamples = inputLeft.size();
+			for(auto index = 0U; index < numSamples; ++index) {
+				auto [outLeft, outRight] = processStereoSidechained(inputLeft.at(index),
+																	inputRight.at(index),
+																	sidechainLeft.at(index),
+																	sidechainRight.at(index));
 #ifdef TESTING_COMPRESSOR_1176
 				Logger::LogMessage("Compressing Input");
 				Logger::LogMessage("Input Left:" + juce::String(inputLeft.at(index))
@@ -295,8 +350,10 @@ namespace apex::dsp {
 					== outputRight.size());
 			auto size = inputLeft.size();
 			for(auto i = 0U; i < size; ++i) {
-				auto [outLeft, outRight]
-					= processStereoSidechained(inputLeft, inputRight, inputLeft, inputRight);
+				auto [outLeft, outRight] = processStereoSidechained(inputLeft.at(i),
+																	inputRight.at(i),
+																	inputLeft.at(i),
+																	inputRight.at(i));
 				outputLeft.at(i) = outLeft;
 				outputRight.at(i) = outRight;
 			}
@@ -310,8 +367,10 @@ namespace apex::dsp {
 					== outputRight.size());
 			auto size = inputLeft.size();
 			for(auto i = 0U; i < size; ++i) {
-				auto [outLeft, outRight]
-					= processStereoSidechained(inputLeft, inputRight, inputLeft, inputRight);
+				auto [outLeft, outRight] = processStereoSidechained(inputLeft.at(i),
+																	inputRight.at(i),
+																	inputLeft.at(i),
+																	inputRight.at(i));
 				outputLeft.at(i) = outLeft;
 				outputRight.at(i) = outRight;
 			}
@@ -331,8 +390,7 @@ namespace apex::dsp {
 		inline auto setRatioProportional(FloatType ratioProportional) noexcept -> void final {
 			jassert(ratioProportional >= narrow_cast<FloatType>(0.0)
 					&& ratioProportional <= narrow_cast<FloatType>(1.0));
-			auto ratio
-				= static_cast<typename Sidechain1176::Ratio>(ratioProportional * MAX_RATIO_INDEX);
+			auto ratio = static_cast<Ratio1176>(ratioProportional * MAX_RATIO_INDEX);
 			for(auto& sidechain : mSidechains) {
 				sidechain.setRatio(ratio);
 			}
@@ -341,11 +399,11 @@ namespace apex::dsp {
 		[[nodiscard]] inline auto getRatio() const noexcept -> Option<FloatType> final {
 			auto ratio = mSidechains.at(0).getEnumRatio();
 			switch(ratio) {
-				case Sidechain1176::Ratio::FourToOne: return Option<FloatType>::Some(4.0);
-				case Sidechain1176::Ratio::EightToOne: return Option<FloatType>::Some(8.0);
-				case Sidechain1176::Ratio::TwelveToOne: return Option<FloatType>::Some(12.0);
-				case Sidechain1176::Ratio::TwentyToOne: return Option<FloatType>::Some(20.0);
-				case Sidechain1176::Ratio::AllButtonsIn: return Option<FloatType>::Some(24.0);
+				case Ratio1176::FourToOne: return Option<FloatType>::Some(4.0);
+				case Ratio1176::EightToOne: return Option<FloatType>::Some(8.0);
+				case Ratio1176::TwelveToOne: return Option<FloatType>::Some(12.0);
+				case Ratio1176::TwentyToOne: return Option<FloatType>::Some(20.0);
+				case Ratio1176::AllButtonsIn: return Option<FloatType>::Some(24.0);
 			}
 		}
 
@@ -466,7 +524,7 @@ namespace apex::dsp {
 
 	  private:
 		static const constexpr size_t MAX_RATIO_INDEX
-			= static_cast<size_t>(Sidechain1176::Ratio::AllButtonsIn);
+			= static_cast<size_t>(Ratio1176::AllButtonsIn);
 		static const constexpr FloatType MAX_RATIO = narrow_cast<FloatType>(24.0);
 		static const constexpr FloatType MIN_RATIO = narrow_cast<FloatType>(4.0);
 		static const constexpr FloatType MAX_ATTACK = Sidechain1176::MAX_ATTACK_SECONDS;

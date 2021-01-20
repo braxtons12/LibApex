@@ -100,7 +100,7 @@ namespace apex::dsp {
 		}
 
 		[[nodiscard]] constexpr inline auto
-		overSample(Span<const FloatType> input) noexcept -> Span<FloatType> {
+		overSample(Span<const FloatType> input) noexcept -> Span<const FloatType> {
 			jassert(input.size() <= mOverSampled.size() / OverSampleRate);
 
 #ifdef TESTING_OVERSAMPLER
@@ -125,7 +125,9 @@ namespace apex::dsp {
 #ifdef TESTING_OVERSAMPLER
 			Logger::LogMessage("Finished Oversampling");
 #endif
-			return span;
+			auto output = Span<const FloatType>::MakeSpan(mOverSampled.data(), mOverSampled.size())
+							  .first(mOverSampledSize);
+			return output;
 		}
 
 		constexpr inline auto downSample() noexcept -> Span<FloatType> {

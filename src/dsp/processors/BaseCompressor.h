@@ -59,6 +59,11 @@ namespace apex::dsp {
 											Span<FloatType> output) noexcept -> void
 			= 0;
 
+		virtual auto processMonoSidechained(Span<FloatType> input,
+											Span<const FloatType> sidechain,
+											Span<FloatType> output) noexcept -> void
+			= 0;
+
 		virtual auto processMonoSidechained(Span<const FloatType> input,
 											Span<const FloatType> sidechain,
 											Span<FloatType> output) noexcept -> void
@@ -77,6 +82,15 @@ namespace apex::dsp {
 											  Span<FloatType> outputLeft,
 											  Span<FloatType> outputRight) noexcept -> void
 			= 0;
+
+		virtual auto processStereoSidechained(Span<FloatType> inputLeft,
+											  Span<FloatType> inputRight,
+											  Span<const FloatType> sidechainLeft,
+											  Span<const FloatType> sidechainRight,
+											  Span<FloatType> outputLeft,
+											  Span<FloatType> outputRight) noexcept -> void
+			= 0;
+
 		virtual auto processStereoSidechained(Span<const FloatType> inputLeft,
 											  Span<const FloatType> inputRight,
 											  Span<const FloatType> sidechainLeft,

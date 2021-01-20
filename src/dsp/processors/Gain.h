@@ -88,7 +88,7 @@ namespace apex::dsp {
 			jassert(input.size() == output.size());
 			auto size = input.size();
 			for(auto i = 0U; i < size; ++i) {
-				output.at(i) = process(input.at(i));
+				output.at(i) = processMono(input.at(i));
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace apex::dsp {
 			jassert(input.size() == output.size());
 			auto size = input.size();
 			for(auto i = 0U; i < size; ++i) {
-				output.at(i) = process(input.at(i));
+				output.at(i) = processMono(input.at(i));
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace apex::dsp {
 					== outputRight.size());
 			auto size = inputLeft.size();
 			for(auto i = 0U; i < size; ++i) {
-				auto [left, right] = procssStereo(inputLeft.at(i), inputRight.at(i));
+				auto [left, right] = processStereo(inputLeft.at(i), inputRight.at(i));
 
 				outputLeft.at(i) = left;
 				outputRight.at(i) = right;
@@ -151,7 +151,7 @@ namespace apex::dsp {
 					== outputRight.size());
 			auto size = inputLeft.size();
 			for(auto i = 0U; i < size; ++i) {
-				auto [left, right] = procssStereo(inputLeft.at(i), inputRight.at(i));
+				auto [left, right] = processStereo(inputLeft.at(i), inputRight.at(i));
 
 				outputLeft.at(i) = left;
 				outputRight.at(i) = right;
