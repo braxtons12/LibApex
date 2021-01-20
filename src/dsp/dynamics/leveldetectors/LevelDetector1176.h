@@ -26,8 +26,8 @@ namespace apex::dsp {
 #ifdef TESTING_LEVELDETECTOR_1176
 			Logger::LogMessage("Creating Level Detector 1176");
 #endif
-			setAttackTime(DEFAULT_ATTACK_SECONDS);
-			setReleaseTime(DEFAULT_RELEASE_SECONDS);
+			LevelDetector::setAttackTime(DEFAULT_ATTACK_SECONDS);
+			LevelDetector::setReleaseTime(DEFAULT_RELEASE_SECONDS);
 			LevelDetector::setDetectorType(DetectorType::NonCorrected);
 		}
 
@@ -39,8 +39,8 @@ namespace apex::dsp {
 #ifdef TESTING_LEVELDETECTOR_1176
 			Logger::LogMessage("Creating Level Detector 1176");
 #endif
-			setAttackTime(DEFAULT_ATTACK_SECONDS);
-			setReleaseTime(DEFAULT_RELEASE_SECONDS);
+			LevelDetector::setAttackTime(DEFAULT_ATTACK_SECONDS);
+			LevelDetector::setReleaseTime(DEFAULT_RELEASE_SECONDS);
 		}
 
 		/// @brief Move constructs a `LevelDetector1176` from the given one

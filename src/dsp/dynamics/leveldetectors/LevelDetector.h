@@ -44,7 +44,7 @@ namespace apex::dsp {
 		/// @param state - The shared state
 		/// @param type - The detector type
 		explicit LevelDetector(DynamicsState* state, DetectorType type) noexcept
-			: mType(type), mState(state) {
+			: mState(state), mType(type) {
 #ifdef TESTING_LEVELDETECTOR
 			Logger::LogMessage("Creating Base Level Detector");
 #endif
@@ -219,9 +219,10 @@ namespace apex::dsp {
 			// y[n] = attackCoeff * y[n-1] + (1 - attackCoeff) * y_1[n]
 
 			auto one = narrow_cast<FloatType>(1.0);
-			auto ytempn = General<>::max(input,
-										 mState->getReleaseCoefficient1() * mYTempStage1
-											 + (one - mState->getReleaseCoefficient1()) * input);
+			auto ytempn
+				= General<FloatType>::max(input,
+										  mState->getReleaseCoefficient1() * mYTempStage1
+											  + (one - mState->getReleaseCoefficient1()) * input);
 			auto yn = mState->getAttackCoefficient1() * mYOut1
 					  + (one - mState->getAttackCoefficient1()) * ytempn;
 			mYTempStage1 = ytempn;
