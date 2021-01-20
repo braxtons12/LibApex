@@ -592,7 +592,7 @@ namespace apex::dsp {
 		inline auto process(Span<FloatType> input, Span<FloatType> output) noexcept -> void {
 			jassert(input.size() == output.size());
 			auto size = input.size();
-			for(auto i = 0; i < size; ++i) {
+			for(auto i = 0U; i < size; ++i) {
 				output.at(i) = process(input.at(i));
 			}
 		}
@@ -604,7 +604,7 @@ namespace apex::dsp {
 		inline auto process(Span<const FloatType> input, Span<FloatType> output) noexcept -> void {
 			jassert(input.size() == output.size());
 			auto size = input.size();
-			for(auto i = 0; i < size; ++i) {
+			for(auto i = 0U; i < size; ++i) {
 				output.at(i) = process(input.at(i));
 			}
 		}
@@ -761,7 +761,8 @@ namespace apex::dsp {
 		inline auto updateCoefficients() noexcept -> void {
 			auto one = narrow_cast<FloatType>(1.0);
 			auto two = narrow_cast<FloatType>(2.0);
-			auto w0 = two * Constants<>::pi * mFrequency / narrow_cast<FloatType>(mSampleRate);
+			auto w0 = narrow_cast<FloatType>(two * Constants<FloatType>::pi * mFrequency
+											 / narrow_cast<FloatType>(mSampleRate));
 			auto cosw0 = Trig<FloatType>::cos(w0);
 			auto sinw0 = Trig<FloatType>::sin(w0);
 			auto alpha = sinw0 / (two * mQ);
@@ -774,7 +775,7 @@ namespace apex::dsp {
 			}
 
 			if(mType == FilterType::LowShelf || mType == FilterType::HighShelf) {
-				twoSqrtAAlpha = two * General<>::sqrt(a) * alpha;
+				twoSqrtAAlpha = two * General<FloatType>::sqrt(a) * alpha;
 			}
 
 			switch(mType) {
