@@ -3,7 +3,9 @@
 #include <functional>
 #include <juce_core/juce_core.h>
 #include <type_traits>
+#include <utility>
 
+#include "Details.h"
 #include "Error.h"
 #include "MiscMacros.h"
 #include "Result.h"
@@ -12,6 +14,7 @@
 	#define OPTION
 
 namespace apex::utils {
+
 	/// @brief Represents an optional value.
 	/// Every `Option` is either `Some` and contains a value, or `None`, and does
 	/// not. Useful for things such as:
@@ -24,12 +27,21 @@ namespace apex::utils {
 	/// @tparam T - The type of the potentially-contained value
 	///
 	/// @tags {`utils`}
-	template<typename T, bool copyable = std::is_copy_constructible_v<T> && !std::is_pointer_v<T>>
-	class [[nodiscard]] Option {
+	template<typename T>
+	requires(utils_details::is_copy_move_or_pointer_v<T>) class [[nodiscard]] Option {
 	  public:
-		constexpr Option(const Option<T, copyable>& option) = default;
-		constexpr Option(Option<T, copyable>&& option) noexcept = default;
-		~Option() noexcept = default;
+		constexpr Option(const Option& option) noexcept requires(std::is_copy_constructible_v<T>)
+			= default;
+		constexpr Option(Option&& option) noexcept requires(std::is_move_constructible_v<T>)
+			= default;
+		~Option() noexcept requires(!std::is_pointer_v<T>) = default;
+
+		~Option() noexcept requires(std::is_pointer_v<T>) {
+			if(mIsSome) {
+				delete mSome;
+				mSome = gsl::owner<T*>(nullptr);
+			}
+		}
 
 		/// @brief Constructs an `Option<T>` containing `some`, aka a `Some` variant
 		/// containing `some` aka `Some(some)`
@@ -37,15 +49,38 @@ namespace apex::utils {
 		/// @param some - The value to store in this `Option<T>`
 		///
 		/// @return `Some(some)`
-		[[nodiscard]] constexpr static inline auto Some(T some) noexcept -> Option<T, copyable> {
-			return Option<T, copyable>(some);
+		[[nodiscard]] constexpr static inline auto
+		Some(T some) noexcept -> Option requires(std::is_reference_v<T>) {
+			return Option(std::forward<T>(some));
+		}
+
+		/// @brief Constructs an `Option<T>` containing `some`, aka a `Some` variant
+		/// containing `some` aka `Some(some)`
+		///
+		/// @param some - The value to store in this `Option<T>`
+		///
+		/// @return `Some(some)`
+		[[nodiscard]] constexpr static inline auto Some(T some) noexcept -> Option
+			requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>) {
+			return Option(std::move(some));
+		}
+
+		/// @brief Constructs an `Option<T>` containing `some`, aka a `Some` variant
+		/// containing `some` aka `Some(some)`
+		///
+		/// @param some - The value to store in this `Option<T>`
+		///
+		/// @return `Some(some)`
+		[[nodiscard]] constexpr static inline auto Some(T some) noexcept -> Option
+			requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>) {
+			return Option(some);
 		}
 
 		/// @brief Constructs an empty `Option<T>`, aka a `None`
 		///
 		/// @return `None`
-		[[nodiscard]] constexpr static inline auto None() noexcept -> Option<T, copyable> {
-			return Option<T, copyable>();
+		[[nodiscard]] constexpr static inline auto None() noexcept -> Option {
+			return Option();
 		}
 
 		/// @brief Returns `true` if this is `Some`, `false` if this is `None`
@@ -68,7 +103,7 @@ namespace apex::utils {
 		/// @tparam U - The type to map to
 		/// @param mapFunc - The function to perform the mapping
 		///
-		/// @return Option<U> - `Some(U)` if this is Some, or `None` if this is `None`
+		/// @return `Some(U)` if this is Some, or `None` if this is `None`
 		template<typename U>
 		[[nodiscard]] inline auto
 		map(std::function<U(T) const> mapFunc) const noexcept -> Option<U> {
@@ -94,6 +129,12 @@ namespace apex::utils {
 		mapOr(std::function<U(T) const> mapFunc, U defaultValue) const noexcept -> U {
 			if(mIsSome) {
 				return mapFunc(mSome);
+			}
+			else if constexpr(std::is_reference_v<U>) {
+				return std::forward<U>(defaultValue);
+			}
+			else if constexpr(std::is_move_constructible_v<U>) {
+				return std::move(defaultValue);
 			}
 			else {
 				return defaultValue;
@@ -133,17 +174,74 @@ namespace apex::utils {
 		/// @param error - The `Error` to return if this `Option<T>` is `None`
 		///
 		/// @return `Ok(T)` if this is `Some`, `Err(error)` if this is `None`
-		template<typename E, typename Enable = std::enable_if_t<std::is_base_of_v<Error, E>, E>>
-		[[nodiscard]] constexpr inline auto okOr(E error) noexcept -> Result<T, E> {
+		template<typename E>
+		[[nodiscard]] constexpr inline auto okOr(E error) noexcept -> Result<T, E> requires(
+			utils_details::is_error_type_v<E>&&
+				utils_details::is_copy_or_move_v<T> && !std::is_pointer_v<T>) {
 			if(mIsSome) {
-				auto res = Result<T, E>::Ok(std::move(mSome));
+				if constexpr(std::is_reference_v<T>) {
+					auto res = Ok<T, E>(std::forward<T>(mSome));
+					mIsSome = false;
+					this->~Option();
+					return std::move(res);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					auto res = Ok<T, E>(std::move(mSome));
+					mIsSome = false;
+					this->~Option();
+					return std::move(res);
+				}
+				else {
+					auto res = Ok<T, E>(mSome);
+					mIsSome = false;
+					this->~Option();
+					return res;
+				}
+			}
+			else {
+				this->~Option();
+				if constexpr(std::is_reference_v<E>) {
+					return Err<T, E>(std::forward<E>(error));
+				}
+				else if constexpr(std::is_move_constructible_v<E>) {
+					return Err<T, E>(std::move<E>(error));
+				}
+				else {
+					return Err<T, E>(error);
+				}
+			}
+		}
+
+		/// @brief Converts this `Option<T>` to a `Result<T, E>`, consuming this
+		/// `Option<T>`. Returns `Ok(T)` if this is `Some` or `Err(error)` if this is
+		/// `None`
+		///
+		/// @tparam E - The type to return if this is `None`.
+		///				Must be an `Error` type (`apex::utils::Error`)
+		/// @param error - The `Error` to return if this `Option<T>` is `None`
+		///
+		/// @return `Ok(T)` if this is `Some`, `Err(error)` if this is `None`
+		template<typename E>
+		[[nodiscard]] constexpr inline auto okOr(E error) noexcept
+			-> Result<T, E> requires(utils_details::is_error_type_v<E>&& std::is_pointer_v<T>) {
+			if(mIsSome) {
+				auto res = Ok<T, E>(mSome);
 				mIsSome = false;
+				mSome = nullptr;
 				this->~Option();
 				return std::move(res);
 			}
 			else {
 				this->~Option();
-				return Result<T, E>::Err(error);
+				if constexpr(std::is_reference_v<E>) {
+					return Err<T, E>(std::forward<E>(error));
+				}
+				else if constexpr(std::is_move_constructible_v<E>) {
+					return Err<T, E>(std::move<E>(error));
+				}
+				else {
+					return Err<T, E>(error);
+				}
 			}
 		}
 
@@ -156,18 +254,59 @@ namespace apex::utils {
 		/// @param errorGenerator - The function to generate the `Error` value
 		///
 		/// @return `Ok(T)` if this is `Some`, `Err(E)` if this is `None`
-		template<typename E, typename Enable = std::enable_if_t<std::is_base_of_v<Error, E>, E>>
+		template<typename E>
 		[[nodiscard]] inline auto
-		okOrElse(std::function<E() const> errorGenerator) noexcept -> Result<T, E> {
+		okOrElse(std::function<E() const> errorGenerator) noexcept -> Result<T, E> requires(
+			utils_details::is_error_type_v<E>&&
+				utils_details::is_copy_or_move_v<T> && !std::is_pointer_v<T>) {
 			if(mIsSome) {
-				auto res = Result<T, E>::Ok(std::move(mSome));
+				if constexpr(std::is_reference_v<T>) {
+					auto res = Ok<T, E>(std::forward<T>(mSome));
+					mIsSome = false;
+					this->~Option();
+					return std::move(res);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					auto res = Ok<T, E>(std::move(mSome));
+					mIsSome = false;
+					this->~Option();
+					return std::move(res);
+				}
+				else {
+					auto res = Ok<T, E>(mSome);
+					mIsSome = false;
+					this->~Option();
+					return res;
+				}
+			}
+			else {
+				this->~Option();
+				return Err<T, E>(errorGenerator());
+			}
+		}
+
+		/// @brief Converts this `Option<T>` to a `Result<T, E>`, consuming this
+		/// `Option<T>`. Returns `Ok(T)` if this is `Some`, or `Err(E)` (where E is
+		/// generated by `errorGenerator`) if this is `None`
+		///
+		/// @tparam E - The type to return if this is `None`.
+		///				Must be an `Error` type (`apex::utils::Error`)
+		/// @param errorGenerator - The function to generate the `Error` value
+		///
+		/// @return `Ok(T)` if this is `Some`, `Err(E)` if this is `None`
+		template<typename E>
+		[[nodiscard]] inline auto okOrElse(std::function<E() const> errorGenerator) noexcept
+			-> Result<T, E> requires(utils_details::is_error_type_v<E>&& std::is_pointer_v<T>) {
+			if(mIsSome) {
+				auto res = Ok<T, E>(mSome);
 				mIsSome = false;
+				mSome = nullptr;
 				this->~Option();
 				return std::move(res);
 			}
 			else {
 				this->~Option();
-				return Result<T, E>::Err(errorGenerator());
+				return Err<T, E>(errorGenerator());
 			}
 		}
 
@@ -175,12 +314,43 @@ namespace apex::utils {
 		/// If this is not `Some`, then `std::terminate` is called
 		///
 		/// @return The contained `T`
-		[[nodiscard]] constexpr inline auto unwrap() noexcept -> T {
+		[[nodiscard]] constexpr inline auto unwrap() noexcept -> T requires(!std::is_pointer_v<T>) {
 			if(mIsSome) {
-				auto some = std::move(mSome);
+				if constexpr(std::is_reference_v<T>) {
+					auto some = std::forward<T>(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::forward<T>(some);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					auto some = std::move(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::move(some);
+				}
+				else {
+					auto some = mSome;
+					mIsSome = false;
+					this->~Option();
+					return some;
+				}
+			}
+			else {
+				std::terminate();
+			}
+		}
+
+		/// @brief Returns the contained `T`, consuming this `Option`.
+		/// If this is not `Some`, then `std::terminate` is called
+		///
+		/// @return The contained `T`
+		[[nodiscard]] constexpr inline auto unwrap() noexcept -> T requires(std::is_pointer_v<T>) {
+			if(mIsSome) {
+				auto some = mSome;
 				mIsSome = false;
+				mSome = nullptr;
 				this->~Option();
-				return std::move(some);
+				return some;
 			}
 			else {
 				std::terminate();
@@ -193,12 +363,55 @@ namespace apex::utils {
 		/// @param defaultValue - The value to return if this is `None`
 		///
 		/// @return The contained `T` if this is `Some`, or `defaultValue`
-		[[nodiscard]] constexpr inline auto unwrapOr(T defaultValue) noexcept -> T {
+		[[nodiscard]] constexpr inline auto
+		unwrapOr(T defaultValue) noexcept -> T requires(!std::is_pointer_v<T>) {
 			if(mIsSome) {
-				auto some = std::move(mSome);
-				mIsSome = false;
+				if constexpr(std::is_reference_v<T>) {
+					auto some = std::forward<T>(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::forward<T>(some);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					auto some = std::move(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::move(some);
+				}
+				else {
+					auto some = mSome;
+					mIsSome = false;
+					this->~Option();
+					return some;
+				}
+			}
+			else {
 				this->~Option();
-				return std::move(some);
+				if constexpr(std::is_reference_v<T>) {
+					return std::forward<T>(defaultValue);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					return std::move(defaultValue);
+				}
+				else {
+					return defaultValue;
+				}
+			}
+		}
+
+		/// @brief Returns the contained `T` if this is `Some`, consuming this
+		/// `Option`. If this is not `Some`, then returns `defaultValue`.
+		///
+		/// @param defaultValue - The value to return if this is `None`
+		///
+		/// @return The contained `T` if this is `Some`, or `defaultValue`
+		[[nodiscard]] constexpr inline auto
+		unwrapOr(T defaultValue) noexcept -> T requires(std::is_pointer_v<T>) {
+			if(mIsSome) {
+				auto some = mSome;
+				mIsSome = false;
+				mSome = nullptr;
+				return some;
 			}
 			else {
 				this->~Option();
@@ -215,13 +428,50 @@ namespace apex::utils {
 		///
 		/// @return The contained `T` if this is `Some`, or the value generated by
 		/// `defaultGenerator`
-		[[nodiscard]] inline auto
-		unwrapOrElse(std::function<T() const> defaultGenerator) noexcept -> T {
+		[[nodiscard]] inline auto unwrapOrElse(std::function<T() const> defaultGenerator) noexcept
+			-> T requires(!std::is_pointer_v<T>) {
 			if(mIsSome) {
-				auto some = std::move(mSome);
-				mIsSome = false;
+				if constexpr(std::is_reference_v<T>) {
+					auto some = std::forward<T>(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::forward<T>(some);
+				}
+				else if constexpr(std::is_move_constructible_v<T>) {
+					auto some = std::move(mSome);
+					mIsSome = false;
+					this->~Option();
+					return std::move(some);
+				}
+				else {
+					auto some = mSome;
+					mIsSome = false;
+					this->~Option();
+					return some;
+				}
+			}
+			else {
 				this->~Option();
-				return std::move(some);
+				return defaultGenerator();
+			}
+		}
+
+		/// @brief Returns the contained `T` if this is `Some`, consuming this
+		/// `Option<T>`. If this is not `Some`, then returns the value generated by
+		/// `defaultGenerator`.
+		///
+		/// @param defaultGenerator - The function to generate the value returned if
+		/// this is `None`
+		///
+		/// @return The contained `T` if this is `Some`, or the value generated by
+		/// `defaultGenerator`
+		[[nodiscard]] inline auto unwrapOrElse(std::function<T() const> defaultGenerator) noexcept
+			-> T requires(std::is_pointer_v<T>) {
+			if(mIsSome) {
+				auto some = mSome;
+				mIsSome = false;
+				mSome = nullptr;
+				return some;
 			}
 			else {
 				this->~Option();
@@ -234,7 +484,37 @@ namespace apex::utils {
 		/// `std::terminate`
 		///
 		/// @return A pointer to the contained `T`
-		[[nodiscard]] constexpr inline auto getMut() noexcept -> T* {
+		[[nodiscard]] constexpr inline auto
+		getMut() noexcept -> T* requires(!std::is_pointer_v<T>) {
+			if(mIsSome) {
+				return &mSome;
+			}
+			else {
+				std::terminate();
+			}
+		}
+
+		/// @brief Similar to `unwrap`, except doesn't consume this `Option`.
+		/// Returns a pointer to the mutable `T` if this is `Some`, otherwise calls
+		/// `std::terminate`
+		///
+		/// @return A pointer to the contained `T`
+		[[nodiscard]] constexpr inline auto getMut() noexcept -> T requires(std::is_pointer_v<T>) {
+			if(mIsSome) {
+				return mSome;
+			}
+			else {
+				std::terminate();
+			}
+		}
+
+		/// @brief Similar to `unwrap`, except doesn't consume this `Option`.
+		/// Returns a pointer to the const `T` if this is `Some`, otherwise calls
+		/// `std::terminate`
+		///
+		/// @return An immutable pointer to the contained `T`
+		[[nodiscard]] constexpr inline auto
+		getConst() const noexcept -> const T* requires(!std::is_pointer_v<T>) {
 			if(mIsSome) {
 				return &mSome;
 			}
@@ -248,9 +528,10 @@ namespace apex::utils {
 		/// `std::terminate`
 		///
 		/// @return An immutable pointer to the contained `T`
-		[[nodiscard]] constexpr inline auto getConst() const noexcept -> const T* {
+		[[nodiscard]] constexpr inline auto
+		getConst() const noexcept -> const T requires(std::is_pointer_v<T>) {
 			if(mIsSome) {
-				return &mSome;
+				return mSome;
 			}
 			else {
 				std::terminate();
@@ -258,13 +539,27 @@ namespace apex::utils {
 		}
 
 		constexpr auto
-		operator=(const Option<T, copyable>& option) -> Option<T, copyable>& = default;
+		operator=(const Option& option) -> Option& requires(std::is_copy_constructible_v<T>)
+			= default;
 		constexpr auto
-		operator=(Option<T, copyable>&& option) noexcept -> Option<T, copyable>& = default;
+		operator=(Option&& option) noexcept -> Option& requires(std::is_move_constructible_v<T>)
+			= default;
 
 	  private:
-		constexpr explicit Option(T some) noexcept : mSome(some), mIsSome(true) {
+		constexpr explicit Option(T some) noexcept requires(std::is_reference_v<T>)
+			: mSome(std::forward<T>(some)), mIsSome(true) {
 		}
+
+		constexpr explicit Option(T some) noexcept
+			requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>)
+			: mSome(std::move(some)), mIsSome(true) {
+		}
+
+		constexpr explicit Option(T some) noexcept
+			requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>)
+			: mSome(some), mIsSome(true) {
+		}
+
 		constexpr Option() = default;
 
 		/// The contained value
@@ -275,114 +570,38 @@ namespace apex::utils {
 		APEX_DECLARE_NON_HEAP_ALLOCATABLE()
 	};
 
+	/// @brief Convenience shorthand for `Option<T>::Some`
+	///
+	/// @param `some` - The value to store in the `Option`
 	template<typename T>
-	class [[nodiscard]] Option<T, false> : Option<T, true> {
-	  public:
-		using Option<T, true>::Some;
-		using Option<T, true>::None;
-		using Option<T, true>::isSome;
-		using Option<T, true>::isNone;
-		using Option<T, true>::map;
-		using Option<T, true>::mapOr;
-		using Option<T, true>::mapOrElse;
-		using Option<T, true>::okOr;
-		using Option<T, true>::okOrElse;
-		using Option<T, true>::unwrap;
-		using Option<T, true>::unwrapOr;
-		using Option<T, true>::unwrapOrElse;
-		using Option<T, true>::getMut;
-		using Option<T, true>::getConst;
+	inline static constexpr auto
+	Some(T some) noexcept -> Option<T> requires(std::is_reference_v<T>) {
+		return Option<T>::Some(std::forward<T>(some));
+	}
 
-		Option(const Option<T>& option) = delete;
-		Option(Option<T>& option) = delete;
-		~Option() noexcept = default;
-
-		auto operator=(const Option<T>& option) = delete;
-		auto operator=(Option<T> option) = delete;
-
-	  private:
-		using Option<T, true>::Option;
-	};
-
+	/// @brief Convenience shorthand for `Option<T>::Some`
+	///
+	/// @param `some` - The value to store in the `Option`
 	template<typename T>
-	class [[nodiscard]] Option<T*, false> : Option<T, true> {
-	  public:
-		using Option<T, true>::None;
-		using Option<T, true>::isSome;
-		using Option<T, true>::isNone;
-		using Option<T, true>::map;
-		using Option<T, true>::mapOr;
-		using Option<T, true>::mapOrElse;
-		using Option<T, true>::okOr;
-		using Option<T, true>::okOrElse;
-		using Option<T, true>::unwrap;
-		using Option<T, true>::unwrapOr;
-		using Option<T, true>::unwrapOrElse;
-		Option(const Option<T*>& option) = delete;
-		Option(Option<T*>& option) = delete;
+	inline static constexpr auto Some(T some) noexcept
+		-> Option<T> requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>) {
+		return Option<T>::Some(std::move(some));
+	}
 
-		auto operator=(const Option<T*>& option) = delete;
-		auto operator=(Option<T*> option) = delete;
+	/// @brief Convenience shorthand for `Option<T>::Some`
+	///
+	/// @param `some` - The value to store in the `Option`
+	template<typename T>
+	inline static constexpr auto Some(T some) noexcept
+		-> Option<T> requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>) {
+		return Option<T>::Some(some);
+	}
 
-		~Option() noexcept {
-			if(mIsSome) {
-				delete mSome;
-				mSome = gsl::owner<T*>(nullptr);
-			}
-		}
-
-		/// @brief Constructs an `Option<T>` containing `some`, aka a `Some` variant
-		/// containing `some` aka `Some(some)`
-		/// Takes ownership of `some`
-		///
-		/// @param some - The value to store in this `Option<T>`
-		///
-		/// @return `Some(some)`
-		[[nodiscard]] constexpr static inline auto
-		Some(gsl::owner<T*> some) noexcept -> Option<T*> {
-			return Option<T*, false>(some);
-		}
-
-		/// @brief Similar to `unwrap`, except doesn't consume this `Option`.
-		/// Returns a pointer to the mutable `T` if this is `Some`, otherwise calls
-		/// `std::terminate`
-		///
-		/// @return A pointer to the contained `T`
-		[[nodiscard]] constexpr inline auto getMut() noexcept -> T* {
-			if(mIsSome) {
-				return gsl::not_null<T*>(mSome);
-			}
-			else {
-				std::terminate();
-			}
-		}
-
-		/// @brief Similar to `unwrap`, except doesn't consume this `Option`.
-		/// Returns a pointer to the const `T` if this is `Some`, otherwise calls
-		/// `std::terminate`
-		///
-		/// @return A pointer to the contained `T`
-		[[nodiscard]] constexpr inline auto getConst() const noexcept -> const T* {
-			if(mIsSome) {
-				return gsl::not_null<T*>(mSome);
-			}
-			else {
-				std::terminate();
-			}
-		}
-
-	  private:
-		constexpr explicit Option(gsl::owner<T*> some) noexcept : mSome(some), mIsSome(true) {
-		}
-		constexpr Option() noexcept = default;
-
-		/// The contained value
-		gsl::owner<T*> mSome = nullptr;
-		/// Whether this is `Some`
-		bool mIsSome = false;
-
-		APEX_DECLARE_NON_HEAP_ALLOCATABLE()
-	};
+	/// @brief Convenience shorthand for `Option<T>::None`
+	template<typename T>
+	inline static constexpr auto None() noexcept -> Option<T> {
+		return Option<T>::None();
+	}
 } // namespace apex::utils
 
 #endif // OPTION

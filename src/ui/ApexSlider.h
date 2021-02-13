@@ -189,12 +189,15 @@ namespace apex::ui {
 			return mYScaleFactor;
 		}
 
+		// clang-format off
+
 		/// @brief Determines if the given value is valid for this slider
 		///
 		/// @param value - The value in question
 		///
 		/// @return - Whether the value is valid
-		[[nodiscard]] inline auto isValueValid(double value) const noexcept -> bool {
+		[[nodiscard]] inline auto isValueValid(double value) const noexcept -> bool { // NOLINT(readability-convert-member-functions-to-static): we want this as a member function
+			//clang-format on
 			return value <= 1.00 && value >= 0.00;
 		}
 
@@ -274,8 +277,8 @@ namespace apex::ui {
 		///
 		/// @return - `Some(ApexFilmStrip)` if this uses a film strip for drawing, otherwise `None`
 		[[nodiscard]] inline auto getFilmStrip() const noexcept -> Option<ApexFilmStrip> {
-			return mUsesFilmStrip ? Option<ApexFilmStrip>::Some(mFilmStrip) :
-									  Option<ApexFilmStrip>::None();
+			return mUsesFilmStrip ? Some(mFilmStrip) :
+									  None<ApexFilmStrip>();
 		}
 
 		/// @brief Gets the user/dsp facing value corresponding to the given proportion of this

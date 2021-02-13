@@ -40,11 +40,15 @@ namespace apex {
 	/// others
 	namespace utils { } // namespace utils
 
+	using apex::utils::Err;
 	using apex::utils::Error;
 	using apex::utils::LockFreeQueue;
 	using apex::utils::Logger;
+	using apex::utils::None;
+	using apex::utils::Ok;
 	using apex::utils::Option;
 	using apex::utils::Result;
+	using apex::utils::Some;
 	using apex::utils::Span;
 
 	using apex::math::Constants;

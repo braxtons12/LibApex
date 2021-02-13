@@ -34,8 +34,7 @@ namespace apex::ui {
 		///
 		/// @return - `Some(ApexFilmStrip)` if this uses a film strip, or `None`
 		[[nodiscard]] inline auto getFilmStrip() const noexcept -> Option<ApexFilmStrip> {
-			return mUsesFilmStrip ? Option<ApexFilmStrip>::Some(mFilmStrip) :
-									  Option<ApexFilmStrip>::None();
+			return mUsesFilmStrip ? Some(mFilmStrip) : None<ApexFilmStrip>();
 		}
 
 		/// @brief Returns the image to draw when this is in the toggled state, if it uses separated
@@ -44,8 +43,7 @@ namespace apex::ui {
 		/// @return - `Some(juce::Image)` if this uses separated image assets for its states, or
 		/// `None` otherwise
 		[[nodiscard]] inline auto getToggledImage() const noexcept -> Option<juce::Image> {
-			return mUsesImages ? Option<juce::Image>::Some(mToggledImage) :
-								   Option<juce::Image>::None();
+			return mUsesImages ? Some(mToggledImage) : None<juce::Image>();
 		}
 
 		/// @brief Returns the image to draw when this is in the hovered state, if it uses separated
@@ -54,8 +52,7 @@ namespace apex::ui {
 		/// @return - `Some(juce::Image)` if this uses separated image assets for its states, or
 		/// `None` otherwise
 		[[nodiscard]] inline auto getHoveredImage() const noexcept -> Option<juce::Image> {
-			return mUsesImages ? Option<juce::Image>::Some(mHoveredImage) :
-								   Option<juce::Image>::None();
+			return mUsesImages ? Some(mHoveredImage) : None<juce::Image>();
 		}
 
 		/// @brief Returns the image to draw when this is in the normal state, if it uses separated
@@ -64,8 +61,7 @@ namespace apex::ui {
 		/// @return - `Some(juce::Image)` if this uses separated image assets for its states, or
 		/// `None` otherwise
 		[[nodiscard]] inline auto getNormalImage() const noexcept -> Option<juce::Image> {
-			return mUsesImages ? Option<juce::Image>::Some(mNormalImage) :
-								   Option<juce::Image>::None();
+			return mUsesImages ? Some(mNormalImage) : None<juce::Image>();
 		}
 
 		/// @brief Sets the LookAndFeel used to draw this button to the given one

@@ -41,8 +41,9 @@ namespace apex::ui {
 		  mInitialThumbWidth(static_cast<size_t>(mThumbImage.getWidth())),
 		  mInitialThumbHeight(static_cast<size_t>(mThumbImage.getHeight())) {
 		mThumbComponent.setImage(mThumbImage);
-		mThumbComponent.setImagePlacement(juce::RectanglePlacement(
-			juce::RectanglePlacement::xMid | juce::RectanglePlacement::yTop));
+		mThumbComponent.setImagePlacement(
+			juce::RectanglePlacement(narrow_cast<size_t>(juce::RectanglePlacement::xMid)
+									 | narrow_cast<size_t>(juce::RectanglePlacement::yTop)));
 		addAndMakeVisible(mThumbComponent);
 	}
 

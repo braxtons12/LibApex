@@ -3,15 +3,17 @@
 #include <functional>
 #include <juce_core/juce_core.h>
 #include <type_traits>
+#include <utility>
 
+#include "Details.h"
 #include "Error.h"
 
 #ifndef RESULT
 	#define RESULT
 
 namespace apex::utils {
-	template<typename T, bool copyable>
-	class Option;
+	template<typename T>
+	requires(utils_details::is_copy_move_or_pointer_v<T>) class Option;
 
 	/// @brief Represents the result of an operation that can fail.
 	/// Every `Result` is either `Ok`, indicating success and containing a value
@@ -19,16 +21,14 @@ namespace apex::utils {
 	///
 	/// @tparam T - the type contained in the case of success
 	/// @tparam E - the `Error` type contained in the case of failure
-	template<typename T,
-			 typename E,
-			 typename Enable
-			 = std::enable_if_t<!std::is_pointer_v<E> && std::is_base_of_v<Error, E>, E>>
-	class [[nodiscard]] Result {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&&
+				 utils_details::is_error_type_v<E>) class [[nodiscard]] Result {
 	  public:
 		constexpr Result() noexcept = delete;
-		constexpr Result(Result<T, E, Enable>& result) = delete;
-		constexpr Result(const Result<T, E, Enable>& result) = delete;
-		constexpr Result(Result<T, E, Enable>&& result) noexcept = default;
+		constexpr Result(Result& result) = delete;
+		constexpr Result(const Result& result) = delete;
+		constexpr Result(Result&& result) noexcept = default;
 		~Result() noexcept;
 
 		/// @brief Constructs a `Result` as the `Ok` variant, containing `ok`
@@ -36,13 +36,29 @@ namespace apex::utils {
 		/// @param ok - the success value
 		///
 		/// @return `Ok`
-		[[nodiscard]] constexpr static inline auto Ok(T ok) noexcept -> Result<T, E> {
-			if constexpr(std::is_trivially_copyable_v<T>) {
-				return Result<T, E, Enable>(ok);
-			}
-			else {
-				return Result<T, E, Enable>(std::move(ok));
-			}
+		[[nodiscard]] constexpr static inline auto
+		Ok(T ok) noexcept -> Result<T, E> requires(std::is_reference_v<T>) {
+			return Result(std::forward<T>(ok));
+		}
+
+		/// @brief Constructs a `Result` as the `Ok` variant, containing `ok`
+		///
+		/// @param ok - the success value
+		///
+		/// @return `Ok`
+		[[nodiscard]] constexpr static inline auto Ok(T ok) noexcept
+			-> Result<T, E> requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>) {
+			return Result(std::move(ok));
+		}
+
+		/// @brief Constructs a `Result` as the `Ok` variant, containing `ok`
+		///
+		/// @param ok - the success value
+		///
+		/// @return `Ok`
+		[[nodiscard]] constexpr static inline auto Ok(T ok) noexcept
+			-> Result<T, E> requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>) {
+			return Result(ok);
 		}
 
 		/// @brief Constructs a `Result` as the `Err` variant, containing `err`
@@ -50,13 +66,29 @@ namespace apex::utils {
 		/// @param err - the failure value
 		///
 		/// @return `Err`
-		[[nodiscard]] constexpr static inline auto Err(E err) noexcept -> Result<T, E> {
-			if constexpr(std::is_trivially_copyable_v<E>) {
-				return Result<T, E, Enable>(err);
-			}
-			else {
-				return Result<T, E, Enable>(std::move(err));
-			}
+		[[nodiscard]] constexpr static inline auto
+		Err(E err) noexcept -> Result<T, E> requires(std::is_reference_v<E>) {
+			return Result(std::forward<E>(err));
+		}
+
+		/// @brief Constructs a `Result` as the `Err` variant, containing `err`
+		///
+		/// @param err - the failure value
+		///
+		/// @return `Err`
+		[[nodiscard]] constexpr static inline auto Err(E err) noexcept
+			-> Result<T, E> requires(!std::is_reference_v<E> && std::is_move_constructible_v<E>) {
+			return Result(std::move(err));
+		}
+
+		/// @brief Constructs a `Result` as the `Err` variant, containing `err`
+		///
+		/// @param err - the failure value
+		///
+		/// @return `Err`
+		[[nodiscard]] constexpr static inline auto Err(E err) noexcept
+			-> Result<T, E> requires(!std::is_reference_v<E> && !std::is_move_constructible_v<E>) {
+			return Result(err);
 		}
 
 		/// @brief Returns `true` if this is `Ok`, `false` if this is `Err`
@@ -117,15 +149,13 @@ namespace apex::utils {
 		/// consuming this `Result` and discarding the error, if any
 		///
 		/// @return `Option<T>`
-		[[nodiscard]] constexpr auto
-		ok() noexcept -> Option<T, std::is_copy_constructible_v<T> && !std::is_pointer_v<T>>;
+		[[nodiscard]] constexpr auto ok() noexcept -> Option<T>;
 
 		/// @brief Converts this `Result<T, E>` to an `Option<E>`,
 		/// consuming this `Result` and discarding the success value, if any
 		///
 		/// @return `Option<E>`
-		[[nodiscard]] constexpr auto
-		err() noexcept -> Option<E, std::is_copy_constructible_v<E> && !std::is_pointer_v<E>>;
+		[[nodiscard]] constexpr auto err() noexcept -> Option<E>;
 
 		/// @brief Maps this `Result<T, E>` to a `Result<U, E>`,
 		/// returning `Ok(U)` (mapped by `mapFunc`) if this is an `Ok`,
@@ -136,8 +166,7 @@ namespace apex::utils {
 		///
 		/// @return `Ok(U)` if this is `Ok`, or `Err`
 		template<typename U>
-		[[nodiscard]] auto
-		map(std::function<U(T) const> mapFunc) const noexcept -> Result<U, E, Enable>;
+		[[nodiscard]] auto map(std::function<U(T) const> mapFunc) const noexcept -> Result<U, E>;
 
 		/// @brief Maps this `Result` to a `U`,
 		/// returning `U` (mapped by `mapFunc`) if this is `Ok`,
@@ -175,20 +204,41 @@ namespace apex::utils {
 		/// @param mapFunc - The function to perform the mapping
 		///
 		/// @return `Ok` if this is `Ok`, or `Err(F)` if this is `Err`
-		template<typename F,
-				 typename FEnable
-				 = std::enable_if_t<!std::is_pointer_v<F> && std::is_base_of_v<Error, F>>>
-		[[nodiscard]] auto
-		mapErr(std::function<F(E) const> mapFunc) const noexcept -> Result<T, F, FEnable>;
+		template<typename F>
+		[[nodiscard]] auto mapErr(std::function<F(E) const> mapFunc) const noexcept -> Result<T, F>;
 
-		auto operator=(Result<T, E, Enable> result) -> Result<T, E, Enable>& = delete;
-		auto operator=(const Result<T, E, Enable>& result) -> Result<T, E, Enable>& = delete;
-		constexpr auto
-		operator=(Result<T, E, Enable>&& result) noexcept -> Result<T, E, Enable>& = default;
+		auto operator=(Result result) -> Result& = delete;
+		auto operator=(const Result& result) -> Result& = delete;
+		constexpr auto operator=(Result&& result) noexcept -> Result& = default;
 
 	  private:
-		constexpr explicit Result(T ok) noexcept;
-		constexpr explicit Result(E err) noexcept;
+		constexpr explicit Result(T ok) noexcept requires(std::is_reference_v<T>)
+			: mOk(std::forward<T>(ok)), mIsOk(true) {
+		}
+
+		constexpr explicit Result(T ok) noexcept
+			requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>)
+			: mOk(std::move(ok)), mIsOk(true) {
+		}
+
+		constexpr explicit Result(T ok) noexcept
+			requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>)
+			: mOk(ok), mIsOk(true) {
+		}
+
+		constexpr explicit Result(E err) noexcept requires(std::is_reference_v<E>)
+			: mErr(std::forward<E>(err)) {
+		}
+
+		constexpr explicit Result(E err) noexcept
+			requires(!std::is_reference_v<E> && std::is_move_constructible_v<E>)
+			: mErr(std::move(err)) {
+		}
+
+		constexpr explicit Result(E err) noexcept
+			requires(!std::is_reference_v<E> && !std::is_move_constructible_v<E>)
+			: mErr(err) {
+		}
 
 		/// the value representing success
 		T mOk;
@@ -201,6 +251,60 @@ namespace apex::utils {
 
 		APEX_DECLARE_NON_HEAP_ALLOCATABLE()
 	};
+
+	/// @brief Convenience shorthand for `Result<T, E>::Ok`
+	///
+	/// @param `ok` - The value to store in the `Result` representing success
+	template<typename T, typename E>
+	inline static constexpr auto
+	Ok(T ok) noexcept -> Result<T, E> requires(std::is_reference_v<T>) {
+		return Result<T, E>::Ok(std::forward<T>(ok));
+	}
+
+	/// @brief Convenience shorthand for `Result<T, E>::Ok`
+	///
+	/// @param `ok` - The value to store in the `Result` representing success
+	template<typename T, typename E>
+	inline static constexpr auto Ok(T ok) noexcept
+		-> Result<T, E> requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>) {
+		return Result<T, E>::Ok(std::move(ok));
+	}
+
+	/// @brief Convenience shorthand for `Result<T, E>::Ok`
+	///
+	/// @param `ok` - The value to store in the `Result` representing success
+	template<typename T, typename E>
+	inline static constexpr auto Ok(T ok) noexcept
+		-> Result<T, E> requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>) {
+		return Result<T, E>::Ok(ok);
+	}
+
+	/// @brief Convenience shorthand for `Result<T, E>::Err`
+	///
+	/// @param `err` - The value to store in the `Result` representing failure
+	template<typename T, typename E>
+	inline static constexpr auto
+	Err(E err) noexcept -> Result<T, E> requires(std::is_reference_v<T>) {
+		return Result<T, E>::Err(std::forward<E>(err));
+	}
+
+	/// @brief Convenience shorthand for `Result<T, E>::Err`
+	///
+	/// @param `err` - The value to store in the `Result` representing failure
+	template<typename T, typename E>
+	inline static constexpr auto Err(E err) noexcept
+		-> Result<T, E> requires(!std::is_reference_v<T> && std::is_move_constructible_v<T>) {
+		return Result<T, E>::Err(std::move(err));
+	}
+
+	/// @brief Convenience shorthand for `Result<T, E>::Err`
+	///
+	/// @param `err` - The value to store in the `Result` representing failure
+	template<typename T, typename E>
+	inline static constexpr auto Err(E err) noexcept
+		-> Result<T, E> requires(!std::is_reference_v<T> && !std::is_move_constructible_v<T>) {
+		return Result<T, E>::Err(err);
+	}
 } // namespace apex::utils
 
 #endif // RESULT
@@ -211,8 +315,9 @@ namespace apex::utils {
 	#include "Option.h"
 
 namespace apex::utils {
-	template<typename T, typename E, typename Enable>
-	Result<T, E, Enable>::~Result() noexcept {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<E>)
+		Result<T, E>::~Result() noexcept {
 		if constexpr(std::is_pointer_v<T>) {
 			if(!mHandled) {
 				if(mIsOk) {
@@ -234,8 +339,9 @@ namespace apex::utils {
 	/// @brief Returns `true` if this is `Ok`, `false` if this is `Err`
 	///
 	/// @return Whether this is `Ok`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::isOk() const noexcept -> bool {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::isOk() const noexcept -> bool {
 		mHandled = true;
 		return mIsOk;
 	}
@@ -243,8 +349,9 @@ namespace apex::utils {
 	/// @brief Returns `true` if this is `Err`, `false` if this is `Ok`
 	///
 	/// @return Whether this is `Err`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::isErr() const noexcept -> bool {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::isErr() const noexcept -> bool {
 		mHandled = true;
 		return !mIsOk;
 	}
@@ -254,8 +361,9 @@ namespace apex::utils {
 	/// `std::terminate`
 	///
 	/// @return A pointer to the contained `T`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::getMut() noexcept -> T* {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::getMut() noexcept -> T* {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
@@ -275,8 +383,9 @@ namespace apex::utils {
 	/// `std::terminate`
 	///
 	/// @return An immutable pointer to the contained `T`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::getConst() const noexcept -> const T* {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::getConst() const noexcept -> const T* {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
@@ -295,21 +404,35 @@ namespace apex::utils {
 	/// If this is not `Ok`, then `std::terminate` is called
 	///
 	/// @return The contained `T`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::unwrap() noexcept -> T {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::unwrap() noexcept -> T {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
 				auto ok = mOk;
 				mIsOk = false;
+				mOk = nullptr;
 				this->~Result();
 				return ok;
 			}
-			else {
+			else if constexpr(std::is_reference_v<T>) {
+				auto ok = std::forward<T>(mOk);
+				mIsOk = false;
+				this->~Result();
+				return std::forward<T>(ok);
+			}
+			else if constexpr(std::is_move_constructible_v<T>) {
 				auto ok = std::move(mOk);
 				mIsOk = false;
 				this->~Result();
 				return std::move(ok);
+			}
+			else {
+				auto ok = mOk;
+				mIsOk = false;
+				this->~Result();
+				return ok;
 			}
 		}
 		else {
@@ -323,22 +446,42 @@ namespace apex::utils {
 	/// @param defaultValue - The value to return if this is `Err`
 	///
 	/// @return The contained `T` if this is `Ok`, or `defaultValue`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::unwrapOr(T defaultValue) noexcept -> T {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::unwrapOr(T defaultValue) noexcept -> T {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
 				auto ok = mOk;
 				mIsOk = false;
+				mOk = nullptr;
 				this->~Result();
 				return ok;
 			}
-			else {
+			else if constexpr(std::is_reference_v<T>) {
+				auto ok = std::forward<T>(mOk);
+				mIsOk = false;
+				this->~Result();
+				return std::forward<T>(ok);
+			}
+			else if constexpr(std::is_move_constructible_v<T>) {
 				auto ok = std::move(mOk);
 				mIsOk = false;
 				this->~Result();
 				return std::move(ok);
 			}
+			else {
+				auto ok = mOk;
+				mIsOk = false;
+				this->~Result();
+				return ok;
+			}
+		}
+		else if constexpr(std::is_reference_v<T>) {
+			return std::forward<T>(defaultValue);
+		}
+		else if constexpr(std::is_move_constructible_v<T>) {
+			return std::move(defaultValue);
 		}
 		else {
 			return defaultValue;
@@ -353,22 +496,36 @@ namespace apex::utils {
 	///
 	/// @return  The contained `T` if this is `Ok`, or the value generated by
 	/// `defaultGenerator`
-	template<typename T, typename E, typename Enable>
-	inline auto
-	Result<T, E, Enable>::unwrapOrElse(std::function<T() const> defaultGenerator) noexcept -> T {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) inline auto Result<T, E>::unwrapOrElse(std::function<T() const>
+															defaultGenerator) noexcept -> T {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
 				auto ok = mOk;
 				mIsOk = false;
+				mOk = nullptr;
 				this->~Result();
 				return ok;
 			}
-			else {
+			else if constexpr(std::is_reference_v<T>) {
+				auto ok = std::forward<T>(mOk);
+				mIsOk = false;
+				this->~Result();
+				return std::forward<T>(ok);
+			}
+			else if constexpr(std::is_move_constructible_v<T>) {
 				auto ok = std::move(mOk);
 				mIsOk = false;
 				this->~Result();
 				return std::move(ok);
+			}
+			else {
+				auto ok = mOk;
+				mIsOk = false;
+				this->~Result();
+				return ok;
 			}
 		}
 		else {
@@ -380,29 +537,40 @@ namespace apex::utils {
 	/// consuming this `Result` and discarding the error, if any
 	///
 	/// @return The contained `E`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::ok() noexcept
-		-> Option<T, std::is_copy_constructible_v<T> && !std::is_pointer_v<T>> {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::ok() noexcept -> Option<T> {
 		mHandled = true;
 		if(mIsOk) {
 			if constexpr(std::is_pointer_v<T>) {
 				auto ok = mOk;
 				mIsOk = false;
+				mOk = nullptr;
 				this->~Result();
-				return Option < T,
-					   std::is_copy_constructible_v<T> && !std::is_pointer_v<T> > ::Some(ok);
+				return Some(ok);
 			}
-			else {
+			else if constexpr(std::is_reference_v<T>) {
+				auto ok = std::forward<T>(mOk);
+				mIsOk = false;
+				this->~Result();
+				return Some(std::forward<T>(mOk));
+			}
+			else if constexpr(std::is_move_constructible_v<T>) {
 				auto ok = std::move(mOk);
 				mIsOk = false;
 				this->~Result();
-				return Option < T, std::is_copy_constructible_v<
-									   T> && !std::is_pointer_v<T> > ::Some(std::move(ok));
+				return Some(std::move(ok));
+			}
+			else {
+				auto ok = mOk;
+				mIsOk = false;
+				this->~Result();
+				return Some(ok);
 			}
 		}
 		else {
 			this->~Result();
-			return Option < T, std::is_copy_constructible_v<T> && !std::is_pointer_v<T> > ::None();
+			return None();
 		}
 	}
 
@@ -410,19 +578,30 @@ namespace apex::utils {
 	/// consuming this `Result` and discarding the success value, if any
 	///
 	/// @return `Option<E>`
-	template<typename T, typename E, typename Enable>
-	constexpr inline auto Result<T, E, Enable>::err() noexcept
-		-> Option<E, std::is_copy_constructible_v<E> && !std::is_pointer_v<E>> {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&& utils_details::is_error_type_v<
+			 E>) constexpr inline auto Result<T, E>::err() noexcept -> Option<E> {
 		mHandled = true;
 		if(!mIsOk) {
-			auto err = mErr;
-			this->~Result();
-			return Option < E, std::is_copy_constructible_v<
-								   E> && !std::is_pointer_v<E> > ::Some(std::move(err));
+			if constexpr(std::is_reference_v<T>) {
+				auto err = std::forward<E>(mErr);
+				this->~Result();
+				return Some(std::forward<E>(err));
+			}
+			else if constexpr(std::is_move_constructible_v<E>) {
+				auto err = std::move(mErr);
+				this->~Result();
+				return Some(std::move(err));
+			}
+			else {
+				auto err = mErr;
+				this->~Result();
+				return Some(err);
+			}
 		}
 		else {
 			this->~Result();
-			return Option < E, std::is_copy_constructible_v<E> && !std::is_pointer_v<E> > ::None();
+			return None();
 		}
 	}
 
@@ -434,16 +613,17 @@ namespace apex::utils {
 	/// @param mapFunc - The function to perform the mapping
 	///
 	/// @return `Ok(U)` if this is `Ok`, or `Err`
-	template<typename T, typename E, typename Enable>
-	template<typename U>
-	inline auto Result<T, E, Enable>::map(std::function<U(T) const> mapFunc) const noexcept
-		-> Result<U, E, Enable> {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&&
+				 utils_details::is_error_type_v<E>) template<typename U>
+	inline auto Result<T, E>::map(std::function<U(T) const> mapFunc) const noexcept
+		-> Result<U, E> {
 		mHandled = true;
 		if(mIsOk) {
-			return Result<U, E>::Ok(mapFunc(mOk));
+			return Ok<U, E>(mapFunc(mOk));
 		}
 		else {
-			return Result<U, E>::Err(mErr);
+			return Err<U, E>(mErr);
 		}
 	}
 
@@ -456,14 +636,20 @@ namespace apex::utils {
 	/// @param defaultValue - The default value
 	///
 	/// @return The result of the mapping if this is `Ok`, or `defaultValue`
-	template<typename T, typename E, typename Enable>
-	template<typename U>
-	inline auto
-	Result<T, E, Enable>::mapOr(std::function<U(T) const> mapFunc, U defaultValue) const noexcept
-		-> U {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&&
+				 utils_details::is_error_type_v<E>) template<typename U>
+	inline auto Result<T, E>::mapOr(std::function<U(T) const> mapFunc,
+									U defaultValue) const noexcept -> U {
 		mHandled = true;
 		if(mIsOk) {
 			return mapFunc(mOk);
+		}
+		else if constexpr(std::is_reference_v<U>) {
+			return std::forward<U>(defaultValue);
+		}
+		else if constexpr(std::is_move_constructible_v<U>) {
+			return std::move(defaultValue);
 		}
 		else {
 			return defaultValue;
@@ -480,11 +666,12 @@ namespace apex::utils {
 	///
 	/// @return The result of the mapping if this is `Ok`,
 	///			or the value returned by `defaultGenerator`
-	template<typename T, typename E, typename Enable>
-	template<typename U>
-	inline auto
-	Result<T, E, Enable>::mapOrElse(std::function<U(T) const> mapFunc,
-									std::function<U() const> defaultGenerator) const noexcept -> U {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&&
+				 utils_details::is_error_type_v<E>) template<typename U>
+	inline auto Result<T, E>::mapOrElse(std::function<U(T) const> mapFunc,
+										std::function<U() const> defaultGenerator) const noexcept
+		-> U {
 		mHandled = true;
 		if(mIsOk) {
 			return mapFunc(mOk);
@@ -503,36 +690,17 @@ namespace apex::utils {
 	/// @param mapFunc - The function to perform the mapping
 	///
 	/// @return `Ok` if this is `Ok`, or `Err(F)` if this is `Err`
-	template<typename T, typename E, typename Enable>
-	template<typename F, typename FEnable>
-	inline auto Result<T, E, Enable>::mapErr(std::function<F(E) const> mapFunc) const noexcept
-		-> Result<T, F, FEnable> {
+	template<typename T, typename E>
+	requires(utils_details::is_copy_move_or_pointer_v<T>&&
+				 utils_details::is_error_type_v<E>) template<typename F>
+	inline auto Result<T, E>::mapErr(std::function<F(E) const> mapFunc) const noexcept
+		-> Result<T, F> {
 		mHandled = true;
 		if(!mIsOk) {
-			return Result<T, F>::Err(mapFunc(mErr));
+			return Err<T, F>(mapFunc(mErr));
 		}
 		else {
-			return Result<T, F>::Ok(mOk);
-		}
-	}
-
-	template<typename T, typename E, typename Enable>
-	constexpr Result<T, E, Enable>::Result(T ok) noexcept : mIsOk(true) {
-		if constexpr(std::is_trivially_copyable_v<T>) {
-			mOk = ok;
-		}
-		else {
-			mOk = std::move(ok);
-		}
-	}
-
-	template<typename T, typename E, typename Enable>
-	constexpr Result<T, E, Enable>::Result(E err) noexcept {
-		if constexpr(std::is_trivially_copyable_v<E>) {
-			mErr = err;
-		}
-		else {
-			mErr = std::move(err);
+			return Ok<T, F>(mOk);
 		}
 	}
 } // namespace apex::utils

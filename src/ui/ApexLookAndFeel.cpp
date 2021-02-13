@@ -668,11 +668,12 @@ namespace apex::ui {
 			juce::Rectangle<float> iconArea;
 			if(icon != nullptr) {
 				iconArea = r.removeFromLeft(juce::roundToInt(maxFontHeight)).toFloat();
-				icon->drawWithin(g,
-								 iconArea,
-								 juce::RectanglePlacement::centred
-									 | juce::RectanglePlacement::onlyReduceInSize,
-								 1.0F);
+				icon->drawWithin(
+					g,
+					iconArea,
+					narrow_cast<size_t>(juce::RectanglePlacement::centred)
+						| narrow_cast<size_t>(juce::RectanglePlacement::onlyReduceInSize),
+					1.0F);
 				r.removeFromLeft(juce::roundToInt(maxFontHeight * 0.5F));
 			}
 			else if(isTicked) {
