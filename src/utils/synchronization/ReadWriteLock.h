@@ -3,7 +3,7 @@
 #include <atomic>
 #include <memory>
 
-#include "../Result.h"
+#include "../OptionAndResult.h"
 #include "ScopedLockGuard.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 

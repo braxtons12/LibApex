@@ -261,9 +261,8 @@ set(MATH
 	)
 
 set(UTILS
-	"${CMAKE_SOURCE_DIR}/src/utils/Option.h"
-	"${CMAKE_SOURCE_DIR}/src/utils/Result.h"
-	"${CMAKE_SOURCE_DIR}/src/utils/Error.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils/OptionAndResult.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/Error.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Span.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp"

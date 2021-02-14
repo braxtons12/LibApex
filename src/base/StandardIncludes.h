@@ -14,8 +14,7 @@
 #include "../utils/LockFreeQueue.h"
 #include "../utils/Logger.h"
 #include "../utils/MiscMacros.h"
-#include "../utils/Option.h"
-#include "../utils/Result.h"
+#include "../utils/OptionAndResult.h"
 #include "../utils/Span.h"
 #include "../utils/synchronization/ReadWriteLock.h"
 #ifndef TEST_HARNESS
