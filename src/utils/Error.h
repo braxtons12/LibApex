@@ -79,6 +79,10 @@ namespace apex::utils {
 			return mMessage;
 		}
 
+		[[nodiscard]] inline auto messageAsStdString() const noexcept -> std::string {
+			return std::string(mMessage);
+		}
+
 		/// @brief Converts this `Error` to a `const char*`.
 		/// Generally implemented by combining the `source`'s `toString` and
 		/// this `Error`'s `message`

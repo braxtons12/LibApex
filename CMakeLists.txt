@@ -356,6 +356,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 			-Wno-suggest-destructor-override
 			-Wno-suggest-override
 			-Wno-deprecated-this-capture
+			-Wno-used-but-marked-unused
 			)
 	else()
 		target_compile_options(ApexTest PRIVATE
@@ -414,6 +415,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 			-Wno-nested-anon-types
 			-Wno-shorten-64-to-32
 			-Wno-deprecated-this-capture
+			-Wno-used-but-marked-unused
 			)
 	endif()
 else()
@@ -439,6 +441,7 @@ else()
 		-Wno-date-time
 		-Wno-ignored-qualifiers
 		-Wno-deprecated-this-capture
+		-Wno-used-but-marked-unused
 		)
 endif()
 
@@ -464,5 +467,5 @@ target_include_directories(ApexTest BEFORE INTERFACE
 target_link_libraries(ApexTest PRIVATE
 	juce::juce_dsp
 	Microsoft.GSL::GSL
-	gtest_main)
+	gtest)
 
