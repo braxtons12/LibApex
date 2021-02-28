@@ -10,6 +10,7 @@
 #include "../math/General.h"
 #include "../math/Random.h"
 #include "../math/TrigFuncs.h"
+#include "../utils/Concepts.h"
 #include "../utils/Error.h"
 #include "../utils/LockFreeQueue.h"
 #include "../utils/Logger.h"
@@ -38,6 +39,27 @@ namespace apex {
 	/// @brief Apex Audio utility types for indicating optional values, results, and errors, among
 	/// others
 	namespace utils { } // namespace utils
+
+	using apex::utils::concepts::Copyable;
+	using apex::utils::concepts::CopyOrMovable;
+	using apex::utils::concepts::DefaultConstructible;
+	using apex::utils::concepts::ErrorType;
+	using apex::utils::concepts::FloatingPoint;
+	using apex::utils::concepts::Integral;
+	using apex::utils::concepts::Movable;
+	using apex::utils::concepts::NotCopyable;
+	using apex::utils::concepts::NotCopyOrMovable;
+	using apex::utils::concepts::NotDefaultConstructible;
+	using apex::utils::concepts::NotErrorType;
+	using apex::utils::concepts::NotMovable;
+	using apex::utils::concepts::NotPassable;
+	using apex::utils::concepts::NotPointer;
+	using apex::utils::concepts::NotReference;
+	using apex::utils::concepts::NotSemiRegular;
+	using apex::utils::concepts::Passable;
+	using apex::utils::concepts::Pointer;
+	using apex::utils::concepts::Reference;
+	using apex::utils::concepts::SemiRegular;
 
 	using apex::utils::Err;
 	using apex::utils::Error;

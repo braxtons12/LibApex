@@ -468,4 +468,3 @@ target_link_libraries(ApexTest PRIVATE
 	juce::juce_dsp
 	Microsoft.GSL::GSL
 	gtest)
-
