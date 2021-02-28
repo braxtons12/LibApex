@@ -3,6 +3,7 @@
 #include <gsl/gsl>
 #include <memory>
 #include <string>
+#include <system_error>
 #include <type_traits>
 
 #include "MiscMacros.h"
@@ -17,18 +18,38 @@ namespace apex::utils {
 	class [[nodiscard]] Error {
 	  public:
 		/// Constructs a default `Error` with no message
-		constexpr Error() noexcept = default;
+		Error() noexcept = default;
 
-		/// @brief Constructs an `Error` with the given message
+		/// @brief Constructs an `Error` from the given `std::error_code`
 		///
-		/// @param message - The error message
-		constexpr explicit Error(const char* message) noexcept : mMessage(message) {
+		/// @param code
+		Error(const std::error_code& code) noexcept // NOLINT
+			: mHasErrorCode(true), mErrorCode(code) {
+		}
+
+		/// @brief Constructs an `Error` from the given `std::error_code`
+		///
+		/// @param code
+		Error(std::error_code&& code) noexcept // NOLINT
+			: mHasErrorCode(true), mErrorCode(code) {
 		}
 
 		/// @brief Constructs an `Error` with the given message
 		///
 		/// @param message - The error message
-		constexpr explicit Error(const std::string& message) noexcept : mMessage(message.c_str()) {
+		explicit Error(const char* message) noexcept : mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message
+		///
+		/// @param message - The error message
+		explicit Error(const std::string& message) noexcept : mMessage(message) { // NOLINT
+		}
+
+		/// @brief Constructs an `Error` with the given message
+		///
+		/// @param message - The error message
+		explicit Error(std::string&& message) noexcept : mMessage(message) {
 		}
 
 		/// @brief Constructs an `Error` with the given message and source.
@@ -45,8 +66,17 @@ namespace apex::utils {
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		Error(const std::string& message, gsl::owner<Error*> source) noexcept
-			: mHasSource(true), mSource(source), mMessage(message.c_str()) {
+		Error(const std::string& message, gsl::owner<Error*> source) noexcept // NOLINT
+			: mHasSource(true), mSource(source), mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		/// Takes ownership of `source`
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(std::string&& message, gsl::owner<Error*> source) noexcept
+			: mHasSource(true), mSource(source), mMessage(message) {
 		}
 
 		/// @brief Constructs an `Error` with the given message and source.
@@ -61,8 +91,16 @@ namespace apex::utils {
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		Error(const std::string& message, const Error& source) noexcept
-			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message.c_str()) {
+		Error(const std::string& message, const Error& source) noexcept // NOLINT
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(std::string&& message, const Error& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
 		}
 
 		/// @brief Constructs an `Error` with the given message and source.
@@ -77,8 +115,16 @@ namespace apex::utils {
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		Error(const std::string& message, Error&& source) noexcept
-			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message.c_str()) {
+		Error(const std::string& message, Error&& source) noexcept // NOLINT
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(std::string&& message, Error&& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
 		}
 
 		Error(const Error& error) = default;
@@ -94,11 +140,19 @@ namespace apex::utils {
 			return mSource;
 		}
 
+		[[nodiscard]] constexpr auto hasStdErrorCode() const noexcept -> bool {
+			return mHasErrorCode;
+		}
+
+		[[nodiscard]] auto errorCode() const noexcept -> const std::error_code {
+			return mErrorCode;
+		}
+
 		/// @brief Returns the error message for this `Error`
 		///
 		/// @return The error message
 		[[nodiscard]] constexpr auto message() const noexcept -> const char* {
-			return mMessage;
+			return mMessage.c_str();
 		}
 
 		[[nodiscard]] inline auto messageAsStdString() const noexcept -> std::string {
@@ -143,13 +197,16 @@ namespace apex::utils {
 		auto operator=(Error&& error) noexcept -> Error& = default;
 
 	  protected:
+		/// whether this `Error` originated from a `std::error_code`
+		bool mHasErrorCode = false;
 		/// whether this `Error` has a source `Error`
 		bool mHasSource = false;
+		/// error code
+		std::error_code mErrorCode = std::error_code();
 		/// the source `Error` of this one
 		/// We use `std::shared_ptr` instead of `std::unique_ptr` so we can be copyable
 		std::shared_ptr<Error> mSource = nullptr;
 		/// the error message.
-		/// We use a c string instead of `std::string` internally so we can be constexpr
-		const char* mMessage = "";
+		std::string mMessage;
 	};
 } // namespace apex::utils
