@@ -139,4 +139,10 @@ namespace apex::utils::concepts {
 	template<typename T>
 	concept Integral = std::integral<T>;
 
+	/// @brief Concept requiring `T` to be inequality comparable to `U`
+	/// (`T` has `operator!=` for `U`)
+	///
+	/// @tparam T
+	template<typename T, typename U = T>
+	concept InequalityComparable = type_traits::has_not_equal_v<T, U>;
 } // namespace apex::utils::concepts
