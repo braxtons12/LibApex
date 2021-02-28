@@ -28,7 +28,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneMapping) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -77,7 +77,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneOkOrValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 		auto error = Error("TestErrorMessage");
 
 		ASSERT_TRUE(none.isNone());
@@ -115,7 +115,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneOkOrElseValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -147,7 +147,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneUnwrap) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -178,7 +178,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneUnwrapOrValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -188,7 +188,7 @@ namespace apex::utils::test {
 	TEST(OptionTest, noneUnwrapOrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* noneValue = new bool(false);
-		auto none = None<bool*>();
+		Option<bool*> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -221,7 +221,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneUnwrapOrElseValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -229,7 +229,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneUnwrapOrElsePointer) {
-		auto none = None<bool*>();
+		Option<bool*> none = None();
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* noneValue = new bool(false);
 
@@ -267,7 +267,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneGetMutValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -275,7 +275,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneGetMutPointer) {
-		auto none = None<bool*>();
+		Option<bool*> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -305,7 +305,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneGetConstValue) {
-		auto none = None<bool>();
+		Option<bool> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -313,7 +313,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneGetConstPointer) {
-		auto none = None<bool*>();
+		Option<bool*> none = None();
 
 		ASSERT_TRUE(none.isNone());
 		ASSERT_FALSE(none.isSome());
@@ -346,7 +346,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(OptionTest, noneMovePointer) {
-		auto none = None<bool*>();
+		Option<bool*> none = None();
 		noneMoveTest(std::move(none));
 	}
 } // namespace apex::utils::test

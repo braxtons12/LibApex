@@ -18,11 +18,24 @@ namespace apex::utils {
 		concepts::Copyable, concepts::Movable, concepts::CopyOrMovable, concepts::NotMovable;
 
 	template<Passable T, ErrorType E = Error>
-	requires NotReference<T> && NotReference<E>
+	requires DefaultConstructible<T> && NotReference<T> && DefaultConstructible<E> && NotReference<
+		E>
 	class [[nodiscard]] Result;
 
 #ifndef OPTION
 	#define OPTION
+
+	struct NoneType {
+		explicit constexpr NoneType(int) { // NOLINT
+		}
+		constexpr NoneType(const NoneType& none) noexcept = default;
+		constexpr NoneType(NoneType&& none) noexcept = default;
+		constexpr auto operator=(const NoneType& none) noexcept -> NoneType& = default;
+		constexpr auto operator=(NoneType&& none) noexcept -> NoneType& = default;
+	};
+
+	inline constexpr NoneType none_t{0};
+
 	/// @brief Represents an optional value.
 	/// Every `Option` is either `Some` and contains a value, or `None`, and does
 	/// not. Useful for things such as:
@@ -39,6 +52,9 @@ namespace apex::utils {
 	requires NotReference<T>
 	class [[nodiscard]] Option {
 	  public:
+		constexpr Option(NoneType none) noexcept { // NOLINT
+			std::ignore = none;
+		}
 		constexpr Option(const Option& option) noexcept requires Copyable<T>
 		= default;
 		constexpr Option(Option&& option) noexcept requires Movable<T> {
@@ -79,8 +95,8 @@ namespace apex::utils {
 		/// @brief Constructs an empty `Option<T>`, aka a `None`
 		///
 		/// @return `None`
-		[[nodiscard]] constexpr static inline auto None() noexcept -> Option {
-			return Option();
+		[[nodiscard]] constexpr static inline auto None(NoneType none) noexcept -> Option {
+			return Option(none);
 		}
 
 		/// @brief Returns `true` if this is `Some`, `false` if this is `None`
@@ -111,7 +127,7 @@ namespace apex::utils {
 				return Option<U>::Some(mapFunc(mSome));
 			}
 			else {
-				return Option<U>::None();
+				return Option<U>::None(none_t);
 			}
 		}
 
@@ -401,7 +417,7 @@ namespace apex::utils {
 	///
 	/// @param `some` - The value to store in the `Option`
 	template<Passable T>
-	requires NotReference<T>
+	requires DefaultConstructible<T> && NotReference<T>
 	inline constexpr auto Some(const T& some) noexcept -> Option<T> {
 		return Option<T>::Some(some);
 	}
@@ -410,21 +426,57 @@ namespace apex::utils {
 	///
 	/// @param `some` - The value to store in the `Option`
 	template<Passable T>
-	requires NotReference<T>
+	requires DefaultConstructible<T> && NotReference<T>
 	inline constexpr auto Some(T&& some) noexcept -> Option<T> {
 		return Option<T>::Some(std::forward<T>(some));
 	}
 
 	/// @brief Convenience shorthand for `Option<T>::None`
-	template<Passable T>
-	requires NotReference<T>
-	inline constexpr auto None() noexcept -> Option<T> {
-		return Option<T>::None();
+	inline constexpr auto None() noexcept -> NoneType {
+		return none_t;
 	}
 #endif // OPTION
 
 #ifndef RESULT
 	#define RESULT
+
+	template<ErrorType E = Error>
+	requires NotReference<E>
+	struct ErrorWrapper {
+		explicit ErrorWrapper(const E& error) : mError(error) {
+		}
+		explicit ErrorWrapper(E&& error) : mError(std::forward<E>(error)) {
+		}
+		ErrorWrapper(const ErrorWrapper& error) noexcept requires Copyable<E>
+		= default;
+		ErrorWrapper(ErrorWrapper&& error) noexcept requires Movable<E>
+		= default;
+		auto operator=(const ErrorWrapper& error) noexcept -> ErrorWrapper& requires Copyable<E>
+		= default;
+		auto operator=(ErrorWrapper&& error) noexcept -> ErrorWrapper& requires Movable<E>
+		= default;
+
+		E mError;
+	};
+
+	template<Passable T>
+	requires NotReference<T> && DefaultConstructible<T>
+	struct OkWrapper {
+		explicit constexpr OkWrapper(const T& ok) : mOk(ok) {
+		}
+		explicit constexpr OkWrapper(T&& ok) : mOk(std::forward<T>(ok)) {
+		}
+		constexpr OkWrapper(const OkWrapper& ok) noexcept requires Copyable<T>
+		= default;
+		constexpr OkWrapper(OkWrapper&& ok) noexcept requires Movable<T>
+		= default;
+		constexpr auto operator=(const OkWrapper& ok) noexcept -> OkWrapper& requires Copyable<T>
+		= default;
+		constexpr auto operator=(OkWrapper&& ok) noexcept -> OkWrapper& requires Movable<T>
+		= default;
+
+		T mOk;
+	};
 
 	/// @brief Represents the result of an operation that can fail.
 	/// Every `Result()` is either `Ok`, indicating success and containing a value
@@ -433,9 +485,18 @@ namespace apex::utils {
 	/// @tparam T - the type contained in the case of success
 	/// @tparam E - the `Error` type contained in the case of failure
 	template<Passable T, ErrorType E>
-	requires NotReference<T> && NotReference<E>
+	requires DefaultConstructible<T> && NotReference<T> && DefaultConstructible<E> && NotReference<
+		E>
 	class [[nodiscard]] Result {
 	  public:
+		Result(const ErrorWrapper<E>& error) noexcept : mErr(error.mError) { // NOLINT
+		}
+		Result(ErrorWrapper<E>&& error) noexcept : mErr(error.mError) { // NOLINT
+		}
+		constexpr Result(const OkWrapper<T>& ok) noexcept : mIsOk(true), mOk(ok.mOk) { // NOLINT
+		}
+		constexpr Result(OkWrapper<T>&& ok) noexcept : mIsOk(true), mOk(ok.mOk) { // NOLINT
+		}
 		constexpr Result() noexcept = delete;
 		constexpr Result(Result& result) = delete;
 		constexpr Result(const Result& result) = delete;
@@ -501,6 +562,25 @@ namespace apex::utils {
 			return Result(std::forward<T>(ok));
 		}
 
+		/// @brief Constructs a `Result()` as the `Ok` variant, containing `ok`
+		///
+		/// @param ok - the success value
+		///
+		/// @return `Ok`
+		[[nodiscard]] constexpr static inline auto Ok(OkWrapper<T>&& ok) noexcept -> Result<T, E> {
+			return Result(std::forward<T>(ok));
+		}
+
+		/// @brief Constructs a `Result()` as the `Ok` variant, containing `ok`
+		///
+		/// @param ok - the success value
+		///
+		/// @return `Ok`
+		[[nodiscard]] constexpr static inline auto
+		Ok(const OkWrapper<T>& ok) noexcept -> Result<T, E> {
+			return Result(ok);
+		}
+
 		/// @brief Constructs a `Result()` as the `Err` variant, containing `err`
 		///
 		/// @param err - the failure value
@@ -517,6 +597,26 @@ namespace apex::utils {
 		/// @return `Err`
 		[[nodiscard]] constexpr static inline auto Err(E&& err) noexcept -> Result<T, E> {
 			return Result(std::forward<E>(err));
+		}
+
+		/// @brief Constructs a `Result()` as the `Err` variant, containing `err`
+		///
+		/// @param err - the failure value
+		///
+		/// @return `Err`
+		[[nodiscard]] constexpr static inline auto
+		Err(const ErrorWrapper<E>& err) noexcept -> Result<T, E> {
+			return Result(err);
+		}
+
+		/// @brief Constructs a `Result()` as the `Err` variant, containing `err`
+		///
+		/// @param err - the failure value
+		///
+		/// @return `Err`
+		[[nodiscard]] constexpr static inline auto
+		Err(ErrorWrapper<E>&& err) noexcept -> Result<T, E> {
+			return Result(std::forward<ErrorWrapper<E>>(err));
 		}
 
 		/// @brief Returns `true` if this is `Ok`, `false` if this is `Err`
@@ -745,7 +845,7 @@ namespace apex::utils {
 				return Some(std::move(_ok));
 			}
 			else {
-				return None<T>();
+				return None();
 			}
 		}
 
@@ -763,7 +863,7 @@ namespace apex::utils {
 				return Some(_ok);
 			}
 			else {
-				return None<T>();
+				return None();
 			}
 		}
 
@@ -780,7 +880,7 @@ namespace apex::utils {
 				return Some(_ok);
 			}
 			else {
-				return None<T>();
+				return None();
 			}
 		}
 
@@ -797,7 +897,7 @@ namespace apex::utils {
 			}
 			else {
 				mIsOk = false;
-				return None<E>();
+				return None();
 			}
 		}
 
@@ -815,7 +915,7 @@ namespace apex::utils {
 			}
 			else {
 				mIsOk = false;
-				return None<E>();
+				return None();
 			}
 		}
 
@@ -832,7 +932,7 @@ namespace apex::utils {
 			}
 			else {
 				mIsOk = false;
-				return None<E>();
+				return None();
 			}
 		}
 
@@ -977,11 +1077,11 @@ namespace apex::utils {
 	  private :
 		  /// value type constructor
 		  constexpr explicit Result(const T& ok) noexcept
-		  : mOk(ok), mIsOk(true) {
+		  : mIsOk(true), mOk(ok) {
 		}
 
 		/// rvalue contructor
-		constexpr explicit Result(T&& ok) noexcept : mOk(ok), mIsOk(true) {
+		constexpr explicit Result(T&& ok) noexcept : mIsOk(true), mOk(ok) {
 		}
 
 		/// value type constructor
@@ -992,14 +1092,14 @@ namespace apex::utils {
 		constexpr explicit Result(E&& err) noexcept : mErr(err) {
 		}
 
-		/// the `Ok` value
-		T mOk;
-		/// The `Err` value
-		E mErr;
 		/// whether this is `Ok` (`true`) or `Err` (`false`)
 		bool mIsOk = false;
 		/// whether this `Result()` has been handled
 		mutable bool mHandled = false;
+		/// the `Ok` value
+		T mOk;
+		/// The `Err` value
+		E mErr;
 
 		APEX_DECLARE_NON_HEAP_ALLOCATABLE()
 	};
@@ -1007,37 +1107,37 @@ namespace apex::utils {
 	/// @brief Convenience shorthand for `Result()<T, E>::Ok`
 	///
 	/// @param `ok` - The value to store in the `Result()` representing success
-	template<Passable T, ErrorType E = Error>
-	requires NotReference<T> && NotReference<E>
-	inline static constexpr auto Ok(const T& ok) noexcept -> Result<T, E> {
-		return Result<T, E>::Ok(ok);
+	template<Passable T>
+	requires NotReference<T> && DefaultConstructible<T>
+	inline static constexpr auto Ok(const T& ok) noexcept -> OkWrapper<T> {
+		return OkWrapper<T>(ok);
 	}
 
 	/// @brief Convenience shorthand for `Result()<T, E>::Ok`
 	///
 	/// @param `ok` - The value to store in the `Result()` representing success
-	template<Passable T, ErrorType E = Error>
-	requires NotReference<T> && NotReference<E>
-	inline static constexpr auto Ok(T&& ok) noexcept -> Result<T, E> {
-		return Result<T, E>::Ok(std::forward<T>(ok));
+	template<Passable T>
+	requires NotReference<T> && DefaultConstructible<T>
+	inline static constexpr auto Ok(T&& ok) noexcept -> OkWrapper<T> {
+		return OkWrapper<T>(std::forward<T>(ok));
 	}
 
 	/// @brief Convenience shorthand for `Result()<T, E>::Err`
 	///
 	/// @param `err` - The value to store in the `Result()` representing failure
-	template<Passable T, ErrorType E>
-	requires NotReference<T> && NotReference<E>
-	inline static constexpr auto Err(const E& err) noexcept -> Result<T, E> {
-		return Result<T, E>::Err(err);
+	template<ErrorType E = Error>
+	requires NotReference<E> && DefaultConstructible<E>
+	inline static constexpr auto Err(const E& err) noexcept -> ErrorWrapper<E> {
+		return ErrorWrapper<E>(err);
 	}
 
 	/// @brief Convenience shorthand for `Result()<T, E>::Err`
 	///
 	/// @param `err` - The value to store in the `Result()` representing failure
-	template<Passable T, ErrorType E>
-	requires NotReference<T> && NotReference<E>
-	inline static constexpr auto Err(E&& err) noexcept -> Result<T, E> {
-		return Result<T, E>::Err(std::forward<E>(err));
+	template<ErrorType E = Error>
+	requires NotReference<E> && DefaultConstructible<E>
+	inline static constexpr auto Err(E&& err) noexcept -> ErrorWrapper<E> {
+		return ErrorWrapper<E>(std::forward<E>(err));
 	}
 
 #endif // RESULT
@@ -1058,12 +1158,11 @@ namespace apex::utils {
 	[[nodiscard]] constexpr inline auto
 	Option<T>::okOr(const ErrorType auto& error) noexcept -> Result<T, decltype(error)>
 	requires NotReference<std::remove_reference_t<decltype(error)>> {
-		using E = decltype(error);
 		if(mIsSome) {
-			return Ok<T, E>(unwrap());
+			return Ok(unwrap());
 		}
 		else {
-			return Err<T, E>(error);
+			return Err(error);
 		}
 	}
 
@@ -1082,10 +1181,10 @@ namespace apex::utils {
 		-> Result<T, std::remove_reference_t<decltype(error)>> {
 		using E = std::remove_reference_t<decltype(error)>;
 		if(mIsSome) {
-			return Ok<T, E>(unwrap());
+			return Ok(unwrap());
 		}
 		else {
-			return Err<T, E>(std::forward<E>(error));
+			return Err(std::forward<E>(error));
 		}
 	}
 
@@ -1105,10 +1204,10 @@ namespace apex::utils {
 	[[nodiscard]] inline auto
 	Option<T>::okOrElse(std::function<E()> errorGenerator) noexcept -> Result<T, E> {
 		if(mIsSome) {
-			return Ok<T, E>(unwrap());
+			return Ok(unwrap());
 		}
 		else {
-			return Err<T, E>(errorGenerator());
+			return Err(errorGenerator());
 		}
 	}
 #endif // OPTION_IMPL

@@ -72,7 +72,7 @@ namespace apex::ui {
 			double val = getValueFromProportion(value);
 			juce::String temp = juce::String(val);
 			if(General<double>::abs(val) <= 0.010) {
-				return juce::String("0.0");
+				return {"0.0"};
 			}
 			else {
 				return temp.dropLastCharacters(

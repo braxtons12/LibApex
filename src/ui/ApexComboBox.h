@@ -134,7 +134,7 @@ namespace apex::ui {
 		///
 		/// @return - The drop down arrow active image, or `None`
 		[[nodiscard]] inline auto getActiveArrowImage() const noexcept -> Option<juce::Image> {
-			return mUsesArrowImages ? Some(mActiveArrowImage) : None<juce::Image>();
+			return mUsesArrowImages ? Some(mActiveArrowImage) : None();
 		}
 
 		/// @brief Returns the drop down arrow image to use when this is hovered, if this is
@@ -142,7 +142,7 @@ namespace apex::ui {
 		///
 		/// @return - The drop down arrow hovered image, or `None`
 		[[nodiscard]] inline auto getHoveredArrowImage() const noexcept -> Option<juce::Image> {
-			return mUsesArrowImages ? Some(mHoveredArrowImage) : None<juce::Image>();
+			return mUsesArrowImages ? Some(mHoveredArrowImage) : None();
 		}
 
 		/// @brief Returns the drop down arrow image to use normally, if this is
@@ -150,7 +150,7 @@ namespace apex::ui {
 		///
 		/// @return - The drop down arrow normal image, or `None`
 		[[nodiscard]] inline auto getNormalArrowImage() const noexcept -> Option<juce::Image> {
-			return mUsesArrowImages ? Some(mNormalArrowImage) : None<juce::Image>();
+			return mUsesArrowImages ? Some(mNormalArrowImage) : None();
 		}
 
 		/// @brief Draws this component to the screen

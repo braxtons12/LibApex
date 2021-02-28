@@ -278,7 +278,7 @@ namespace apex::ui {
 		/// @return - `Some(ApexFilmStrip)` if this uses a film strip for drawing, otherwise `None`
 		[[nodiscard]] inline auto getFilmStrip() const noexcept -> Option<ApexFilmStrip> {
 			return mUsesFilmStrip ? Some(mFilmStrip) :
-									  None<ApexFilmStrip>();
+									  None();
 		}
 
 		/// @brief Gets the user/dsp facing value corresponding to the given proportion of this

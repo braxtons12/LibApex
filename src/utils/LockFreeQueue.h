@@ -49,7 +49,7 @@ namespace apex::utils {
 
 		[[nodiscard]] inline auto push(T entry) noexcept -> Result<bool, PushError> {
 			if(mWriteIndex == mReadIndex && mWriteGeneration > mReadGeneration) {
-				return Err<bool, PushError>(PushError());
+				return Err(PushError());
 			}
 
 			mData.at(mWriteIndex) = entry;
@@ -58,12 +58,12 @@ namespace apex::utils {
 				mWriteIndex = 0;
 				mWriteGeneration++;
 			}
-			return Ok<bool, PushError>(true);
+			return Ok(true);
 		}
 
 		[[nodiscard]] inline auto read() noexcept -> Result<T, ReadError> {
 			if(isEmpty()) {
-				return Err<T, ReadError>(ReadError());
+				return Err(ReadError());
 			}
 			else {
 				mReadIndex++;
@@ -71,7 +71,7 @@ namespace apex::utils {
 					mReadIndex = 0;
 					mReadGeneration++;
 				}
-				return Ok<T, ReadError>(mData.at(mReadIndex));
+				return Ok(mData.at(mReadIndex));
 			}
 		}
 

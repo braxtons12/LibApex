@@ -9,7 +9,7 @@
 namespace apex::utils::test {
 
 	TEST(ResultTest, okGetMutValue) {
-		auto ok = Ok(true);
+		Result<bool, Error> ok = Ok(true);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -27,7 +27,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okGetMutPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -44,7 +44,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errGetMutValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(std::move(error));
+		Result<bool, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -54,7 +54,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errGetMutPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool*, Error>(std::move(error));
+		Result<bool*, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -63,7 +63,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(ResultTest, okGetConstValue) {
-		auto ok = Ok(true);
+		Result<bool, Error> ok = Ok(true);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -77,7 +77,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okGetConstPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -90,7 +90,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errGetConstValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(std::move(error));
+		Result<bool, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -101,7 +101,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errGetConstPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool*, Error>(std::move(error));
+		Result<bool*, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -112,7 +112,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -124,7 +124,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -136,7 +136,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(std::move(error));
+		Result<bool, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -147,7 +147,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool*, Error>(std::move(error));
+		Result<bool*, Error> err = Err(std::move(error));
 
 		ASSERT_TRUE(err.isErr());
 		ASSERT_FALSE(err.isOk());
@@ -158,7 +158,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapOrValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -170,7 +170,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapOrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -183,7 +183,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapOrValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -194,7 +194,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapOrPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool*, Error>(error);
+		Result<bool*, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -209,7 +209,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapOrElseValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -221,7 +221,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapOrElsePointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -239,7 +239,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapOrElseValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -250,7 +250,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapOrElsePointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool*, Error>(error);
+		Result<bool*, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -266,7 +266,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapErrValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -278,7 +278,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapErrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -289,7 +289,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapErrValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -300,7 +300,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errUnwrapErrPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -311,7 +311,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okokValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -325,7 +325,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okokPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -341,7 +341,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errokValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -354,7 +354,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errokPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -367,7 +367,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okerrValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -381,7 +381,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okerrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -394,7 +394,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errerrValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -407,7 +407,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errerrPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -420,7 +420,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -436,7 +436,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -451,7 +451,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -468,7 +468,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -485,7 +485,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapOrValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -503,7 +503,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapOrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -520,7 +520,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapOrValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -537,7 +537,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapOrPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -554,7 +554,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapOrElseValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -572,7 +572,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapOrElsePointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -589,7 +589,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapOrElseValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -606,7 +606,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapOrElsePointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -623,7 +623,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapErrValue) {
 		auto value = true;
-		auto ok = Ok(value);
+		Result<bool, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -640,7 +640,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapErrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok(value);
+		Result<bool*, Error> ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -656,7 +656,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapErrValue) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error>(error);
+		Result<bool, Error> err = Err(error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -674,7 +674,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, errMapErrPointer) {
 		auto error = Error("TestErrorMessage");
-		auto err = Err<bool, Error*>(&error);
+		Result<bool, Error*> err = Err(&error);
 
 		ASSERT_FALSE(err.isOk());
 		ASSERT_FALSE(err);
@@ -702,7 +702,7 @@ namespace apex::utils::test {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
 		{
-			auto ok = Ok(value);
+			Result<bool*, Error> ok = Ok(value);
 			okMoveTest(std::move(ok));
 		}
 
@@ -721,7 +721,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, errMovePointer) {
 		auto error = Error("TestErrorMessage");
 		{
-			auto err = Err<bool*, Error*>(&error);
+			Result<bool*, Error*> err = Err(&error);
 			errMoveTest(std::move(err));
 		}
 	}

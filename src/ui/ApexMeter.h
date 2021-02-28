@@ -142,14 +142,14 @@ namespace apex::ui {
 		///
 		/// @return - `Some(ApexFilmStrip)` if this uses a film strip asset, or `None` otherwise
 		[[nodiscard]] inline auto getFilmStrip() const noexcept -> Option<ApexFilmStrip> {
-			return mUsesFilmStrip ? Some(mFilmStrip) : None<ApexFilmStrip>();
+			return mUsesFilmStrip ? Some(mFilmStrip) : None();
 		}
 
 		/// @brief Returns the image asset used to draw this meter, if this uses one
 		///
 		/// @return - `Some(juce::Image)` if this uses one, or `None` otherwise
 		[[nodiscard]] inline auto getMaxedImage() const noexcept -> Option<juce::Image> {
-			return mUsesMaxedImage ? Some(mMaxedMeterImage) : None<juce::Image>();
+			return mUsesMaxedImage ? Some(mMaxedMeterImage) : None();
 		}
 
 		/// @brief Draws this meter to the screen
