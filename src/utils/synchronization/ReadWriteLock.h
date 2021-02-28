@@ -20,10 +20,7 @@ namespace apex::utils::synchronization {
 	template<ReadWriteLockErrors Type>
 	class ReadWriteLockError final : public Error {
 	  public:
-		ReadWriteLockError() noexcept {
-			if constexpr(Type == ReadWriteLockErrors::AlreadyLocked) {
-				mMessage = "Lock Failure: Lock has already been acquired";
-			}
+		ReadWriteLockError() noexcept : Error("Lock Failure: Lock has already been acquired") {
 		}
 		~ReadWriteLockError() noexcept final = default;
 	};
@@ -31,12 +28,13 @@ namespace apex::utils::synchronization {
 	/// @brief Basic Read/Write Lock for synchronizing a single piece of data
 	///
 	/// @tparam T - The type of the value to be guarded/synchronized
-	template<typename T>
+	template<Passable T>
+	requires DefaultConstructible<T> && Copyable<T>
 	class ReadWriteLock {
 	  public:
-		using LockResult
-			= Result<ScopedLockGuard<T>, ReadWriteLockError<ReadWriteLockErrors::AlreadyLocked>>;
 		using LockError = ReadWriteLockError<ReadWriteLockErrors::AlreadyLocked>;
+		using LockGuard = ScopedLockGuard<T>;
+		using LockResult = Result<LockGuard, LockError>;
 
 		/// @brief Constructs a default `ReadWriteLock`
 		ReadWriteLock() noexcept = default;
@@ -54,9 +52,7 @@ namespace apex::utils::synchronization {
 		/// @brief Constructs a `ReadWriteLock` with the given initial data
 		///
 		/// @param data - The data to guard
-		explicit ReadWriteLock(T data) noexcept {
-			mData = std::make_shared<T>(data);
-			mCached = data;
+		explicit ReadWriteLock(T data) noexcept : mData(std::make_shared<T>(data)), mCached(data) {
 		}
 		~ReadWriteLock() noexcept = default;
 
@@ -75,11 +71,10 @@ namespace apex::utils::synchronization {
 		[[nodiscard]] inline auto try_lock() noexcept -> LockResult {
 			if(!mLocked.load()) {
 				mLocked.store(true);
-				return LockResult::Ok(
-					std::move(ScopedLockGuard<T>(mData, [this]() { this->unlock(); })));
+				return Ok(std::move(ScopedLockGuard<T>(mData, [this]() { this->unlock(); })));
 			}
 			else {
-				return LockResult::Err(LockError());
+				return Err<LockGuard, LockError>(LockError());
 			}
 		}
 
