@@ -17,7 +17,7 @@ namespace apex::utils {
 		concepts::Reference, concepts::NotReference, concepts::Pointer, concepts::NotPointer,
 		concepts::Copyable, concepts::Movable, concepts::CopyOrMovable, concepts::NotMovable;
 
-	template<Passable T, ErrorType E>
+	template<Passable T, ErrorType E = Error>
 	requires NotReference<T> && NotReference<E>
 	class [[nodiscard]] Result;
 
@@ -213,7 +213,7 @@ namespace apex::utils {
 		/// @param errorGenerator - The function to generate the `Error` value
 		///
 		/// @return `Ok(T)` if this is `Some`, `Err(E)` if this is `None`
-		template<ErrorType E>
+		template<ErrorType E = Error>
 		requires NotReference<E>
 		[[nodiscard]] inline auto
 		okOrElse(std::function<E()> errorGenerator) noexcept -> Result<T, E>;
@@ -458,7 +458,7 @@ namespace apex::utils {
 				else {
 					this->mErr = result.mErr;
 				}
-		}
+			}
 		}
 
 		~Result() noexcept {
@@ -931,7 +931,7 @@ namespace apex::utils {
 		/// @param mapFunc - The function to perform the mapping
 		///
 		/// @return `Ok` if this is `Ok`, or `Err(F)` if this is `Err`
-		template<ErrorType F>
+		template<ErrorType F = Error>
 		requires NotReference<F>
 		[[nodiscard]] inline auto
 		mapErr(std::function<F(const E)> mapFunc) const noexcept -> Result<T, F> {
@@ -1007,7 +1007,7 @@ namespace apex::utils {
 	/// @brief Convenience shorthand for `Result()<T, E>::Ok`
 	///
 	/// @param `ok` - The value to store in the `Result()` representing success
-	template<Passable T, ErrorType E>
+	template<Passable T, ErrorType E = Error>
 	requires NotReference<T> && NotReference<E>
 	inline static constexpr auto Ok(const T& ok) noexcept -> Result<T, E> {
 		return Result<T, E>::Ok(ok);
@@ -1016,7 +1016,7 @@ namespace apex::utils {
 	/// @brief Convenience shorthand for `Result()<T, E>::Ok`
 	///
 	/// @param `ok` - The value to store in the `Result()` representing success
-	template<Passable T, ErrorType E>
+	template<Passable T, ErrorType E = Error>
 	requires NotReference<T> && NotReference<E>
 	inline static constexpr auto Ok(T&& ok) noexcept -> Result<T, E> {
 		return Result<T, E>::Ok(std::forward<T>(ok));

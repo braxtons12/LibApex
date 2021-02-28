@@ -9,7 +9,7 @@
 namespace apex::utils::test {
 
 	TEST(ResultTest, okGetMutValue) {
-		auto ok = Ok<bool, Error>(true);
+		auto ok = Ok(true);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -27,7 +27,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okGetMutPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -63,7 +63,7 @@ namespace apex::utils::test {
 	}
 
 	TEST(ResultTest, okGetConstValue) {
-		auto ok = Ok<bool, Error>(true);
+		auto ok = Ok(true);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -77,7 +77,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okGetConstPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(static_cast<bool>(ok));
@@ -112,7 +112,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -124,7 +124,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -158,7 +158,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapOrValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -170,7 +170,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapOrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -209,7 +209,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapOrElseValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -221,7 +221,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapOrElsePointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -266,7 +266,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okUnwrapErrValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -278,7 +278,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okUnwrapErrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -311,7 +311,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okokValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -325,7 +325,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okokPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -367,7 +367,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okerrValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -381,7 +381,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okerrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -420,7 +420,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -436,7 +436,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -485,7 +485,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapOrValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -503,7 +503,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapOrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -554,7 +554,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapOrElseValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -572,7 +572,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapOrElsePointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -623,7 +623,7 @@ namespace apex::utils::test {
 
 	TEST(ResultTest, okMapErrValue) {
 		auto value = true;
-		auto ok = Ok<bool, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -640,7 +640,7 @@ namespace apex::utils::test {
 	TEST(ResultTest, okMapErrPointer) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
-		auto ok = Ok<bool*, Error>(value);
+		auto ok = Ok(value);
 
 		ASSERT_TRUE(ok.isOk());
 		ASSERT_TRUE(ok);
@@ -702,7 +702,7 @@ namespace apex::utils::test {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		auto* value = new bool(true);
 		{
-			auto ok = Ok<bool*, Error>(value);
+			auto ok = Ok(value);
 			okMoveTest(std::move(ok));
 		}
 
