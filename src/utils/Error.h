@@ -28,7 +28,7 @@ namespace apex::utils {
 		/// @brief Constructs an `Error` with the given message
 		///
 		/// @param message - The error message
-		explicit Error(const std::string& message) noexcept : mMessage(message.c_str()) {
+		constexpr explicit Error(const std::string& message) noexcept : mMessage(message.c_str()) {
 		}
 
 		/// @brief Constructs an `Error` with the given message and source.
@@ -36,7 +36,7 @@ namespace apex::utils {
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		constexpr Error(const char* message, gsl::owner<Error*> source) noexcept
+		Error(const char* message, gsl::owner<Error*> source) noexcept
 			: mHasSource(true), mSource(source), mMessage(message) {
 		}
 
@@ -45,12 +45,44 @@ namespace apex::utils {
 		///
 		/// @param message - The error message
 		/// @param source - The source/cause `Error`
-		constexpr Error(const std::string& message, gsl::owner<Error*> source) noexcept
+		Error(const std::string& message, gsl::owner<Error*> source) noexcept
 			: mHasSource(true), mSource(source), mMessage(message.c_str()) {
 		}
 
-		constexpr Error(const Error& error) = default;
-		constexpr Error(Error&& error) noexcept = default;
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(const char* message, const Error& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(const std::string& message, const Error& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message.c_str()) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(const char* message, Error&& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message) {
+		}
+
+		/// @brief Constructs an `Error` with the given message and source.
+		///
+		/// @param message - The error message
+		/// @param source - The source/cause `Error`
+		Error(const std::string& message, Error&& source) noexcept
+			: mHasSource(true), mSource(std::make_shared<Error>(source)), mMessage(message.c_str()) {
+		}
+
+		Error(const Error& error) = default;
+		Error(Error&& error) noexcept = default;
 
 		virtual ~Error() noexcept = default;
 
@@ -58,13 +90,8 @@ namespace apex::utils {
 		/// passing ownership to the containing `Option`.
 		///
 		/// @return sourceError, if there is one, or nullptr
-		[[nodiscard]] constexpr auto source() const noexcept -> const Error* {
-			if(mHasSource) {
-				return mSource;
-			}
-			else {
-				return nullptr;
-			}
+		[[nodiscard]] auto source() const noexcept -> const std::weak_ptr<Error> {
+			return mSource;
 		}
 
 		/// @brief Returns the error message for this `Error`
@@ -115,31 +142,12 @@ namespace apex::utils {
 		auto operator=(const Error& error) -> Error& = default;
 		auto operator=(Error&& error) noexcept -> Error& = default;
 
-		auto operator new(std::size_t size) noexcept -> gsl::owner<void*> {
-			// clang-format off
-			// NOLINTNEXTLINE(hicpp-no-malloc, cppcoreguidelines-no-malloc): We're writing new, we have to use malloc
-			gsl::owner<void*> pointer = std::malloc(size);
-			//clang-format on
-			if(pointer != nullptr) {
-				return pointer;
-			}
-			else {
-				return nullptr;
-			}
-		}
-		auto operator delete(void* pointer) noexcept -> void {
-			// clang-format off
-			// NOLINTNEXTLINE(hicpp-no-malloc, cppcoreguidelines-no-malloc): We're writing new, we have to use malloc
-			std::free(gsl::owner<void*>(pointer));
-			//clang-format on
-		}
-
 	  protected:
 		/// whether this `Error` has a source `Error`
 		bool mHasSource = false;
 		/// the source `Error` of this one
-		/// We use a raw pointer so we can be constexpr
-		Error* mSource = nullptr;
+		/// We use `std::shared_ptr` instead of `std::unique_ptr` so we can be copyable
+		std::shared_ptr<Error> mSource = nullptr;
 		/// the error message.
 		/// We use a c string instead of `std::string` internally so we can be constexpr
 		const char* mMessage = "";
