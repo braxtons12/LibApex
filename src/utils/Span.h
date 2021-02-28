@@ -2,17 +2,16 @@
 
 #include <array>
 #include <cstdint>
-#include <gsl/span>
-
-#ifndef _MSC_VER
-using std::size_t;
-#endif // _MSC_VER
-
 #include <gsl/gsl>
+#include <gsl/span>
 
 #ifndef APEX_SPAN
 	#define APEX_SPAN
 namespace apex::utils {
+	#ifndef _MSC_VER
+	using std::size_t;
+	#endif // _MSC_VER
+
 	/// @brief Thin wrapper around `gsl::span`
 	///
 	/// @tparam T - The type contained in the `Span`
@@ -31,8 +30,7 @@ namespace apex::utils {
 		/// @brief Constructs a `Span` from a `gsl::span`
 		///
 		/// @param span - The `gsl::span` to wrap
-		explicit constexpr Span(gsl::span<T, Size> span) noexcept {
-			mSpanInternal = span;
+		explicit constexpr Span(gsl::span<T, Size> span) noexcept : mSpanInternal(span) {
 		}
 
 		/// @brief Copy constructs a `Span` from the given one
@@ -216,7 +214,7 @@ namespace apex::utils {
 
 		template<size_t Count>
 		[[nodiscard]] constexpr static inline auto
-		MakeSpan(T (&array)[Count]) noexcept -> Span<T, Count> {
+			MakeSpan(T (&array)[Count]) noexcept -> Span<T, Count> { // NOLINT
 			return Span(gsl::make_span(array));
 		}
 
