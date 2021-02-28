@@ -88,19 +88,6 @@ namespace apex::utils::test {
 		ASSERT_TRUE(res.unwrapErr().messageAsStdString() == std::string("TestErrorMessage"));
 	}
 
-	TEST(OptionTest, noneOkOrReference) {
-		auto none = None<bool>();
-		auto error = Error("TestErrorMessage");
-		auto& errorRef = error;
-
-		ASSERT_TRUE(none.isNone());
-		ASSERT_FALSE(none.isSome());
-
-		auto res = none.okOr(std::forward<Error>(errorRef));
-		ASSERT_TRUE(res.isErr());
-		ASSERT_TRUE(res.unwrapErr().messageAsStdString() == std::string("TestErrorMessage"));
-	}
-
 	TEST(OptionTest, someOkOrElseValue) {
 		auto some = Some(true);
 
@@ -134,18 +121,6 @@ namespace apex::utils::test {
 		ASSERT_FALSE(none.isSome());
 
 		auto res = none.okOrElse<Error>([]() { return Error("TestErrorMessage"); });
-		ASSERT_TRUE(res.isErr());
-		ASSERT_TRUE(res.unwrapErr().messageAsStdString() == std::string("TestErrorMessage"));
-	}
-
-	TEST(OptionTest, noneOkOrElseReference) {
-		auto none = None<bool>();
-		auto error = Error("TestErrorMessage");
-
-		ASSERT_TRUE(none.isNone());
-		ASSERT_FALSE(none.isSome());
-
-		auto res = none.okOrElse<Error>([&error]() { return std::forward<Error>(error); });
 		ASSERT_TRUE(res.isErr());
 		ASSERT_TRUE(res.unwrapErr().messageAsStdString() == std::string("TestErrorMessage"));
 	}

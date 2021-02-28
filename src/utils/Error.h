@@ -49,15 +49,10 @@ namespace apex::utils {
 			: mHasSource(true), mSource(source), mMessage(message.c_str()) {
 		}
 
-		constexpr Error(const Error& error) = delete;
+		constexpr Error(const Error& error) = default;
 		constexpr Error(Error&& error) noexcept = default;
 
-		virtual ~Error() noexcept {
-			if(mHasSource) {
-				delete mSource;
-				mSource = nullptr;
-			}
-		}
+		virtual ~Error() noexcept = default;
 
 		/// @brief Returns the source/cause `Error` of this error if there is one,
 		/// passing ownership to the containing `Option`.
@@ -80,7 +75,7 @@ namespace apex::utils {
 		}
 
 		[[nodiscard]] inline auto messageAsStdString() const noexcept -> std::string {
-			return std::string(mMessage);
+			return {mMessage};
 		}
 
 		/// @brief Converts this `Error` to a `const char*`.
@@ -117,7 +112,7 @@ namespace apex::utils {
 			}
 		}
 
-		auto operator=(const Error& error) -> Error& = delete;
+		auto operator=(const Error& error) -> Error& = default;
 		auto operator=(Error&& error) noexcept -> Error& = default;
 
 		auto operator new(std::size_t size) noexcept -> gsl::owner<void*> {
@@ -144,7 +139,7 @@ namespace apex::utils {
 		bool mHasSource = false;
 		/// the source `Error` of this one
 		/// We use a raw pointer so we can be constexpr
-		gsl::owner<Error*> mSource = nullptr;
+		Error* mSource = nullptr;
 		/// the error message.
 		/// We use a c string instead of `std::string` internally so we can be constexpr
 		const char* mMessage = "";

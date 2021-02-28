@@ -4,7 +4,7 @@
 
 #include "Error.h"
 
-namespace apex::utils::utils_details {
+namespace apex::utils::type_traits {
 	template<typename T>
 	struct is_copy_move_or_pointer
 		: std::bool_constant<std::is_copy_constructible_v<
@@ -22,9 +22,10 @@ namespace apex::utils::utils_details {
 
 	template<typename E>
 	struct is_error_type
-		: std::bool_constant<!std::is_pointer_v<E> && std::is_base_of_v<Error, E>> { };
+		: std::bool_constant<
+			  std::is_base_of_v<Error, std::remove_reference_t<std::remove_pointer_t<E>>>> { };
 
 	template<typename E>
 	constexpr auto is_error_type_v = is_error_type<E>::value;
 
-} // namespace apex::utils::utils_details
+} // namespace apex::utils::type_traits
