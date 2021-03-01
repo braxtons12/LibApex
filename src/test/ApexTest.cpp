@@ -9,9 +9,10 @@
 #include "../math/test/GeneralTestFloat.h"
 #include "../math/test/TrigFuncsTestDouble.h"
 #include "../math/test/TrigFuncsTestFloat.h"
+#include "../utils/test/ChangeDetectorTest.h"
+#include "../utils/test/InterpolatorTest.h"
 #include "../utils/test/OptionTest.h"
 #include "../utils/test/ResultTest.h"
-#include "../utils/test/ChangeDetectorTest.h"
 #include "gtest/gtest.h"
 
 auto main(int argc, char** argv) -> int {
