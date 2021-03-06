@@ -29,7 +29,7 @@ namespace apex::math::test {
 	}
 
 	TEST(GeneralTestDouble, sqrtCase4) {
-		double input = -3.12345;
+		double input = 6.12345;
 		ASSERT_NEAR(General<double>::sqrt(input), std::sqrt(input), DOUBLE_ACCEPTED_ERROR);
 	}
 

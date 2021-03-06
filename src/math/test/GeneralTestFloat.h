@@ -29,7 +29,7 @@ namespace apex::math::test {
 	}
 
 	TEST(GeneralTestFloat, sqrtfCase4) {
-		float input = -3.12345F;
+		float input = 6.12345F;
 		ASSERT_NEAR(General<>::sqrt(input), std::sqrt(input), FLOAT_ACCEPTED_ERROR);
 	}
 
