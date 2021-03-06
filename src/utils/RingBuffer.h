@@ -16,6 +16,10 @@ namespace apex::utils {
 	/// random access iterators.
 	///
 	/// # Iterator Invalidation
+	/// * Iterators are lazily evaluated, so will only ever be invalidated at their current state.
+	/// Performing any mutating operation (mutating the iterator, not the underlying data) on them
+	/// will re-sync them with their associated `RingBuffer`.
+	/// The following operations will invalidate an iterator's current state:
 	/// - Read-only operations: never
 	/// - clear: always
 	/// - reserve: only if the `RingBuffer` changed capacity
@@ -114,7 +118,7 @@ namespace apex::utils {
 			}
 
 			constexpr inline auto operator+(Integral auto rhs) const noexcept -> Iterator {
-				auto diff = static_cast<size_t>(rhs);
+				const auto diff = static_cast<size_t>(rhs);
 				if(rhs < 0) {
 					return std::move(*this - -rhs);
 				}
@@ -137,7 +141,7 @@ namespace apex::utils {
 			}
 
 			constexpr inline auto operator-(Integral auto rhs) const noexcept -> Iterator {
-				auto diff = static_cast<size_t>(rhs);
+				const auto diff = static_cast<size_t>(rhs);
 				if(rhs < 0) {
 					return std::move(*this + -rhs);
 				}
@@ -273,7 +277,7 @@ namespace apex::utils {
 			}
 
 			constexpr inline auto operator+(Integral auto rhs) const noexcept -> ConstIterator {
-				auto diff = static_cast<size_t>(rhs);
+				const auto diff = static_cast<size_t>(rhs);
 				if(rhs < 0) {
 					return std::move(*this - -rhs);
 				}
@@ -296,7 +300,7 @@ namespace apex::utils {
 			}
 
 			constexpr inline auto operator-(Integral auto rhs) const noexcept -> ConstIterator {
-				auto diff = static_cast<size_t>(rhs);
+				const auto diff = static_cast<size_t>(rhs);
 				if(rhs < 0) {
 					return std::move(*this + -rhs);
 				}
@@ -546,7 +550,7 @@ namespace apex::utils {
 		/// @param value - the element to insert
 		constexpr inline auto push_back(T&& value) noexcept -> void {
 			// clang-format off
-		mBuffer[mWriteIndex] = std::forward<T>(value); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+			mBuffer[mWriteIndex] = std::forward<T>(value); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 			// clang-format on
 
 			incrementIndices();
@@ -959,12 +963,12 @@ namespace apex::utils {
 				auto iter = begin() + externalIndex;
 				if(mSize == mCapacity) [[likely]] { // NOLINT
 					for(size_t i = 1ULL, j = numToMove - 2; i < numToMove; ++i, --j) {
-						*((end() - i) + 1) = std::move(*(iter + j));
+						*((end() - i) + 1) = *(iter + j);
 					}
 				}
 				else {
 					for(size_t i = 0ULL, j = numToMove - 1; i < numToMove; ++i, --j) {
-						*(end() - i) = std::move(*(iter + j));
+						*(end() - i) = *(iter + j);
 					}
 				}
 				incrementIndices();
@@ -1011,12 +1015,12 @@ namespace apex::utils {
 				incrementIndices();
 				if(externalIndex == 0) {
 					// clang-format off
-					mBuffer[mStartIndex] = elem; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+					mBuffer[mStartIndex] = std::move(elem); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 					// clang-format on
 				}
 				else {
 					// clang-format off
-					mBuffer[index] = elem; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+					mBuffer[index] = std::move(elem); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 					// clang-format on
 				}
 			}
@@ -1041,12 +1045,12 @@ namespace apex::utils {
 				auto iter = begin() + externalIndex;
 				if(mSize == mCapacity) [[likely]] { // NOLINT
 					for(size_t i = 1ULL, j = numToMove - 2; i < numToMove; ++i, --j) {
-						*((end() - i) + 1) = std::move(*(iter + j));
+						*((end() - i) + 1) = *(iter + j);
 					}
 				}
 				else {
 					for(size_t i = 0ULL, j = numToMove - 1; i < numToMove; ++i, --j) {
-						*(end() - i) = std::move(*(iter + j));
+						*(end() - i) = *(iter + j);
 					}
 				}
 				incrementIndices();
