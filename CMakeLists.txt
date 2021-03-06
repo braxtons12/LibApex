@@ -261,12 +261,17 @@ set(MATH
 	)
 
 set(UTILS
-	"${CMAKE_SOURCE_DIR}/src/utils/OptionAndResult.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/ChangeDetector.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/Concepts.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/Error.h"
-	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
-	"${CMAKE_SOURCE_DIR}/src/utils/Span.h"
-	"${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils/Interpolator.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/LockFreeQueue.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils/MiscMacros.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/OptionAndResult.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/RingBuffer.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/Span.h"
+	"${CMAKE_SOURCE_DIR}/src/utils/TypeTraits.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ScopedLockGuard.h"
 	"${CMAKE_SOURCE_DIR}/src/utils/synchronization/ReadWriteLock.h"
 	)
@@ -464,7 +469,15 @@ target_include_directories(ApexTest BEFORE INTERFACE
 	"${CMAKE_SOURCE_DIR}/src/utils/test"
 	)
 
-target_link_libraries(ApexTest PRIVATE
-	juce::juce_dsp
-	Microsoft.GSL::GSL
-	gtest)
+if(UNIX AND NOT APPLE)
+	target_link_libraries(ApexTest PRIVATE
+		curl
+		juce::juce_dsp
+		Microsoft.GSL::GSL
+		gtest)
+else()
+	target_link_libraries(ApexTest PRIVATE
+		juce::juce_dsp
+		Microsoft.GSL::GSL
+		gtest)
+endif()

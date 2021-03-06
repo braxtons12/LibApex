@@ -13,6 +13,7 @@
 #include "../utils/test/InterpolatorTest.h"
 #include "../utils/test/OptionTest.h"
 #include "../utils/test/ResultTest.h"
+#include "../utils/test/RingBufferTest.h"
 #include "gtest/gtest.h"
 
 auto main(int argc, char** argv) -> int {
